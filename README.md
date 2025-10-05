@@ -1,21 +1,19 @@
-# TailAdmin Pro - Next.js (v2.2)
+# TinAdmin Master Admin Panel V1.0
 
-[TailAdmin](https://tailadmin.com) is a modern, responsive, and customizable admin dashboard template built using
+TinAdmin Master Admin Panel is a modern, responsive, and customizable admin dashboard template built using
 Tailwind CSS and Next.js. It is designed to help developers build beautiful and functional dashboards quickly and
 easily.
 
 ## Quick Links
 
-- [✨ Visit Website](https://tailadmin.com)
-- [📄 Documentation](https://tailadmin.com/docs)
-- [⬇️ Download](https://tailadmin.com/download)
-- [🌐 Live Site](https://nextjs-demo.tailadmin.com)
+- [🚀 GitHub Repository](https://github.com/tindevelopers/tinadmin-master-admin-panel)
+- [📄 Documentation](https://github.com/tindevelopers/tinadmin-master-admin-panel/blob/main/README.md)
 
 ## Installation
 
 ### Prerequisites
 
-To get started with TailAdmin, ensure you have the following prerequisites installed and set up:
+To get started with TinAdmin Master Admin Panel, ensure you have the following prerequisites installed and set up:
 
 - Node.js 18.x or later (recommended to use Node.js 20.x or later)
 
