@@ -71,6 +71,42 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    name: "Templates",
+    icon: <BoxCubeIcon />,
+    new: true,
+    subItems: [
+      {
+        name: "E-commerce",
+        path: "/templates/ecommerce",
+      },
+      {
+        name: "Blog Writer",
+        path: "/templates/blog-writer",
+        new: true,
+      },
+      {
+        name: "Restaurant",
+        path: "/templates/restaurant",
+      },
+      {
+        name: "Healthcare",
+        path: "/templates/healthcare",
+      },
+      {
+        name: "Finance",
+        path: "/templates/finance",
+      },
+      {
+        name: "Education",
+        path: "/templates/education",
+      },
+      {
+        name: "SaaS",
+        path: "/templates/saas",
+      },
+    ],
+  },
+  {
     name: "E-commerce",
     icon: <CartIcon />,
     new: true,

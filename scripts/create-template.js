@@ -53,6 +53,15 @@ const templates = {
       primary: '#8B5CF6',
       secondary: '#06B6D4'
     }
+  },
+  'blog-writer': {
+    name: 'TinAdmin Blog Writer',
+    description: 'Marketing dashboard for small business client management, social media, email marketing, and appointment booking',
+    features: ['client-management', 'social-media', 'email-marketing', 'appointment-booking', 'content-creation'],
+    colors: {
+      primary: '#F59E0B',
+      secondary: '#EF4444'
+    }
   }
 };
 
