@@ -858,6 +858,79 @@ jobs:
 **Happy deploying! 🚀**`;
 }
 
+function fixBlogWriterResponsiveLayout() {
+  const templatePagePath = path.join(OUTPUT_DIR, 'src/app/templates/blog-writer/page.tsx');
+  if (fs.existsSync(templatePagePath)) {
+    let pageContent = fs.readFileSync(templatePagePath, 'utf8');
+    
+    // Fix the header section for better responsiveness
+    pageContent = pageContent.replace(
+      /<div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-xl p-6 text-white">[\s\S]*?<\/div>/,
+      `<div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-xl p-4 md:p-6 text-white">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl md:text-2xl font-bold mb-2 break-words">✍️ Blog Writer Dashboard</h1>
+            <p className="text-indigo-100 text-sm md:text-base break-words">
+              Overview of your content marketing performance and quick actions
+            </p>
+          </div>
+          <div className="hidden md:block flex-shrink-0">
+            <div className="bg-white bg-opacity-20 rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold">24</div>
+              <div className="text-sm text-indigo-100">Posts This Month</div>
+            </div>
+          </div>
+        </div>
+      </div>`
+    );
+    
+    // Fix the main content grid for better overflow handling
+    pageContent = pageContent.replace(
+      /<div className="grid grid-cols-12 gap-4 md:gap-6">[\s\S]*?<\/div>/,
+      `<div className="grid grid-cols-12 gap-4 md:gap-6">
+        {/* Metrics Cards */}
+        <div className="col-span-12 overflow-hidden">
+          <BlogWriterMetrics />
+        </div>
+
+        {/* Dashboard Widgets */}
+        <div className="col-span-12 xl:col-span-7 min-w-0">
+          <BlogWriterDashboard />
+        </div>
+
+        {/* Sidebar Widgets */}
+        <div className="col-span-12 xl:col-span-5 space-y-6 min-w-0">
+          <UpcomingSchedule />
+          <AnalyticsPreview />
+        </div>
+      </div>`
+    );
+    
+    // Fix the quick actions section for better responsiveness
+    pageContent = pageContent.replace(
+      /<div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">[\s\S]*?<h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">[\s\S]*?Quick Actions[\s\S]*?<\/h3>[\s\S]*?<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">/,
+      `<div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 break-words">
+          Quick Actions
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">`
+    );
+    
+    // Fix quick action buttons for better responsiveness
+    pageContent = pageContent.replace(
+      /className="flex items-center space-x-3 p-4 ([^"]*)"[\s\S]*?<span className="text-sm font-medium text-gray-900 dark:text-white">([^<]*)<\/span>/g,
+      `className="flex items-center space-x-3 p-3 md:p-4 $1 min-w-0"
+          >
+            <div className="w-8 h-8 $2 rounded-lg flex items-center justify-center flex-shrink-0">
+              $3
+            </div>
+            <span className="text-sm font-medium text-gray-900 dark:text-white break-words">$4</span>`
+    );
+    
+    fs.writeFileSync(templatePagePath, pageContent);
+  }
+}
+
 function modifyAppSidebar() {
   const sidebarPath = path.join(OUTPUT_DIR, 'src/layout/AppSidebar.tsx');
   if (fs.existsSync(sidebarPath)) {
@@ -872,12 +945,12 @@ const navItems = [
     new: true,
     subItems: [
       { name: "Dashboard", path: "/templates/blog-writer" },
+      { name: "Drafts", path: "/templates/blog-writer/drafts", new: true },
+      { name: "Media Library", path: "/templates/blog-writer/media", new: true },
       { name: "Content Calendar", path: "/templates/blog-writer/calendar", pro: true },
       { name: "Post Analytics", path: "/templates/blog-writer/analytics", pro: true },
       { name: "SEO Tools", path: "/templates/blog-writer/seo", pro: true },
       { name: "Publishing", path: "/templates/blog-writer/publishing", pro: true },
-      { name: "Drafts", path: "/templates/blog-writer/drafts", new: true },
-      { name: "Media Library", path: "/templates/blog-writer/media", new: true },
       { name: "Team Management", path: "/templates/blog-writer/team", new: true },
       { name: "Content Templates", path: "/templates/blog-writer/templates", new: true },
       { name: "Workflows", path: "/templates/blog-writer/workflows", new: true },
@@ -890,6 +963,75 @@ const navItems = [
     sidebarContent = sidebarContent.replace(
       /const navItems = \[[\s\S]*?\];/,
       blogWriterOnlyNavItems
+    );
+    
+    // Remove othersItems and supportItems sections
+    sidebarContent = sidebarContent.replace(
+      /const othersItems: NavItem\[\] = \[[\s\S]*?\];/,
+      '// Removed othersItems and supportItems - only Blog Writer template needed'
+    );
+    
+    sidebarContent = sidebarContent.replace(
+      /const supportItems: NavItem\[\] = \[[\s\S]*?\];/,
+      ''
+    );
+    
+    // Simplify the navigation rendering to only show main menu
+    const simplifiedNavRendering = `
+        <nav className="mb-6">
+          <div className="flex flex-col gap-4">
+            <div>
+              <h2
+                className={\`mb-4 text-xs uppercase flex leading-5 text-gray-400 \${
+                  !isExpanded && !isHovered
+                    ? "xl:justify-center"
+                    : "justify-start"
+                }\`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "Menu"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(navItems, "main")}
+            </div>
+          </div>
+        </nav>`;
+    
+    sidebarContent = sidebarContent.replace(
+      /<nav className="mb-6">[\s\S]*?<\/nav>/,
+      simplifiedNavRendering
+    );
+    
+    // Simplify the useEffect for submenu matching
+    const simplifiedUseEffect = `
+  useEffect(() => {
+    // Check if the current path matches any submenu item
+    let submenuMatched = false;
+    navItems.forEach((nav, index) => {
+      if (nav.subItems) {
+        nav.subItems.forEach((subItem) => {
+          if (isActive(subItem.path)) {
+            setOpenSubmenu({
+              type: "main",
+              index,
+            });
+            submenuMatched = true;
+          }
+        });
+      }
+    });
+
+    // If no submenu item matches, close the open submenu
+    if (!submenuMatched) {
+      setOpenSubmenu(null);
+    }
+  }, [pathname, isActive]);`;
+    
+    sidebarContent = sidebarContent.replace(
+      /useEffect\(\(\) => \{[\s\S]*?\}, \[pathname, isActive\]\);/,
+      simplifiedUseEffect
     );
     
     fs.writeFileSync(sidebarPath, sidebarContent);
@@ -1672,6 +1814,11 @@ function extractTemplate() {
   log('Modifying navigation...', 'progress');
   modifyAppSidebar();
   log('Modified navigation', 'success');
+  
+  // Fix responsive layout issues in blog writer template
+  log('Fixing responsive layout...', 'progress');
+  fixBlogWriterResponsiveLayout();
+  log('Fixed responsive layout', 'success');
   
   // Add build caching configuration
   log('Adding build caching configuration...', 'progress');
