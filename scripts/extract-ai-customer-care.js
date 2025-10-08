@@ -3,11 +3,32 @@
 /**
  * AI Customer Care Template Extraction Script
  * 
- * This script extracts the AI Customer Care template from the TinAdmin repository
+ * This script extracts ONLY the AI Customer Care template from the TinAdmin repository
  * and creates a standalone Next.js project with all necessary files and dependencies.
+ * All other templates are excluded to create a focused AI customer care application.
  * 
- * Usage: node scripts/extract-ai-customer-care.js [output-directory]
- * Example: node scripts/extract-ai-customer-care.js ./ai-customer-care-standalone
+ * Usage: 
+ *   node scripts/extract-ai-customer-care.js [output-directory] [options]
+ * 
+ * Examples:
+ *   node scripts/extract-ai-customer-care.js ./ai-customer-care-standalone
+ *   node scripts/extract-ai-customer-care.js ./ai-customer-care-standalone --deploy-github
+ *   node scripts/extract-ai-customer-care.js ./ai-customer-care-standalone --deploy-github --publish-npm
+ * 
+ * Options:
+ *   --deploy-github, --deploy    Deploy the template to GitHub (develop branch ONLY)
+ *   --publish-npm, --npm         Also publish to NPM (requires --deploy-github)
+ * 
+ * INCLUDES:
+ *   ✅ AI Customer Care template ONLY
+ *   ✅ Essential UI components (ui, common, charts, form, tables)
+ *   ✅ All missing dependencies fixed (react-apexcharts, @popperjs/core, flatpickr, etc.)
+ *   ✅ Simplified Vercel config for successful deployment
+ *   ❌ All other templates excluded (Blog Writer, Analytics, CRM, E-commerce, etc.)
+ * 
+ * SAFETY: This script ONLY operates on the 'develop' branch and will NEVER
+ * modify the 'main' branch. The main branch is protected and can only be
+ * updated via Pull Requests.
  */
 
 const fs = require('fs');
@@ -17,7 +38,66 @@ const { execSync } = require('child_process');
 // Configuration
 const TEMPLATE_NAME = 'ai-customer-care';
 const TEMPLATE_DISPLAY_NAME = 'AI Customer Care';
-const OUTPUT_DIR = process.argv[2] || `./${TEMPLATE_NAME}-standalone`;
+
+// Parse command line arguments
+const args = process.argv.slice(2);
+const OUTPUT_DIR = args[0] || `./${TEMPLATE_NAME}-standalone`;
+const SHOULD_DEPLOY_GITHUB = args.includes('--deploy-github') || args.includes('--deploy');
+const SHOULD_PUBLISH_NPM = args.includes('--publish-npm') || args.includes('--npm');
+const SHOW_HELP = args.includes('--help') || args.includes('-h');
+
+// Help function
+function showHelp() {
+  console.log(`
+${TEMPLATE_DISPLAY_NAME} Template Extraction Script
+
+This script extracts the AI Customer Care template from the TinAdmin repository
+and creates a standalone Next.js project with all necessary files and dependencies.
+
+USAGE:
+  node scripts/extract-ai-customer-care.js [output-directory] [options]
+
+ARGUMENTS:
+  output-directory    Directory to create the standalone template (default: ./ai-customer-care-standalone)
+
+OPTIONS:
+  --deploy-github, --deploy    Deploy the template to GitHub (develop branch)
+  --publish-npm, --npm         Also publish to NPM (requires --deploy-github)
+  --help, -h                   Show this help message
+
+EXAMPLES:
+  # Basic extraction
+  node scripts/extract-ai-customer-care.js ./my-ai-template
+  
+  # Extract and deploy to GitHub
+  node scripts/extract-ai-customer-care.js ./my-ai-template --deploy-github
+  
+  # Extract, deploy to GitHub, and publish to NPM
+  node scripts/extract-ai-customer-care.js ./my-ai-template --deploy-github --publish-npm
+
+GITHUB REPOSITORY:
+  https://github.com/tindevelopers/adminpanel-template-ai-customer-care-next-js
+  
+FEATURES:
+  ✅ Complete Next.js project structure
+  ✅ AI Customer Care template ONLY (focused application)
+  ✅ Essential UI components for AI customer care functionality
+  ✅ Fixed missing dependencies from deployment testing
+  ✅ Simplified Vercel config for successful deployment
+  ✅ GitHub deployment to develop branch
+  ✅ NPM package publishing
+  ✅ Executable template creation script
+
+TEMPLATES INCLUDED:
+  🤖 AI Customer Care ONLY
+  ❌ All other templates excluded (Blog Writer, Analytics, CRM, etc.)
+`);
+}
+
+if (SHOW_HELP) {
+  showHelp();
+  process.exit(0);
+}
 
 // Files and directories to copy
 const FILES_TO_COPY = [
@@ -46,20 +126,107 @@ const FILES_TO_COPY = [
   'src/utils',
   'src/svg.d.ts',
   
-  // Template-specific files
+  // Admin layout only (no other admin pages)
+  'src/app/(admin)/layout.tsx',
+  
+  // Template-specific files (ONLY ai-customer-care)
   `src/app/templates/${TEMPLATE_NAME}`,
   `src/components/${TEMPLATE_NAME}`,
+  
+  // Essential UI components for AI customer care only
+  'src/components/ui',
+  'src/components/common',
+  'src/components/charts',
+  'src/components/form',
+  'src/components/tables',
+  
+  // Layout components
   'src/layout/AppSidebar.tsx',
   'src/layout/AppHeader.tsx',
   'src/layout/Backdrop.tsx',
   'src/layout/SidebarWidget.tsx',
   
-  // Icons (we'll filter these)
-  'src/icons',
+  // Header components (required by AppHeader)
+  'src/components/header/NotificationDropdown.tsx',
+  'src/components/header/UserDropdown.tsx',
   
   // Documentation
   'docs/MULTITENANT_ARCHITECTURE.md',
   `templates/${TEMPLATE_NAME}/template.config.json`,
+  
+  // GitHub Actions workflows (if they exist)
+  '.github/workflows',
+];
+
+// Icons to copy (comprehensive list based on actual usage)
+const ICONS_TO_COPY = [
+  // Core navigation icons
+  'src/icons/ai-icon.svg',
+  'src/icons/call-icon.svg',
+  'src/icons/chat.svg',
+  'src/icons/user-circle.svg',
+  'src/icons/user-line.svg',
+  'src/icons/calendar.svg',
+  'src/icons/calender-line.svg',
+  'src/icons/time.svg',
+  'src/icons/eye.svg',
+  'src/icons/eye-close.svg',
+  'src/icons/check-circle.svg',
+  'src/icons/check-line.svg',
+  'src/icons/close.svg',
+  'src/icons/close-line.svg',
+  'src/icons/plus.svg',
+  'src/icons/pencil.svg',
+  'src/icons/trash.svg',
+  'src/icons/download.svg',
+  'src/icons/copy.svg',
+  'src/icons/arrow-up.svg',
+  'src/icons/arrow-down.svg',
+  'src/icons/arrow-right.svg',
+  'src/icons/angle-down.svg',
+  'src/icons/angle-up.svg',
+  'src/icons/angle-left.svg',
+  'src/icons/angle-right.svg',
+  'src/icons/chevron-down.svg',
+  'src/icons/chevron-left.svg',
+  'src/icons/chevron-up.svg',
+  'src/icons/horizontal-dots.svg',
+  'src/icons/grid.svg',
+  'src/icons/list.svg',
+  'src/icons/table.svg',
+  'src/icons/pie-chart.svg',
+  'src/icons/bolt.svg',
+  'src/icons/shooting-star.svg',
+  'src/icons/info.svg',
+  'src/icons/info-hexa.svg',
+  'src/icons/alert.svg',
+  'src/icons/lock.svg',
+  'src/icons/envelope.svg',
+  'src/icons/mail-line.svg',
+  'src/icons/mail-icon.svg',
+  'src/icons/docs.svg',
+  'src/icons/folder.svg',
+  'src/icons/file.svg',
+  'src/icons/page.svg',
+  'src/icons/group.svg',
+  'src/icons/box.svg',
+  'src/icons/box-cube.svg',
+  'src/icons/box-icon.svg',
+  'src/icons/box-line.svg',
+  'src/icons/box-tapped.svg',
+  'src/icons/truck-delivery.svg',
+  'src/icons/task.svg',
+  'src/icons/task-icon.svg',
+  'src/icons/audio.svg',
+  'src/icons/videos.svg',
+  'src/icons/MoreDotIcon.svg',
+  'src/icons/cart-icon.svg',
+  'src/icons/plug-in.svg',
+  'src/icons/paper-plane.svg',
+  'src/icons/dollar-line.svg',
+  
+  // Icon index file
+  'src/icons/index.tsx',
 ];
 
 // Files to create/modify
@@ -71,7 +238,7 @@ const FILES_TO_CREATE = [
   'DEPLOYMENT.md',
 ];
 
-// Dependencies to include (filtered from main package.json)
+// Dependencies to include (filtered from main package.json + deployment fixes)
 const REQUIRED_DEPENDENCIES = [
   'next@^15.5.4',
   'react@^19.0.0',
@@ -79,6 +246,7 @@ const REQUIRED_DEPENDENCIES = [
   '@types/node@^22.0.0',
   '@types/react@^19.0.0',
   '@types/react-dom@^19.0.0',
+  '@types/prismjs@^1.26.5',
   'typescript@^5.0.0',
   'tailwindcss@^4.0.0',
   'autoprefixer@^10.4.0',
@@ -86,10 +254,20 @@ const REQUIRED_DEPENDENCIES = [
   'eslint@^9.0.0',
   'eslint-config-next@^15.5.4',
   '@heroicons/react@^2.1.0',
+  '@svgr/webpack@^8.1.0',
+  '@tailwindcss/forms@^0.5.9',
+  '@tailwindcss/postcss@^4.0.9',
   'clsx@^2.1.0',
   'tailwind-merge@^2.5.0',
   'lucide-react@^0.460.0',
   'recharts@^2.13.0',
+  'apexcharts@^4.3.0',
+  'react-apexcharts@^1.4.1',
+  '@popperjs/core@^2.11.8',
+  'flatpickr@^4.6.13',
+  'react-dropzone@^14.2.3',
+  'swiper@^11.0.5',
+  'simplebar-react@^3.2.4',
 ];
 
 const REQUIRED_DEV_DEPENDENCIES = [
@@ -101,687 +279,755 @@ const REQUIRED_DEV_DEPENDENCIES = [
   'eslint-config-next@^15.5.4',
 ];
 
-// Icons to keep (only AI Customer Care related)
-const ICONS_TO_KEEP = [
-  'call-icon.svg',
-  'chat.svg',
-  'user-circle.svg',
-  'user-line.svg',
-  'calendar.svg',
-  'time.svg',
-  'eye.svg',
-  'eye-close.svg',
-  'check-circle.svg',
-  'check-line.svg',
-  'close.svg',
-  'close-line.svg',
-  'plus.svg',
-  'pencil.svg',
-  'trash.svg',
-  'download.svg',
-  'copy.svg',
-  'arrow-up.svg',
-  'arrow-down.svg',
-  'arrow-right.svg',
-  'angle-down.svg',
-  'angle-up.svg',
-  'angle-left.svg',
-  'angle-right.svg',
-  'chevron-down.svg',
-  'chevron-left.svg',
-  'chevron-up.svg',
-  'horizontal-dots.svg',
-  'grid.svg',
-  'list.svg',
-  'table.svg',
-  'pie-chart.svg',
-  'bolt.svg',
-  'shooting-star.svg',
-  'info.svg',
-  'alert.svg',
-  'lock.svg',
-  'envelope.svg',
-  'mail-line.svg',
-  'docs.svg',
-  'folder.svg',
-  'file.svg',
-  'page.svg',
-  'group.svg',
-  'box.svg',
-  'box-cube.svg',
-  'box-icon.svg',
-  'box-line.svg',
-  'box-tapped.svg',
-  'truck-delivery.svg',
-  'task.svg',
-  'task-icon.svg',
-  'audio.svg',
-  'videos.svg',
-];
-
-class AICustomerCareExtractor {
-  constructor() {
-    this.rootDir = process.cwd();
-    this.outputDir = path.resolve(this.rootDir, OUTPUT_DIR);
-    this.errors = [];
-  }
-
-  log(message) {
-    console.log(`[AI Customer Care Extractor] ${message}`);
-  }
-
-  error(message) {
-    this.errors.push(message);
-    console.error(`[ERROR] ${message}`);
-  }
-
-  async run() {
-    try {
-      this.log('Starting AI Customer Care template extraction...');
-      
-      // Step 1: Create output directory
-      await this.createOutputDirectory();
-      
-      // Step 2: Copy files
-      await this.copyFiles();
-      
-      // Step 3: Create template-specific files
-      await this.createTemplateFiles();
-      
-      // Step 4: Generate package.json
-      await this.generatePackageJson();
-      
-      // Step 5: Clean up unnecessary files
-      await this.cleanupFiles();
-      
-      // Step 6: Initialize git repository
-      await this.initializeGit();
-      
-      // Step 7: Install dependencies
-      await this.installDependencies();
-      
-      this.log('✅ AI Customer Care template extraction completed successfully!');
-      this.log(`📁 Output directory: ${this.outputDir}`);
-      
-      if (this.errors.length > 0) {
-        this.log(`⚠️  ${this.errors.length} warnings occurred during extraction`);
-        this.errors.forEach(error => this.log(`   - ${error}`));
-      }
-      
-      this.printNextSteps();
-      
-    } catch (error) {
-      this.error(`Extraction failed: ${error.message}`);
-      process.exit(1);
-    }
-  }
-
-  async createOutputDirectory() {
-    this.log('Creating output directory...');
-    
-    if (fs.existsSync(this.outputDir)) {
-      this.log(`Removing existing directory: ${this.outputDir}`);
-      fs.rmSync(this.outputDir, { recursive: true, force: true });
-    }
-    
-    fs.mkdirSync(this.outputDir, { recursive: true });
-  }
-
-  async copyFiles() {
-    this.log('Copying files...');
-    
-    for (const filePath of FILES_TO_COPY) {
-      const sourcePath = path.join(this.rootDir, filePath);
-      const destPath = path.join(this.outputDir, filePath);
-      
-      if (!fs.existsSync(sourcePath)) {
-        this.error(`Source file not found: ${filePath}`);
-        continue;
-      }
-      
-      try {
-        const stat = fs.statSync(sourcePath);
-        
-        if (stat.isDirectory()) {
-          this.copyDirectory(sourcePath, destPath);
-        } else {
-          this.copyFile(sourcePath, destPath);
-        }
-        
-        this.log(`✓ Copied: ${filePath}`);
-      } catch (error) {
-        this.error(`Failed to copy ${filePath}: ${error.message}`);
-      }
-    }
-  }
-
-  copyFile(source, dest) {
-    const destDir = path.dirname(dest);
-    if (!fs.existsSync(destDir)) {
-      fs.mkdirSync(destDir, { recursive: true });
-    }
-    fs.copyFileSync(source, dest);
-  }
-
-  copyDirectory(source, dest) {
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest, { recursive: true });
-    }
-    
-    const items = fs.readdirSync(source);
-    
-    for (const item of items) {
-      const sourcePath = path.join(source, item);
-      const destPath = path.join(dest, item);
-      
-      const stat = fs.statSync(sourcePath);
-      
-      if (stat.isDirectory()) {
-        this.copyDirectory(sourcePath, destPath);
-      } else {
-        this.copyFile(sourcePath, destPath);
-      }
-    }
-  }
-
-  async createTemplateFiles() {
-    this.log('Creating template-specific files...');
-    
-    // Create main page (redirects to AI Customer Care)
-    const mainPageContent = `import { redirect } from 'next/navigation';
-
-export default function HomePage() {
-  redirect('/templates/${TEMPLATE_NAME}');
-}`;
-
-    fs.writeFileSync(
-      path.join(this.outputDir, 'src/app/page.tsx'),
-      mainPageContent
-    );
-
-    // Create admin layout
-    const adminLayoutContent = `import type { Metadata } from "next";
-import AppSidebar from "@/layout/AppSidebar";
-import AppHeader from "@/layout/AppHeader";
-import { SidebarProvider } from "@/context/SidebarContext";
-import { ThemeProvider } from "@/context/ThemeContext";
-
-export const metadata: Metadata = {
-  title: "${TEMPLATE_DISPLAY_NAME} Dashboard | TinAdmin",
-  description: "Enterprise-grade admin platform for managing AI voice agents, chat conversations, and call analytics",
+// Scripts to include
+const REQUIRED_SCRIPTS = {
+  'dev': 'next dev',
+  'build': 'next build',
+  'start': 'next start',
+  'lint': 'next lint',
+  'type-check': 'tsc --noEmit'
 };
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <ThemeProvider>
-      <SidebarProvider>
-        <div className="flex h-screen overflow-hidden">
-          <AppSidebar />
-          <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
-            <AppHeader />
-            <main className="relative flex-1 overflow-y-auto p-4 md:p-6">
-              {children}
-            </main>
-          </div>
-        </div>
-      </SidebarProvider>
-    </ThemeProvider>
-  );
-}`;
+// Utility functions
+function log(message, type = 'info') {
+  const icons = {
+    info: '📝',
+    success: '✅',
+    warning: '⚠️',
+    error: '❌',
+    progress: '🔄'
+  };
+  console.log(`${icons[type]} ${message}`);
+}
 
-    fs.mkdirSync(path.join(this.outputDir, 'src/app/(admin)'), { recursive: true });
-    fs.writeFileSync(
-      path.join(this.outputDir, 'src/app/(admin)/layout.tsx'),
-      adminLayoutContent
-    );
+function ensureDirectoryExists(dirPath) {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+}
 
-    // Create admin page (redirects to template)
-    const adminPageContent = `import { redirect } from 'next/navigation';
+function copyFileOrDirectory(src, dest) {
+  const srcPath = path.resolve(src);
+  const destPath = path.resolve(dest);
+  
+  if (!fs.existsSync(srcPath)) {
+    log(`Warning: Source path does not exist: ${srcPath}`, 'warning');
+    return;
+  }
+  
+  ensureDirectoryExists(path.dirname(destPath));
+  
+  if (fs.statSync(srcPath).isDirectory()) {
+    if (fs.existsSync(destPath)) {
+      fs.rmSync(destPath, { recursive: true });
+    }
+    fs.cpSync(srcPath, destPath, { recursive: true });
+  } else {
+    fs.copyFileSync(srcPath, destPath);
+  }
+}
 
-export default function AdminPage() {
+function createPackageJson() {
+  const packageJson = {
+    name: `tinadmin-ai-customer-care-template`,
+    version: '1.0.0',
+    description: `${TEMPLATE_DISPLAY_NAME} Template - Enterprise-grade admin platform for managing AI voice agents, chat conversations, and call analytics`,
+    private: false,
+    main: "bin/create-ai-customer-care.js",
+    bin: {
+      "tinadmin-ai-customer-care-template": "./bin/create-ai-customer-care.js"
+    },
+    files: [
+      "bin/",
+      "src/",
+      "public/",
+      "templates/",
+      "package.json",
+      "README.md",
+      "DEPLOYMENT.md",
+      "LICENSE",
+      "next.config.ts",
+      "tsconfig.json",
+      "tailwind.config.ts",
+      "postcss.config.mjs",
+      "eslint.config.mjs"
+    ],
+    keywords: [
+      "nextjs",
+      "react",
+      "typescript",
+      "tailwindcss",
+      "ai",
+      "customer-care",
+      "voice-agents",
+      "chat-agents",
+      "call-analytics",
+      "admin-panel",
+      "template"
+    ],
+    author: "TinAdmin",
+    license: "MIT",
+    homepage: "https://github.com/tindevelopers/adminpanel-template-ai-customer-care-next-js",
+    repository: {
+      type: "git",
+      url: "git+https://github.com/tindevelopers/adminpanel-template-ai-customer-care-next-js.git"
+    },
+    bugs: {
+      url: "https://github.com/tindevelopers/adminpanel-template-ai-customer-care-next-js/issues"
+    },
+    publishConfig: {
+      access: "public"
+    },
+    scripts: REQUIRED_SCRIPTS,
+    dependencies: {},
+    devDependencies: {},
+    optionalDependencies: {
+      '@tailwindcss/oxide-linux-x64-gnu': '^4.0.0',
+      'lightningcss-linux-x64-gnu': '^1.29.0'
+    },
+    engines: {
+      node: '>=18.0.0',
+      npm: '>=8.0.0'
+    }
+  };
+  
+  // Add dependencies with proper parsing
+  REQUIRED_DEPENDENCIES.forEach(dep => {
+    // Handle scoped packages like @types/node@^20.0.0
+    const match = dep.match(/^(@[^@]+)@(.+)$/);
+    if (match) {
+      const [, name, version] = match;
+      packageJson.dependencies[name] = version;
+    } else {
+      // Handle non-scoped packages like react@^18.0.0
+      const parts = dep.split('@');
+      if (parts.length === 2) {
+        const [name, version] = parts;
+        packageJson.dependencies[name] = version;
+      }
+    }
+  });
+  
+  REQUIRED_DEV_DEPENDENCIES.forEach(dep => {
+    // Handle scoped packages like @types/node@^20.0.0
+    const match = dep.match(/^(@[^@]+)@(.+)$/);
+    if (match) {
+      const [, name, version] = match;
+      packageJson.devDependencies[name] = version;
+    } else {
+      // Handle non-scoped packages like typescript@^5.0.0
+      const parts = dep.split('@');
+      if (parts.length === 2) {
+        const [name, version] = parts;
+        packageJson.devDependencies[name] = version;
+      }
+    }
+  });
+  
+  return packageJson;
+}
+
+function createMainPage() {
+  return `import { redirect } from 'next/navigation';
+
+export default function HomePage() {
+  // Redirect to the AI Customer Care template
   redirect('/templates/${TEMPLATE_NAME}');
 }`;
+}
 
-    fs.writeFileSync(
-      path.join(this.outputDir, 'src/app/(admin)/page.tsx'),
-      adminPageContent
-    );
+function createReadme() {
+  return `# ${TEMPLATE_DISPLAY_NAME} Template
 
-    // Create README
-    const readmeContent = `# ${TEMPLATE_DISPLAY_NAME} Template
+A comprehensive AI Customer Care management platform built with Next.js, TypeScript, and Tailwind CSS.
 
-A standalone Next.js application for managing AI voice agents, chat conversations, and call analytics.
+## 🚀 Features
 
-## Features
+### 🤖 AI Agent Management
+- **Voice Agent Configuration** - Set up and manage AI voice agents
+- **Chat Agent Management** - Configure chat conversations and flows
+- **Agent Performance Tracking** - Monitor agent effectiveness and metrics
+- **Training & Knowledge Base** - Centralized content repository
 
-- 🤖 **AI Voice Agent Management** - Configure and manage AI voice agents
-- 💬 **Chat Agent Management** - Set up and monitor chat conversations
-- 📊 **Live Call Monitoring** - Real-time call supervision and intervention
-- 📈 **Analytics & Reporting** - Comprehensive analytics and performance metrics
-- 🔗 **Integration Hub** - Connect with CRMs, telephony providers, and business tools
-- 📞 **Call Flow Builder** - Visual call flow creation and management
-- 📚 **Knowledge Base** - Centralized content repository for agent training
-- 🔐 **Quality Assurance** - Call evaluation and compliance monitoring
-- 🏢 **Multi-tenant Support** - Manage multiple tenants and subtenants
-- ⚙️ **System Settings** - Comprehensive configuration management
-- 🔌 **API Playground** - Test and explore API endpoints
+### 📊 Call Management & Analytics
+- **Live Call Monitoring** - Real-time call supervision and intervention
+- **Call Flow Builder** - Visual flow creation and management
+- **Call History** - Comprehensive call logs and recordings
+- **Analytics Dashboard** - Performance metrics and insights
+- **Sentiment Analysis** - Track customer sentiment and satisfaction
 
-## Tech Stack
+### 🔗 Integration Hub
+- **CRM Integration** - Salesforce, HubSpot, and other CRMs
+- **Telephony Providers** - Twilio, Vonage, and other providers
+- **Business Tools** - Slack, Teams, and collaboration platforms
+- **API Playground** - Test and explore API endpoints
+- **Webhooks** - Event-driven integrations
 
-- **Framework**: Next.js 15 with App Router
+### 🏢 Multi-Tenant Support
+- **Tenant Management** - Manage multiple organizations
+- **Subtenant Configuration** - Hierarchical tenant structure
+- **Role-based Access Control** - Granular permissions
+- **Billing & Analytics** - Per-tenant billing and reporting
+
+### ⚙️ System Configuration
+- **Quality Assurance** - Call evaluation and compliance monitoring
+- **Monitoring** - System health and performance tracking
+- **Phone Numbers** - Number provisioning and management
+- **User Management** - Team collaboration and permissions
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15.5.4
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4.0
-- **UI Components**: Custom components with Heroicons
-- **Charts**: Recharts for analytics visualization
+- **Icons**: Heroicons
+- **Charts**: Recharts & ApexCharts
 - **State Management**: React Context API
 
-## Quick Start
+## 📦 Installation
 
-1. **Install dependencies**:
+1. **Clone or download** this template
+2. **Install dependencies**:
    \`\`\`bash
    npm install
    \`\`\`
 
-2. **Start development server**:
+3. **Start development server**:
    \`\`\`bash
    npm run dev
    \`\`\`
 
-3. **Open your browser**:
-   Navigate to [http://localhost:3000](http://localhost:3000)
+4. **Open your browser** and navigate to \`http://localhost:3000\`
 
-## Project Structure
+## 🏗️ Project Structure
 
 \`\`\`
 src/
 ├── app/
-│   ├── (admin)/
-│   │   └── layout.tsx          # Admin layout wrapper
-│   ├── templates/
-│   │   └── ${TEMPLATE_NAME}/    # AI Customer Care pages
-│   ├── globals.css             # Global styles
-│   ├── layout.tsx              # Root layout
-│   └── page.tsx                # Home page (redirects to template)
+│   ├── templates/ai-customer-care/  # AI Customer Care pages
+│   │   ├── agents/                  # Agent management
+│   │   ├── analytics/               # Analytics dashboard
+│   │   ├── calls/                   # Call history
+│   │   ├── flows/                   # Conversation flows
+│   │   ├── integrations/            # Third-party integrations
+│   │   ├── knowledge/               # Knowledge base
+│   │   ├── monitoring/              # System monitoring
+│   │   ├── quality/                 # Quality assurance
+│   │   └── ...                      # Other features
+│   └── layout.tsx                   # Root layout
 ├── components/
-│   └── ${TEMPLATE_NAME}/        # AI Customer Care components
-├── context/                     # React contexts
-├── hooks/                       # Custom hooks
-├── icons/                       # SVG icons
-├── layout/                      # Layout components
-└── utils/                       # Utility functions
+│   └── ai-customer-care/            # AI Customer Care components
+├── layout/                          # Layout components
+└── hooks/                           # Custom React hooks
 \`\`\`
 
-## Available Scripts
+## 🚀 Deployment
 
-- \`npm run dev\` - Start development server
-- \`npm run build\` - Build for production
-- \`npm run start\` - Start production server
-- \`npm run lint\` - Run ESLint
+### Vercel (Recommended)
+\`\`\`bash
+npm run build
+npx vercel --prod
+\`\`\`
 
-## Deployment
+### Netlify
+\`\`\`bash
+npm run build
+npm run export
+# Upload the 'out' directory to Netlify
+\`\`\`
 
-This template is ready for deployment on any platform that supports Next.js:
+### Docker
+\`\`\`bash
+# Build the image
+docker build -t ai-customer-care-app .
 
-- **Vercel** (recommended)
-- **Netlify**
-- **AWS Amplify**
-- **Railway**
-- **DigitalOcean App Platform**
+# Run the container
+docker run -p 3000:3000 ai-customer-care-app
+\`\`\`
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+## 🔧 Customization
 
-## Customization
+### Adding New Pages
+1. Create a new directory in \`src/app/templates/ai-customer-care/\`
+2. Add a \`page.tsx\` file with your component
+3. Update the sidebar navigation in \`src/layout/AppSidebar.tsx\`
 
-The template is fully customizable:
+### Styling
+- Modify \`src/app/globals.css\` for global styles
+- Use Tailwind CSS classes for component styling
+- Customize the theme in \`tailwind.config.ts\`
 
-1. **Styling**: Modify Tailwind CSS classes or add custom styles
-2. **Components**: Extend or modify components in \`src/components/${TEMPLATE_NAME}/\`
-3. **Pages**: Add new pages in \`src/app/templates/${TEMPLATE_NAME}/\`
-4. **Icons**: Add custom icons in \`src/icons/\`
+### Adding Integrations
+1. Create integration components in \`src/components/ai-customer-care/\`
+2. Add API endpoints and configuration
+3. Update the integrations page
 
-## Support
+## 📚 API Integration
 
-For questions and support:
+The template includes comprehensive API integration support:
+
+- **Agent Management APIs** - CRUD operations for agents and configurations
+- **Call Management APIs** - Call handling and recording
+- **Analytics APIs** - Performance tracking and reporting
+- **Integration APIs** - Third-party service connections
+- **Webhook APIs** - Event notifications
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This template is licensed under the MIT License.
+
+## 🆘 Support
 
 - 📧 Email: support@tinadmin.com
 - 📚 Documentation: [docs.tinadmin.com](https://docs.tinadmin.com)
 - 🐛 Issues: [GitHub Issues](https://github.com/tinadmin/tinadmin/issues)
 
-## License
+---
 
-MIT License - see [LICENSE](./LICENSE) file for details.
+**Ready to build your AI Customer Care platform? Start with this template! 🚀**`;
+}
+
+function createDeploymentGuide() {
+  return `# Deployment Guide - ${TEMPLATE_DISPLAY_NAME} Template
+
+This guide covers various deployment options for your ${TEMPLATE_DISPLAY_NAME} application.
+
+## 🚀 Quick Deploy (Vercel - Recommended)
+
+### 1. Deploy to Vercel
+\`\`\`bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to production
+vercel --prod
+\`\`\`
+
+### 2. Environment Variables
+Set these in your Vercel dashboard:
+\`\`\`env
+NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
+NEXT_PUBLIC_API_URL=https://your-api-domain.com
+\`\`\`
+
+## 🐳 Docker Deployment
+
+### 1. Create Dockerfile
+\`\`\`dockerfile
+FROM node:18-alpine AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY . .
+COPY --from=deps /app/node_modules ./node_modules
+RUN npm run build
+
+FROM node:18-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV production
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+EXPOSE 3000
+CMD ["node", "server.js"]
+\`\`\`
+
+### 2. Build and Run
+\`\`\`bash
+# Build the image
+docker build -t ai-customer-care-app .
+
+# Run the container
+docker run -p 3000:3000 ai-customer-care-app
+\`\`\`
+
+## ☁️ AWS Deployment
+
+### 1. Using AWS Amplify
+\`\`\`bash
+# Install Amplify CLI
+npm install -g @aws-amplify/cli
+
+# Initialize Amplify
+amplify init
+
+# Add hosting
+amplify add hosting
+
+# Deploy
+amplify publish
+\`\`\`
+
+## 🌐 Netlify Deployment
+
+### 1. Build Settings
+\`\`\`yaml
+# netlify.toml
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+\`\`\`
+
+## 🔧 Environment Configuration
+
+### Development
+\`\`\`env
+NODE_ENV=development
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:8000
+\`\`\`
+
+### Production
+\`\`\`env
+NODE_ENV=production
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+NEXT_PUBLIC_API_URL=https://your-api-domain.com
+\`\`\`
+
+## 📊 Performance Optimization
+
+### 1. Enable Caching
+\`\`\`typescript
+// next.config.ts
+const nextConfig = {
+  experimental: {
+    outputFileTracingRoot: path.join(__dirname, '../../'),
+  },
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+};
+\`\`\`
+
+### 2. Image Optimization
+\`\`\`typescript
+// Use Next.js Image component
+import Image from 'next/image';
+
+<Image
+  src="/images/hero.jpg"
+  alt="Hero image"
+  width={800}
+  height={600}
+  priority
+/>
+\`\`\`
+
+## 🔒 Security Considerations
+
+### 1. Environment Variables
+- Never commit \`.env.local\` files
+- Use secure random secrets for production
+- Rotate API keys regularly
+
+### 2. HTTPS
+- Always use HTTPS in production
+- Configure proper SSL certificates
+- Enable HSTS headers
+
+## 📈 Monitoring & Analytics
+
+### 1. Error Tracking
+\`\`\`bash
+# Install Sentry
+npm install @sentry/nextjs
+\`\`\`
+
+### 2. Performance Monitoring
+\`\`\`bash
+# Install Vercel Analytics
+npm install @vercel/analytics
+\`\`\`
+
+## 🆘 Troubleshooting
+
+### Common Issues
+
+1. **Build Failures**
+   - Check Node.js version (requires 18+)
+   - Clear \`node_modules\` and reinstall
+   - Verify all dependencies are compatible
+
+2. **Deployment Issues**
+   - Check environment variables
+   - Verify build output directory
+   - Check deployment logs
+
+3. **Performance Issues**
+   - Enable caching
+   - Optimize images
+   - Use CDN for static assets
+
+### Getting Help
+- 📧 Email: support@tinadmin.com
+- 📚 Documentation: [docs.tinadmin.com](https://docs.tinadmin.com)
+- 🐛 Issues: [GitHub Issues](https://github.com/tinadmin/tinadmin/issues)
 
 ---
 
-Built with ❤️ using [TinAdmin](https://tinadmin.com)`;
+**Happy deploying! 🚀**`;
+}
+
+function modifyAppSidebar() {
+  const sidebarPath = path.join(OUTPUT_DIR, 'src/layout/AppSidebar.tsx');
+  if (fs.existsSync(sidebarPath)) {
+    let sidebarContent = fs.readFileSync(sidebarPath, 'utf8');
     
-    fs.writeFileSync(
-      path.join(this.outputDir, 'README.md'),
-      readmeContent
+    // Replace the navigation items to ONLY include AI Customer Care
+    const aiCustomerCareOnlyNavItems = `
+const navItems = [
+  {
+    name: "AI Customer Care",
+    icon: <AiIcon />,
+    new: true,
+    subItems: [
+      { name: "Dashboard", path: "/templates/ai-customer-care" },
+      { name: "Chat Agent", path: "/templates/ai-customer-care/agents/chat", new: true },
+      { name: "Voice Agent", path: "/templates/ai-customer-care/agents/voice", new: true },
+      { name: "Knowledge Base", path: "/templates/ai-customer-care/knowledge", new: true },
+      { name: "Conversation Flows", path: "/templates/ai-customer-care/flows", new: true },
+      { name: "Call History", path: "/templates/ai-customer-care/calls/history", new: true },
+      { name: "Analytics", path: "/templates/ai-customer-care/analytics", pro: true },
+      { name: "Quality Control", path: "/templates/ai-customer-care/quality", pro: true },
+      { name: "Monitoring", path: "/templates/ai-customer-care/monitoring", pro: true },
+      { name: "Phone Numbers", path: "/templates/ai-customer-care/numbers", new: true },
+      { name: "Integrations", path: "/templates/ai-customer-care/integrations", new: true },
+      { name: "API Playground", path: "/templates/ai-customer-care/api-playground", new: true },
+      { name: "Webhooks", path: "/templates/ai-customer-care/webhooks", new: true },
+      { name: "Users", path: "/templates/ai-customer-care/users", new: true },
+      { name: "Settings", path: "/templates/ai-customer-care/settings", new: true },
+      { name: "Tenant Settings", path: "/templates/ai-customer-care/tenant-settings", pro: true },
+    ],
+  },
+];`;
+
+    // Replace the navItems array
+    sidebarContent = sidebarContent.replace(
+      /const navItems = \[[\s\S]*?\];/,
+      aiCustomerCareOnlyNavItems
     );
-
-    // Create deployment guide
-    const deploymentContent = `# Deployment Guide - ${TEMPLATE_DISPLAY_NAME} Template
-
-This guide covers deploying your AI Customer Care template to various platforms.
-
-## Prerequisites
-
-- Node.js 18+ installed
-- Git repository set up
-- Environment variables configured (if needed)
-
-## Platform-Specific Deployment
-
-### Vercel (Recommended)
-
-1. **Connect your repository**:
-   - Go to [vercel.com](https://vercel.com)
-   - Import your Git repository
-   - Vercel will auto-detect Next.js
-
-2. **Configure build settings**:
-   - Build Command: \`npm run build\`
-   - Output Directory: \`.next\`
-   - Install Command: \`npm install\`
-
-3. **Deploy**:
-   - Click "Deploy" and wait for completion
-   - Your app will be available at \`your-app.vercel.app\`
-
-### Netlify
-
-1. **Build settings**:
-   - Build Command: \`npm run build && npm run export\`
-   - Publish Directory: \`out\`
-
-2. **Add build script to package.json**:
-   \`\`\`json
-   {
-     "scripts": {
-       "export": "next export"
-     }
-   }
-   \`\`\`
-
-### AWS Amplify
-
-1. **Connect repository**:
-   - Go to AWS Amplify Console
-   - Connect your Git repository
-
-2. **Build settings**:
-   - Build Command: \`npm run build\`
-   - Base Directory: \`/\`
-   - Output Directory: \`.next\`
-
-### Railway
-
-1. **Connect repository**:
-   - Go to [railway.app](https://railway.app)
-   - Deploy from Git repository
-
-2. **Environment variables**:
-   - Add any required environment variables
-   - Railway will auto-detect Next.js
-
-### DigitalOcean App Platform
-
-1. **Create app**:
-   - Go to DigitalOcean App Platform
-   - Create new app from Git repository
-
-2. **Configure**:
-   - Build Command: \`npm run build\`
-   - Run Command: \`npm start\`
-
-## Environment Variables
-
-If your app requires environment variables, create a \`.env.local\` file:
-
-\`\`\`bash
-# Example environment variables
-NEXT_PUBLIC_API_URL=https://api.your-domain.com
-DATABASE_URL=your-database-url
-SECRET_KEY=your-secret-key
-\`\`\`
-
-## Production Optimization
-
-1. **Enable compression**:
-   \`\`\`javascript
-   // next.config.ts
-   module.exports = {
-     compress: true,
-     // ... other config
-   };
-   \`\`\`
-
-2. **Optimize images**:
-   - Use Next.js Image component
-   - Enable image optimization
-
-3. **Enable caching**:
-   - Configure appropriate cache headers
-   - Use CDN for static assets
-
-## Monitoring
-
-Consider setting up monitoring for production:
-
-- **Error tracking**: Sentry, Bugsnag
-- **Analytics**: Google Analytics, Mixpanel
-- **Uptime monitoring**: UptimeRobot, Pingdom
-- **Performance**: WebPageTest, Lighthouse
-
-## Security
-
-1. **HTTPS**: Ensure SSL certificate is configured
-2. **Headers**: Set security headers
-3. **Environment variables**: Never commit secrets
-4. **Dependencies**: Keep dependencies updated
-
-## Scaling
-
-For high-traffic applications:
-
-1. **Database**: Use managed database service
-2. **CDN**: Enable CDN for static assets
-3. **Caching**: Implement Redis or similar
-4. **Load balancing**: Use multiple instances
-
-## Troubleshooting
-
-### Build Failures
-
-- Check Node.js version compatibility
-- Ensure all dependencies are installed
-- Review build logs for specific errors
-
-### Runtime Errors
-
-- Check environment variables
-- Verify database connections
-- Review application logs
-
-### Performance Issues
-
-- Enable Next.js production optimizations
-- Use performance monitoring tools
-- Optimize images and assets
-
-## Support
-
-For deployment issues:
-
-- 📧 Email: support@tinadmin.com
-- 📚 Documentation: [docs.tinadmin.com](https://docs.tinadmin.com)
-- 🐛 Issues: [GitHub Issues](https://github.com/tinadmin/tinadmin/issues)`;
     
-    fs.writeFileSync(
-      path.join(this.outputDir, 'DEPLOYMENT.md'),
-      deploymentContent
+    // Remove othersItems and supportItems sections
+    sidebarContent = sidebarContent.replace(
+      /const othersItems: NavItem\[\] = \[[\s\S]*?\];/,
+      '// Removed othersItems and supportItems - only AI Customer Care template needed'
     );
-  }
-
-  async generatePackageJson() {
-    this.log('Generating package.json...');
     
-    const packageJson = {
-      name: `${TEMPLATE_NAME}-template`,
-      version: "1.0.0",
-      description: `Standalone ${TEMPLATE_DISPLAY_NAME} template built with Next.js 15 and Tailwind CSS`,
-      private: true,
-      scripts: {
-        dev: "next dev",
-        build: "next build",
-        start: "next start",
-        lint: "next lint",
-        "type-check": "tsc --noEmit"
-      },
-      dependencies: {},
-      devDependencies: {},
-      engines: {
-        node: ">=18.0.0",
-        npm: ">=8.0.0"
-      },
-      repository: {
-        type: "git",
-        url: "https://github.com/your-username/ai-customer-care-template.git"
-      },
-      keywords: [
-        "nextjs",
-        "react",
-        "typescript",
-        "tailwindcss",
-        "admin-dashboard",
-        "ai-customer-care",
-        "voice-agents",
-        "chat-agents",
-        "call-analytics"
-      ],
-      author: "Your Name <your.email@example.com>",
-      license: "MIT"
-    };
-
-    // Add dependencies
-    REQUIRED_DEPENDENCIES.forEach(dep => {
-      const [name, version] = dep.split('@');
-      packageJson.dependencies[name] = version;
+    sidebarContent = sidebarContent.replace(
+      /const supportItems: NavItem\[\] = \[[\s\S]*?\];/,
+      ''
+    );
+    
+    // Simplify the navigation rendering to only show main menu
+    const simplifiedNavRendering = `
+        <nav className="mb-6">
+          <div className="flex flex-col gap-4">
+            <div>
+              <h2
+                className={\`mb-4 text-xs uppercase flex leading-5 text-gray-400 \${
+                  !isExpanded && !isHovered
+                    ? "xl:justify-center"
+                    : "justify-start"
+                }\`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                  "Menu"
+                ) : (
+                  <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(navItems, "main")}
+            </div>
+          </div>
+        </nav>`;
+    
+    sidebarContent = sidebarContent.replace(
+      /<nav className="mb-6">[\s\S]*?<\/nav>/,
+      simplifiedNavRendering
+    );
+    
+    // Simplify the useEffect for submenu matching
+    const simplifiedUseEffect = `
+  useEffect(() => {
+    // Check if the current path matches any submenu item
+    let submenuMatched = false;
+    navItems.forEach((nav, index) => {
+      if (nav.subItems) {
+        nav.subItems.forEach((subItem) => {
+          if (isActive(subItem.path)) {
+            setOpenSubmenu({
+              type: "main",
+              index,
+            });
+            submenuMatched = true;
+          }
+        });
+      }
     });
 
-    REQUIRED_DEV_DEPENDENCIES.forEach(dep => {
-      const [name, version] = dep.split('@');
-      packageJson.devDependencies[name] = version;
-    });
-
-    fs.writeFileSync(
-      path.join(this.outputDir, 'package.json'),
-      JSON.stringify(packageJson, null, 2)
+    // If no submenu item matches, close the open submenu
+    if (!submenuMatched) {
+      setOpenSubmenu(null);
+    }
+  }, [pathname, isActive]);`;
+    
+    sidebarContent = sidebarContent.replace(
+      /useEffect\(\(\) => \{[\s\S]*?\}, \[pathname, isActive\]\);/,
+      simplifiedUseEffect
     );
-  }
-
-  async cleanupFiles() {
-    this.log('Cleaning up unnecessary files...');
     
-    // Remove package-lock.json (will be regenerated)
-    const packageLockPath = path.join(this.outputDir, 'package-lock.json');
-    if (fs.existsSync(packageLockPath)) {
-      fs.unlinkSync(packageLockPath);
-    }
-
-    // Remove .next directory if it exists
-    const nextDir = path.join(this.outputDir, '.next');
-    if (fs.existsSync(nextDir)) {
-      fs.rmSync(nextDir, { recursive: true, force: true });
-    }
-
-    // Remove node_modules if it exists
-    const nodeModulesDir = path.join(this.outputDir, 'node_modules');
-    if (fs.existsSync(nodeModulesDir)) {
-      fs.rmSync(nodeModulesDir, { recursive: true, force: true });
-    }
-
-    // Filter icons to keep only relevant ones
-    await this.filterIcons();
-
-    // Remove other template directories
-    await this.removeOtherTemplates();
+    fs.writeFileSync(sidebarPath, sidebarContent);
   }
+}
 
-  async filterIcons() {
-    const iconsDir = path.join(this.outputDir, 'src/icons');
-    if (!fs.existsSync(iconsDir)) return;
-
-    const iconFiles = fs.readdirSync(iconsDir);
+function addBuildCaching() {
+  const nextConfigPath = path.join(OUTPUT_DIR, 'next.config.ts');
+  if (fs.existsSync(nextConfigPath)) {
+    let configContent = fs.readFileSync(nextConfigPath, 'utf8');
     
-    for (const iconFile of iconFiles) {
-      if (!ICONS_TO_KEEP.includes(iconFile)) {
-        const iconPath = path.join(iconsDir, iconFile);
-        fs.unlinkSync(iconPath);
-        this.log(`Removed icon: ${iconFile}`);
-      }
+    // Add caching configuration for standalone deployment
+    const cachingConfig = `
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Set correct workspace root for standalone repository
+  outputFileTracingRoot: path.join(__dirname),
+  
+  // Enable caching for better performance
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+  // Enable image optimization
+  images: {
+    domains: ['localhost'],
+    formats: ['image/webp', 'image/avif'],
+  },
+  // Enable compression
+  compress: true,
+  // Enable static optimization
+  trailingSlash: false,
+  // SWC minification is enabled by default in Next.js 15
+};`;
+    
+    // Replace the existing config
+    configContent = configContent.replace(
+      /\/\*\* @type \{import\('next'\)\.NextConfig\} \*\/[\s\S]*?const nextConfig = \{[\s\S]*?\};/,
+      cachingConfig
+    );
+    
+    // Add path import if not present
+    if (!configContent.includes("import path from 'path';")) {
+      configContent = configContent.replace(
+        "import type { NextConfig } from 'next';",
+        "import type { NextConfig } from 'next';\nimport path from 'path';"
+      );
     }
-
-    // Update icons index file
-    const indexPath = path.join(iconsDir, 'index.tsx');
-    if (fs.existsSync(indexPath)) {
-      const indexContent = `// AI Customer Care Template Icons
-// Auto-generated icon exports
-
-${ICONS_TO_KEEP.map(icon => {
-  const iconName = icon.replace('.svg', '').split('-').map(part => 
-    part.charAt(0).toUpperCase() + part.slice(1)
-  ).join('');
-  return `export { default as ${iconName}Icon } from './${icon}';`;
-}).join('\n')}`;
-
-      fs.writeFileSync(indexPath, indexContent);
-    }
+    
+    fs.writeFileSync(nextConfigPath, configContent);
   }
+}
 
-  async removeOtherTemplates() {
-    const templatesDir = path.join(this.outputDir, 'src/app/templates');
-    if (!fs.existsSync(templatesDir)) return;
-
-    const templateDirs = fs.readdirSync(templatesDir);
+function integrateAdminLayoutIntoMain() {
+  const layoutPath = path.join(OUTPUT_DIR, 'src/app/layout.tsx');
+  if (fs.existsSync(layoutPath)) {
+    let layoutContent = fs.readFileSync(layoutPath, 'utf8');
     
-    for (const templateDir of templateDirs) {
-      if (templateDir !== TEMPLATE_NAME) {
-        const templatePath = path.join(templatesDir, templateDir);
-        fs.rmSync(templatePath, { recursive: true, force: true });
-        this.log(`Removed template: ${templateDir}`);
-      }
+    // Add imports for AppHeader and AppSidebar
+    if (!layoutContent.includes("import AppHeader")) {
+      layoutContent = layoutContent.replace(
+        "import { ThemeProvider } from \"@/context/ThemeContext\";",
+        "import { ThemeProvider } from \"@/context/ThemeContext\";\nimport AppHeader from \"@/layout/AppHeader\";\nimport AppSidebar from \"@/layout/AppSidebar\";"
+      );
     }
-
-    // Remove other template components
-    const componentsDir = path.join(this.outputDir, 'src/components');
-    if (fs.existsSync(componentsDir)) {
-      const componentDirs = fs.readdirSync(componentsDir);
-      
-      for (const componentDir of componentDirs) {
-        if (componentDir !== TEMPLATE_NAME && 
-            !['ui', 'common', 'form', 'charts'].includes(componentDir)) {
-          const componentPath = path.join(componentsDir, componentDir);
-          fs.rmSync(componentPath, { recursive: true, force: true });
-          this.log(`Removed component directory: ${componentDir}`);
-        }
-      }
-    }
+    
+    // Replace the body content to include admin layout
+    const newBodyContent = `      <body className={\`\${outfit.className} dark:bg-gray-900\`}>
+        <ThemeProvider>
+          <SidebarProvider>
+            <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+              <AppSidebar />
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <AppHeader />
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-gray-900">
+                  {children}
+                </main>
+              </div>
+            </div>
+          </SidebarProvider>
+        </ThemeProvider>
+      </body>`;
+    
+    // Replace the existing body content
+    layoutContent = layoutContent.replace(
+      /<body className=\{`\${outfit\.className} dark:bg-gray-900`\}>[\s\S]*?<\/body>/,
+      newBodyContent
+    );
+    
+    fs.writeFileSync(layoutPath, layoutContent);
   }
+}
 
-  async initializeGit() {
-    this.log('Initializing Git repository...');
-    
-    try {
-      execSync('git init', { cwd: this.outputDir, stdio: 'pipe' });
-      
-      // Create .gitignore
-      const gitignoreContent = `# Dependencies
+function createVercelConfig() {
+  // Simplified Vercel config that works with Next.js App Router
+  const vercelConfig = {
+    version: 2,
+    env: {
+      NODE_ENV: "production"
+    }
+  };
+  
+  fs.writeFileSync(
+    path.join(OUTPUT_DIR, 'vercel.json'),
+    JSON.stringify(vercelConfig, null, 2)
+  );
+}
+
+function createLicense() {
+  const licenseContent = `MIT License
+
+Copyright (c) 2025 TinAdmin
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`;
+  
+  fs.writeFileSync(
+    path.join(OUTPUT_DIR, 'LICENSE'),
+    licenseContent
+  );
+}
+
+function createGitignore() {
+  const gitignoreContent = `# Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -791,8 +1037,6 @@ yarn-error.log*
 .next/
 out/
 build/
-
-# Production
 dist/
 
 # Environment variables
@@ -801,6 +1045,13 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
 # IDE
 .vscode/
@@ -813,6 +1064,7 @@ dist/
 Thumbs.db
 
 # Logs
+logs
 *.log
 
 # Runtime data
@@ -832,6 +1084,15 @@ jspm_packages/
 
 # Optional npm cache directory
 .npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
 
 # Optional REPL history
 .node_repl_history
@@ -865,65 +1126,630 @@ jspm_packages/
 .dynamodb/
 
 # TernJS port file
-.tern-port`;
-      
-      fs.writeFileSync(
-        path.join(this.outputDir, '.gitignore'),
-        gitignoreContent
-      );
-      
-      this.log('✓ Git repository initialized');
-    } catch (error) {
-      this.error(`Failed to initialize Git: ${error.message}`);
-    }
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Temporary folders
+tmp/
+temp/`;
+  
+  fs.writeFileSync(
+    path.join(OUTPUT_DIR, '.gitignore'),
+    gitignoreContent
+  );
+}
+
+function createGitHubWorkflow() {
+  const workflowDir = path.join(OUTPUT_DIR, '.github/workflows');
+  ensureDirectoryExists(workflowDir);
+  
+  const workflowContent = `name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+env:
+  VERCEL_ORG_ID: \${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: \${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=\${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --token=\${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Preview to Vercel
+        run: vercel deploy --prebuilt --token=\${{ secrets.VERCEL_TOKEN }}
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build
+        run: npm run build
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=\${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=\${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Production to Vercel
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=\${{ secrets.VERCEL_TOKEN }})
+          echo "deployment_url=$url" >> $GITHUB_OUTPUT
+
+      - name: Comment deployment URL
+        uses: actions/github-script@v7
+        if: github.event_name == 'push'
+        with:
+          script: |
+            const deploymentUrl = '\${{ steps.deploy.outputs.deployment_url }}';
+            const message = \\\`✅ Successfully deployed to Vercel!
+
+🔗 **Deployment URL**: \\\${deploymentUrl}\\\`;
+            
+            // Create a commit status
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'success',
+              target_url: deploymentUrl,
+              description: 'Deployed to Vercel',
+              context: 'vercel/deployment'
+            });
+`;
+  
+  fs.writeFileSync(
+    path.join(workflowDir, 'deploy-vercel.yml'),
+    workflowContent
+  );
+  
+  // Create setup guide
+  const setupGuideContent = `# Vercel CI/CD Setup Guide
+
+This guide will help you set up automatic deployments to Vercel when pushing to the \`develop\` branch.
+
+## Required GitHub Secrets
+
+Add these secrets to your GitHub repository (Settings → Secrets and variables → Actions):
+
+1. **VERCEL_TOKEN** - Get from https://vercel.com/account/tokens
+2. **VERCEL_ORG_ID** - Found in .vercel/project.json after running \`vercel link\`
+3. **VERCEL_PROJECT_ID** - Found in .vercel/project.json after running \`vercel link\`
+
+## Quick Setup
+
+\`\`\`bash
+# Login to Vercel
+vercel login
+
+# Link your project
+vercel link
+
+# View project details
+cat .vercel/project.json
+\`\`\`
+
+## Workflow Behavior
+
+- **Push to develop**: Automatically deploys to production
+- **Pull request to develop**: Creates preview deployment
+
+For detailed instructions, see .github/VERCEL_SETUP.md
+`;
+  
+  fs.writeFileSync(
+    path.join(OUTPUT_DIR, '.github/VERCEL_SETUP.md'),
+    setupGuideContent
+  );
+}
+
+function createBinDirectory() {
+  const binDir = path.join(OUTPUT_DIR, 'bin');
+  ensureDirectoryExists(binDir);
+  
+  const createScriptContent = `#!/usr/bin/env node
+
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+function log(message, type = 'info') {
+  const icons = {
+    info: '📝',
+    success: '✅',
+    warning: '⚠️',
+    error: '❌',
+    progress: '🔄'
+  };
+  console.log(\`\${icons[type]} \${message}\`);
+}
+
+function createAICustomerCareProject() {
+  const projectName = process.argv[2];
+
+  if (!projectName) {
+    log('Please specify the project directory: npx tinadmin-ai-customer-care-template <project-name>', 'error');
+    process.exit(1);
   }
 
-  async installDependencies() {
-    this.log('Installing dependencies...');
+  const projectPath = path.resolve(process.cwd(), projectName);
+  const templateDir = path.dirname(__dirname); // This points to the template directory
+
+  log(\`🚀 Creating new AI Customer Care project: \${projectName}\`, 'progress');
+
+  try {
+    // Create project directory
+    fs.mkdirSync(projectPath, { recursive: true });
+
+    log('📁 Copying template files...', 'progress');
+
+    // Copy all template files except node_modules, .git, and this bin directory
+    const itemsToCopy = fs.readdirSync(templateDir);
+
+    for (const item of itemsToCopy) {
+      const srcPath = path.join(templateDir, item);
+      const destPath = path.join(projectPath, item);
+
+      // Skip certain directories and files
+      if (['node_modules', '.git', 'bin', '.next', 'dist', projectName].includes(item)) {
+        continue;
+      }
+
+      // Skip if source and destination are the same (avoid circular copying)
+      if (path.resolve(srcPath) === path.resolve(destPath)) {
+        continue;
+      }
+
+      if (fs.statSync(srcPath).isDirectory()) {
+        fs.cpSync(srcPath, destPath, { recursive: true });
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+
+    // Update package.json with the new project name
+    const packageJsonPath = path.join(projectPath, 'package.json');
+    if (fs.existsSync(packageJsonPath)) {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      packageJson.name = projectName;
+      packageJson.description = \`\${projectName} - AI Customer Care platform for managing voice agents and chat conversations\`;
+      packageJson.private = true;
+
+      // Remove template-specific fields
+      delete packageJson.bin;
+      delete packageJson.files;
+      delete packageJson.homepage;
+      delete packageJson.repository;
+      delete packageJson.bugs;
+      delete packageJson.publishConfig;
+      delete packageJson.keywords;
+      delete packageJson.author;
+      delete packageJson.license;
+
+      fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    }
+
+    console.log('✅ Project created successfully!');
+    console.log('');
+    console.log('📋 Next steps:');
+    console.log(\`   cd \${projectName}\`);
+    console.log('   npm install');
+    console.log('   npm run dev');
+    console.log('');
+    console.log('🌐 Open http://localhost:3000 to view your AI Customer Care application');
+    console.log('');
+    console.log('📚 Documentation:');
+    console.log('   - README.md - Getting started guide');
+    console.log('   - DEPLOYMENT.md - Deployment instructions');
+
+  } catch (error) {
+    log(\`❌ Failed to create project: \${error.message}\`, 'error');
+    process.exit(1);
+  }
+}
+
+if (require.main === module) {
+  createAICustomerCareProject();
+}`;
+  
+  fs.writeFileSync(
+    path.join(binDir, 'create-ai-customer-care.js'),
+    createScriptContent
+  );
+  
+  // Make the script executable
+  try {
+    execSync(`chmod +x ${path.join(binDir, 'create-ai-customer-care.js')}`);
+  } catch (error) {
+    log(`Warning: Could not make script executable: ${error.message}`, 'warning');
+  }
+}
+
+// GitHub deployment configuration
+const GITHUB_CONFIG = {
+  repository: 'tindevelopers/adminpanel-template-ai-customer-care-next-js',
+  branch: 'develop', // ALWAYS use develop branch - never main
+  remoteUrl: 'git@github.com:tindevelopers/adminpanel-template-ai-customer-care-next-js.git',
+  protectedBranches: ['main', 'master'] // Branches that should never be modified
+};
+
+// Safety function to prevent operations on protected branches
+function validateBranchSafety() {
+  const currentBranch = process.env.GIT_BRANCH || 'develop';
+  
+  if (GITHUB_CONFIG.protectedBranches.includes(currentBranch)) {
+    log(`❌ ERROR: Cannot operate on protected branch '${currentBranch}'`, 'error');
+    log(`Protected branches: ${GITHUB_CONFIG.protectedBranches.join(', ')}`, 'error');
+    log(`This script only operates on the '${GITHUB_CONFIG.branch}' branch for safety.`, 'error');
+    process.exit(1);
+  }
+  
+  log(`✅ Branch safety check passed. Operating on: ${GITHUB_CONFIG.branch}`, 'success');
+}
+
+// GitHub deployment functions
+function initializeGitRepository(outputDir) {
+  log('Initializing Git repository...', 'progress');
+  
+  try {
+    // Initialize git repository
+    execSync('git init', { cwd: outputDir, stdio: 'pipe' });
     
+    // Add remote origin
+    execSync(`git remote add origin ${GITHUB_CONFIG.remoteUrl}`, { 
+      cwd: outputDir, 
+      stdio: 'pipe' 
+    });
+    
+    log('Git repository initialized', 'success');
+    return true;
+  } catch (error) {
+    log(`Failed to initialize Git repository: ${error.message}`, 'error');
+    return false;
+  }
+}
+
+function commitAndPushToGitHub(outputDir, commitMessage = 'Update AI Customer Care template') {
+  log('Committing and pushing to GitHub...', 'progress');
+  
+  try {
+    // Add all files
+    execSync('git add .', { cwd: outputDir, stdio: 'pipe' });
+    
+    // Check if there are changes to commit
     try {
-      execSync('npm install', { 
-        cwd: this.outputDir, 
-        stdio: 'inherit',
-        timeout: 300000 // 5 minutes timeout
+      const status = execSync('git status --porcelain', { 
+        cwd: outputDir, 
+        encoding: 'utf8' 
       });
       
-      this.log('✓ Dependencies installed successfully');
+      if (!status.trim()) {
+        log('No changes to commit', 'warning');
+        return true;
+      }
     } catch (error) {
-      this.error(`Failed to install dependencies: ${error.message}`);
+      // Continue with commit even if status check fails
+    }
+    
+    // Commit changes
+    execSync(`git commit -m "${commitMessage}"`, { 
+      cwd: outputDir, 
+      stdio: 'pipe' 
+    });
+    
+    // Ensure we're on the correct branch before pushing
+    try {
+      const currentBranch = execSync('git branch --show-current', { 
+        cwd: outputDir, 
+        encoding: 'utf8' 
+      }).trim();
+      
+      if (currentBranch !== GITHUB_CONFIG.branch) {
+        log(`Switching to ${GITHUB_CONFIG.branch} branch...`, 'progress');
+        execSync(`git checkout -b ${GITHUB_CONFIG.branch}`, { 
+          cwd: outputDir, 
+          stdio: 'pipe' 
+        });
+      }
+    } catch (error) {
+      log(`Warning: Could not verify branch: ${error.message}`, 'warning');
+    }
+    
+    // Push to develop branch (ALWAYS develop, never main)
+    execSync(`git push -u origin ${GITHUB_CONFIG.branch}`, { 
+      cwd: outputDir, 
+      stdio: 'pipe' 
+    });
+    
+    log(`Successfully pushed to GitHub repository: ${GITHUB_CONFIG.repository}`, 'success');
+    log(`Branch: ${GITHUB_CONFIG.branch}`, 'info');
+    return true;
+  } catch (error) {
+    log(`Failed to commit and push to GitHub: ${error.message}`, 'error');
+    
+    // Try to handle common Git issues
+    if (error.message.includes('fatal: not a git repository')) {
+      log('Attempting to reinitialize Git repository...', 'progress');
+      if (initializeGitRepository(outputDir)) {
+        return commitAndPushToGitHub(outputDir, commitMessage);
+      }
+    }
+    
+    return false;
+  }
+}
+
+function publishToNPM(outputDir) {
+  log('Publishing to NPM...', 'progress');
+  
+  try {
+    // Check if package is already published
+    try {
+      execSync(`npm view ${require(path.join(outputDir, 'package.json')).name}`, { 
+        stdio: 'pipe' 
+      });
+      log('Package already exists on NPM, updating version...', 'info');
+      
+      // Update version
+      execSync('npm version patch', { cwd: outputDir, stdio: 'inherit' });
+    } catch (error) {
+      log('Package not found on NPM, publishing new package...', 'info');
+    }
+    
+    // Publish to NPM
+    execSync('npm publish', { cwd: outputDir, stdio: 'inherit' });
+    
+    log('Successfully published to NPM', 'success');
+    return true;
+  } catch (error) {
+    log(`Failed to publish to NPM: ${error.message}`, 'error');
+    return false;
+  }
+}
+
+function deployToGitHub(outputDir, shouldPublishNPM = false) {
+  log('Starting GitHub deployment process...', 'progress');
+  
+  // Safety check - ensure we never operate on protected branches
+  validateBranchSafety();
+  
+  const success = {
+    git: false,
+    npm: false
+  };
+  
+  // Initialize Git and push to GitHub
+  if (initializeGitRepository(outputDir)) {
+    const commitMessage = `Update ${TEMPLATE_DISPLAY_NAME} template - ${new Date().toISOString()}`;
+    success.git = commitAndPushToGitHub(outputDir, commitMessage);
+  }
+  
+  // Publish to NPM if requested
+  if (shouldPublishNPM && success.git) {
+    success.npm = publishToNPM(outputDir);
+  }
+  
+  // Summary
+  log('Deployment Summary:', 'info');
+  log(`  GitHub: ${success.git ? '✅ Success' : '❌ Failed'}`, 'info');
+  if (shouldPublishNPM) {
+    log(`  NPM: ${success.npm ? '✅ Success' : '❌ Failed'}`, 'info');
+  }
+  
+  if (success.git) {
+    log(`🔗 Repository: https://github.com/${GITHUB_CONFIG.repository}`, 'info');
+    log(`🌿 Branch: ${GITHUB_CONFIG.branch}`, 'info');
+  }
+  
+  return success;
+}
+
+// Main extraction function
+function extractTemplate() {
+  log(`Starting ${TEMPLATE_DISPLAY_NAME} template extraction...`, 'progress');
+  
+  // Clean output directory
+  if (fs.existsSync(OUTPUT_DIR)) {
+    log(`Cleaning existing output directory: ${OUTPUT_DIR}`, 'info');
+    fs.rmSync(OUTPUT_DIR, { recursive: true });
+  }
+  
+  // Create output directory
+  ensureDirectoryExists(OUTPUT_DIR);
+  log(`Created output directory: ${OUTPUT_DIR}`, 'success');
+  
+  // Copy files and directories
+  log('Copying template files...', 'progress');
+  FILES_TO_COPY.forEach(file => {
+    const srcPath = path.resolve(file);
+    const destPath = path.join(OUTPUT_DIR, file);
+    
+    if (fs.existsSync(srcPath)) {
+      copyFileOrDirectory(srcPath, destPath);
+      log(`Copied: ${file}`, 'success');
+    } else {
+      log(`Skipped (not found): ${file}`, 'warning');
+    }
+  });
+  
+  // Copy selective icons
+  log('Copying selective icons...', 'progress');
+  ensureDirectoryExists(path.join(OUTPUT_DIR, 'src/icons'));
+  ICONS_TO_COPY.forEach(iconFile => {
+    const srcPath = path.resolve(iconFile);
+    const destPath = path.join(OUTPUT_DIR, iconFile);
+    
+    if (fs.existsSync(srcPath)) {
+      copyFileOrDirectory(srcPath, destPath);
+      log(`Copied icon: ${iconFile}`, 'success');
+    } else {
+      log(`Skipped icon (not found): ${iconFile}`, 'warning');
+    }
+  });
+  
+  // Create package.json
+  log('Creating package.json...', 'progress');
+  const packageJson = createPackageJson();
+  fs.writeFileSync(
+    path.join(OUTPUT_DIR, 'package.json'),
+    JSON.stringify(packageJson, null, 2)
+  );
+  log('Created package.json', 'success');
+  
+  // Create main page
+  log('Creating main page...', 'progress');
+  fs.writeFileSync(
+    path.join(OUTPUT_DIR, 'src/app/page.tsx'),
+    createMainPage()
+  );
+  log('Created main page', 'success');
+  
+  // Integrate admin layout into main layout (no separate route group)
+  log('Integrating admin layout into main layout...', 'progress');
+  integrateAdminLayoutIntoMain();
+  log('Integrated admin layout into main layout', 'success');
+  
+  // Create documentation
+  log('Creating documentation...', 'progress');
+  fs.writeFileSync(
+    path.join(OUTPUT_DIR, 'README.md'),
+    createReadme()
+  );
+  fs.writeFileSync(
+    path.join(OUTPUT_DIR, 'DEPLOYMENT.md'),
+    createDeploymentGuide()
+  );
+  log('Created documentation', 'success');
+  
+  // Modify AppSidebar for AI Customer Care only
+  log('Modifying navigation...', 'progress');
+  modifyAppSidebar();
+  log('Modified navigation', 'success');
+  
+  // Add build caching configuration
+  log('Adding build caching configuration...', 'progress');
+  addBuildCaching();
+  log('Added build caching configuration', 'success');
+  
+  // Create Vercel configuration
+  log('Creating Vercel configuration...', 'progress');
+  createVercelConfig();
+  log('Created Vercel configuration', 'success');
+  
+  // Create .gitignore for standalone
+  log('Creating .gitignore...', 'progress');
+  createGitignore();
+  log('Created .gitignore', 'success');
+  
+  // Create LICENSE file
+  log('Creating LICENSE file...', 'progress');
+  createLicense();
+  log('Created LICENSE file', 'success');
+  
+  // Create bin directory with executable script
+  log('Creating bin directory with executable script...', 'progress');
+  createBinDirectory();
+  log('Created bin directory with executable script', 'success');
+  
+  // Create GitHub Actions workflow for Vercel deployment
+  log('Creating GitHub Actions workflow for Vercel deployment...', 'progress');
+  createGitHubWorkflow();
+  log('Created GitHub Actions workflow for Vercel deployment', 'success');
+  
+  // Install dependencies
+  log('Installing dependencies...', 'progress');
+  try {
+    execSync('npm install', { 
+      cwd: OUTPUT_DIR, 
+      stdio: 'inherit' 
+    });
+    log('Dependencies installed successfully', 'success');
+  } catch (error) {
+    log(`Failed to install dependencies: ${error.message}`, 'error');
+    log('Please run "npm install" manually in the output directory', 'warning');
+  }
+  
+  log(`🎉 ${TEMPLATE_DISPLAY_NAME} template extraction completed!`, 'success');
+  log(`📁 Output directory: ${OUTPUT_DIR}`, 'info');
+  
+  // Deploy to GitHub if requested
+  if (SHOULD_DEPLOY_GITHUB) {
+    log('', 'info');
+    log('🚀 Starting GitHub deployment...', 'progress');
+    const deploymentSuccess = deployToGitHub(OUTPUT_DIR, SHOULD_PUBLISH_NPM);
+    
+    if (deploymentSuccess.git) {
+      log('', 'info');
+      log('✅ Template successfully deployed to GitHub!', 'success');
+      log(`🔗 Repository: https://github.com/${GITHUB_CONFIG.repository}`, 'info');
+      log(`🌿 Branch: ${GITHUB_CONFIG.branch}`, 'info');
     }
   }
-
-  printNextSteps() {
-    console.log('\n🎉 AI Customer Care Template Extraction Complete!');
-    console.log('\n📋 Next Steps:');
-    console.log(`   1. cd ${OUTPUT_DIR}`);
-    console.log('   2. npm run dev');
-    console.log('   3. Open http://localhost:3000');
-    console.log('\n🚀 Deployment Options:');
-    console.log('   • Vercel: vercel --prod');
-    console.log('   • Netlify: npm run build && npm run export');
-    console.log('   • Railway: Connect GitHub repo');
-    console.log('\n📚 Documentation:');
-    console.log('   • README.md - Getting started guide');
-    console.log('   • DEPLOYMENT.md - Deployment instructions');
-    console.log('\n💡 Customization:');
-    console.log('   • Modify components in src/components/ai-customer-care/');
-    console.log('   • Add pages in src/app/templates/ai-customer-care/');
-    console.log('   • Update styling with Tailwind CSS');
-    console.log('\n🔧 Available Scripts:');
-    console.log('   • npm run dev - Start development server');
-    console.log('   • npm run build - Build for production');
-    console.log('   • npm run start - Start production server');
-    console.log('   • npm run lint - Run ESLint');
-    console.log('   • npm run type-check - Run TypeScript checks');
+  
+  log('', 'info');
+  log('🚀 Next steps:', 'info');
+  log('   1. cd ' + OUTPUT_DIR, 'info');
+  log('   2. npm run dev', 'info');
+  log('   3. Open http://localhost:3000', 'info');
+  log('', 'info');
+  log('📚 Documentation available in README.md and DEPLOYMENT.md', 'info');
+  
+  if (!SHOULD_DEPLOY_GITHUB) {
+    log('', 'info');
+    log('💡 To deploy to GitHub, run with --deploy-github flag', 'info');
+    log('💡 To also publish to NPM, add --publish-npm flag', 'info');
   }
 }
 
-// Run the extraction
+// Run extraction
 if (require.main === module) {
-  const extractor = new AICustomerCareExtractor();
-  extractor.run().catch(console.error);
+  extractTemplate();
 }
 
-module.exports = AICustomerCareExtractor;
+module.exports = { extractTemplate };

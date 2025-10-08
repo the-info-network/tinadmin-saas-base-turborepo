@@ -56,47 +56,50 @@ const blogWriterItems: NavItem[] = [
   },
 ];
 
-const otherItems: NavItem[] = [
+const userProfileItem: NavItem[] = [
   {
     name: "User Profile",
     icon: <UserCircleIcon />,
-    path: "/profile",
+    path: "/templates/blog-writer/profile",
   },
+];
+
+const componentItems: NavItem[] = [
   {
     name: "Task",
     icon: <TaskIcon />,
     subItems: [
-      { name: "Task List", path: "/task-list" },
-      { name: "Task Kanban", path: "/task-kanban" },
+      { name: "Task List", path: "/templates/blog-writer/task-list" },
+      { name: "Task Kanban", path: "/templates/blog-writer/task-kanban" },
     ],
   },
   {
     name: "Forms",
     icon: <PageIcon />,
     subItems: [
-      { name: "Form Elements", path: "/form-elements" },
-      { name: "Form Layout", path: "/form-layout" },
+      { name: "Form Elements", path: "/templates/blog-writer/form-elements" },
+      { name: "Form Layout", path: "/templates/blog-writer/form-layout" },
     ],
   },
   {
     name: "Tables",
     icon: <TableIcon />,
     subItems: [
-      { name: "Basic Tables", path: "/basic-tables" },
-      { name: "Data Tables", path: "/data-tables" },
+      { name: "Basic Tables", path: "/templates/blog-writer/basic-tables" },
+      { name: "Data Tables", path: "/templates/blog-writer/data-tables" },
     ],
   },
   {
     name: "Pages",
     icon: <PageIcon />,
     subItems: [
-      { name: "Blank", path: "/blank" },
-      { name: "FAQ", path: "/faq" },
-      { name: "Pricing Tables", path: "/pricing-tables" },
-      { name: "File Manager", path: "/file-manager" },
-      { name: "Integrations", path: "/integrations" },
-      { name: "Multi Tenant", path: "/multi-tenant" },
-      { name: "API Keys", path: "/api-keys" },
+      { name: "Blank", path: "/templates/blog-writer/blank" },
+      { name: "FAQ", path: "/templates/blog-writer/faq" },
+      { name: "Pricing Tables", path: "/templates/blog-writer/pricing-tables" },
+      { name: "File Manager", path: "/templates/blog-writer/file-manager" },
+      { name: "Integrations", path: "/templates/blog-writer/integrations" },
+      { name: "Multi Tenant", path: "/templates/blog-writer/multi-tenant" },
+      { name: "API Keys", path: "/templates/blog-writer/api-keys" },
     ],
   },
 ];
@@ -320,22 +323,27 @@ const BlogWriterSidebar: React.FC = () => {
                 {renderMenuItems(blogWriterItems, "blog-writer")}
               </div>
 
-              {/* Other Menu Items */}
+              {/* User Profile */}
+              <div>
+                {renderMenuItems(userProfileItem, "main")}
+              </div>
+
+              {/* Components */}
               <div>
                 <h2
-                  className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
+                  className={`mb-4 text-xs uppercase flex leading-5 text-red-600 ${
                     !isExpanded && !isHovered
                       ? "xl:justify-center"
                       : "justify-start"
                   }`}
                 >
                   {isExpanded || isHovered || isMobileOpen ? (
-                    "Menu"
+                    "Components"
                   ) : (
                     <HorizontaLDots />
                   )}
                 </h2>
-                {renderMenuItems(otherItems, "main")}
+                {renderMenuItems(componentItems, "main")}
               </div>
 
               {/* Other Pages */}

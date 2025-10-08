@@ -158,3 +158,4 @@ docker run -p 3000:3000 <template-name>-app
 ---
 
 **Ready to extract? Run the command above and start building your platform! 🚀**
+
