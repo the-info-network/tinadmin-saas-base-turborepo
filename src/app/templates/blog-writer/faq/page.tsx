@@ -29,7 +29,7 @@ export default function BlogWriterFAQPage() {
               How do I create a new blog post?
             </h3>
             <p className="text-gray-600 dark:text-gray-300">
-              Navigate to the Blog Writer dashboard and click the "New Post" button. Fill in the required fields including title, content, and SEO settings.
+              Navigate to the Blog Writer dashboard and click the &quot;New Post&quot; button. Fill in the required fields including title, content, and SEO settings.
             </p>
           </div>
           

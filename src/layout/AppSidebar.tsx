@@ -6,22 +6,16 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
   AiIcon,
-  BoxCubeIcon,
-  CalenderIcon,
-  CallIcon,
   CartIcon,
   ChatIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
-  ListIcon,
   MailIcon,
   PageIcon,
   PieChartIcon,
-  PlugInIcon,
   TableIcon,
   TaskIcon,
-  UserCircleIcon,
 } from "../icons";
 import SidebarWidget from "./SidebarWidget";
 
@@ -44,77 +38,59 @@ const navItems: NavItem[] = [
   {
     name: "Dashboard",
     icon: <GridIcon />,
-    path: "/",
+    subItems: [
+      { name: "eCommerce", path: "/admin" },
+      { name: "Analytics", path: "/analytics" },
+      { name: "Marketing", path: "/marketing" },
+      { name: "CRM", path: "/crm" },
+      { name: "Stocks", path: "/stocks" },
+      { name: "SaaS", path: "/saas", new: true },
+      { name: "Logistics", path: "/logistics", new: true },
+    ],
   },
+];
+
+const othersItems: NavItem[] = [
   {
-    name: "Analytics",
-    icon: <PieChartIcon />,
-    path: "/analytics",
-  },
-  {
-    name: "Marketing",
-    icon: <MailIcon />,
-    path: "/marketing",
-  },
-  {
-    name: "CRM",
-    icon: <UserCircleIcon />,
-    path: "/crm",
-  },
-  {
-    name: "Stocks",
-    icon: <BoxCubeIcon />,
-    path: "/stocks",
-  },
-  {
-    name: "Logistics",
-    icon: <TaskIcon />,
-    new: true,
-    path: "/logistics",
-  },
-  {
-    name: "AI Assistant",
+    name: "AI Tools",
     icon: <AiIcon />,
     new: true,
     subItems: [
-      { name: "Text Generator", path: "/text-generator" },
-      { name: "Code Generator", path: "/code-generator" },
-      { name: "Image Generator", path: "/image-generator" },
-      { name: "Video Generator", path: "/video-generator" },
+      { name: "Text Generator", path: "/text-generator", new: true },
+      { name: "Code Generator", path: "/code-generator", new: true },
+      { name: "Image Generator", path: "/image-generator", new: true },
+      { name: "Video Generator", path: "/video-generator", new: true },
+    ],
+  },
+  {
+    name: "Charts",
+    icon: <PieChartIcon />,
+    subItems: [
+      { name: "Bar Chart", path: "/bar-chart" },
+      { name: "Line Chart", path: "/line-chart" },
+      { name: "Pie Chart", path: "/pie-chart" },
     ],
   },
   {
     name: "E-commerce",
     icon: <CartIcon />,
-    new: true,
     subItems: [
-      { name: "Dashboard", path: "/" },
-      { name: "Products List", path: "/products-list" },
       { name: "Add Product", path: "/add-product" },
-      { name: "Transactions", path: "/transactions" },
-      { name: "Single Transaction", path: "/single-transaction" },
-      { name: "Invoices", path: "/invoices" },
-      { name: "Single Invoice", path: "/single-invoice" },
-      { name: "Create Invoice", path: "/create-invoice" },
       { name: "Billing", path: "/billing" },
+      { name: "Create Invoice", path: "/create-invoice" },
+      { name: "Invoices", path: "/invoices" },
+      { name: "Products List", path: "/products-list" },
+      { name: "Single Invoice", path: "/single-invoice" },
+      { name: "Single Transaction", path: "/single-transaction" },
+      { name: "Transactions", path: "/transactions" },
     ],
   },
   {
-    name: "Calendar",
-    icon: <CalenderIcon />,
-    path: "/calendar",
-  },
-  {
-    name: "User Profile",
-    icon: <UserCircleIcon />,
-    path: "/profile",
-  },
-  {
-    name: "Task",
-    icon: <TaskIcon />,
+    name: "Email",
+    icon: <MailIcon />,
     subItems: [
-      { name: "Task List", path: "/task-list" },
-      { name: "Task Kanban", path: "/task-kanban" },
+      { name: "Inbox", path: "/inbox" },
+      { name: "Inbox Details", path: "/inbox-details" },
     ],
   },
   {
@@ -126,6 +102,14 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    name: "Support",
+    icon: <ChatIcon />,
+    subItems: [
+      { name: "Support Ticket Reply", path: "/support-ticket-reply" },
+      { name: "Support Tickets", path: "/support-tickets" },
+    ],
+  },
+  {
     name: "Tables",
     icon: <TableIcon />,
     subItems: [
@@ -134,101 +118,51 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    name: "Pages",
-    icon: <PageIcon />,
+    name: "Task",
+    icon: <TaskIcon />,
     subItems: [
+      { name: "Task Kanban", path: "/task-kanban" },
+      { name: "Task List", path: "/task-list" },
+    ],
+  },
+  {
+    name: "Other Pages",
+    icon: <GridIcon />,
+    subItems: [
+      { name: "API Keys", path: "/api-keys" },
       { name: "Blank", path: "/blank" },
+      { name: "Calendar", path: "/calendar" },
+      { name: "Chat", path: "/chat" },
       { name: "FAQ", path: "/faq" },
-      { name: "Pricing Tables", path: "/pricing-tables" },
       { name: "File Manager", path: "/file-manager" },
       { name: "Integrations", path: "/integrations" },
       { name: "Multi Tenant", path: "/multi-tenant" },
-      { name: "API Keys", path: "/api-keys" },
+      { name: "Pricing Tables", path: "/pricing-tables" },
+      { name: "Profile", path: "/profile" },
     ],
   },
 ];
 
-const othersItems: NavItem[] = [
-  {
-    name: "Email",
-    icon: <MailIcon />,
-    subItems: [
-      { name: "Inbox", path: "/inbox" },
-      { name: "Inbox Details", path: "/inbox-details" },
-    ],
-  },
-  {
-    name: "Chart",
-    icon: <PieChartIcon />,
-    subItems: [
-      { name: "Bar Chart", path: "/bar-chart" },
-      { name: "Line Chart", path: "/line-chart" },
-      { name: "Pie Chart", path: "/pie-chart" },
-    ],
-  },
-  {
-    name: "Support",
-    icon: <CallIcon />,
-    subItems: [
-      { name: "Support Tickets", path: "/support-tickets" },
-      { name: "Support Ticket Reply", path: "/support-ticket-reply" },
-    ],
-  },
-];
+const supportItems: NavItem[] = [];
 
-const supportItems: NavItem[] = [
+// Templates section for the main admin panel
+const templatesSection: NavItem[] = [
   {
-    name: "Chat",
-    icon: <ChatIcon />,
-    path: "/chat",
-  },
-];
-
-// Template navigation items
-const templateItems: NavItem[] = [
-  {
-    name: "All Templates",
-    icon: <GridIcon />,
-    path: "/",
+    name: "AI Customer Care",
+    icon: <AiIcon />,
+    new: true,
+    path: "/templates/ai-customer-care",
   },
   {
     name: "Blog Writer",
-    icon: <MailIcon />,
+    icon: <span className="w-5 h-5 flex items-center justify-center text-xs font-bold bg-blue-500 text-white rounded">B</span>,
     new: true,
-    subItems: [
-      { name: "Dashboard", path: "/templates/blog-writer" },
-      { 
-        name: "User Profile", 
-        isAccordionHeader: true,
-        new: true,
-        subItems: [
-          { name: "User Details", path: "/templates/blog-writer/profile/details" },
-          { name: "Change Password", path: "/templates/blog-writer/profile/change-password" },
-          { name: "Access Control", path: "/templates/blog-writer/profile/access" },
-        ]
-      },
-      { 
-        name: "Components", 
-        isAccordionHeader: true,
-        new: true,
-        subItems: [
-          { name: "Drafts", path: "/templates/blog-writer/drafts", new: true },
-          { name: "Media Library", path: "/templates/blog-writer/media", new: true },
-          { name: "Comments Management", path: "/templates/blog-writer/comments", new: true },
-          { name: "Categories & Tags", path: "/templates/blog-writer/categories", new: true },
-          { name: "Authors Management", path: "/templates/blog-writer/authors", new: true },
-          { name: "Content Calendar", path: "/templates/blog-writer/calendar", pro: true },
-          { name: "Post Analytics", path: "/templates/blog-writer/analytics", pro: true },
-          { name: "SEO Tools", path: "/templates/blog-writer/seo", pro: true },
-          { name: "Publishing", path: "/templates/blog-writer/publishing", pro: true },
-          { name: "Team Management", path: "/templates/blog-writer/team", new: true },
-          { name: "Content Templates", path: "/templates/blog-writer/templates", new: true },
-          { name: "Workflows", path: "/templates/blog-writer/workflows", new: true },
-          { name: "Integrations", path: "/templates/blog-writer/integrations", new: true },
-        ]
-      },
-    ],
+    path: "/templates/blog-writer",
   },
+];
+
+// AI Customer Care specific navigation items
+const aiCustomerCareItems: NavItem[] = [
   {
     name: "AI Customer Care",
     icon: <AiIcon />,
@@ -269,35 +203,47 @@ const templateItems: NavItem[] = [
       },
     ],
   },
+];
+
+// Blog Writer specific navigation items
+const blogWriterItems: NavItem[] = [
   {
-    name: "E-commerce Template",
-    icon: <CartIcon />,
-    path: "/templates/ecommerce",
-  },
-  {
-    name: "Restaurant Template",
-    icon: <UserCircleIcon />,
-    path: "/templates/restaurant",
-  },
-  {
-    name: "Healthcare Template",
-    icon: <UserCircleIcon />,
-    path: "/templates/healthcare",
-  },
-  {
-    name: "Finance Template",
-    icon: <PieChartIcon />,
-    path: "/templates/finance",
-  },
-  {
-    name: "Education Template",
-    icon: <UserCircleIcon />,
-    path: "/templates/education",
-  },
-  {
-    name: "SaaS Template",
-    icon: <PlugInIcon />,
-    path: "/templates/saas",
+    name: "Blog Writer",
+    icon: <span className="w-5 h-5 flex items-center justify-center text-xs font-bold bg-blue-500 text-white rounded">B</span>,
+    new: true,
+    subItems: [
+      { name: "Dashboard", path: "/templates/blog-writer" },
+      { 
+        name: "Content Management", 
+        isAccordionHeader: true,
+        new: true,
+        subItems: [
+          { name: "Drafts", path: "/templates/blog-writer/drafts", new: true },
+          { name: "Templates", path: "/templates/blog-writer/templates", new: true },
+          { name: "Publishing", path: "/templates/blog-writer/publishing", new: true },
+          { name: "Workflows", path: "/templates/blog-writer/workflows", new: true },
+        ]
+      },
+      { 
+        name: "Team & Collaboration", 
+        isAccordionHeader: true,
+        new: true,
+        subItems: [
+          { name: "Team", path: "/templates/blog-writer/team", new: true },
+          { name: "Media", path: "/templates/blog-writer/media", new: true },
+          { name: "Integrations", path: "/templates/blog-writer/integrations", new: true },
+        ]
+      },
+      { 
+        name: "Analytics & SEO", 
+        isAccordionHeader: true,
+        pro: true,
+        subItems: [
+          { name: "Analytics", path: "/templates/blog-writer/analytics", pro: true },
+          { name: "SEO", path: "/templates/blog-writer/seo", pro: true },
+        ]
+      },
+    ],
   },
 ];
 
@@ -585,15 +531,25 @@ const AppSidebar: React.FC = () => {
     if (!submenuMatched) {
       othersItems.forEach((nav, index) => {
         if (nav.subItems) {
-        nav.subItems.forEach((subItem) => {
-          if (subItem.path && isActive(subItem.path)) {
-            setOpenSubmenu({
-              type: "others",
-              index,
-            });
-            submenuMatched = true;
-          }
-        });
+          nav.subItems.forEach((subItem) => {
+            if (subItem.path && isActive(subItem.path)) {
+              setOpenSubmenu({
+                type: "others",
+                index,
+              });
+              submenuMatched = true;
+            }
+          });
+        }
+      });
+    }
+
+    // Check support navigation items (templates section)
+    if (!submenuMatched) {
+      templatesSection.forEach((nav) => {
+        if (nav.path && isActive(nav.path)) {
+          // Templates are direct links, no submenu needed
+          submenuMatched = true;
         }
       });
     }
@@ -602,22 +558,57 @@ const AppSidebar: React.FC = () => {
     if (!submenuMatched) {
       supportItems.forEach((nav, index) => {
         if (nav.subItems) {
-        nav.subItems.forEach((subItem) => {
-          if (subItem.path && isActive(subItem.path)) {
-            setOpenSubmenu({
-              type: "support",
-              index,
-            });
-            submenuMatched = true;
-          }
-        });
+          nav.subItems.forEach((subItem) => {
+            if (subItem.path && isActive(subItem.path)) {
+              setOpenSubmenu({
+                type: "support",
+                index,
+              });
+              submenuMatched = true;
+            }
+          });
         }
       });
     }
 
-    // Check template navigation items
+    // Check AI Customer Care template navigation items
     if (!submenuMatched) {
-      templateItems.forEach((nav, index) => {
+      aiCustomerCareItems.forEach((nav, index) => {
+        if (nav.subItems) {
+          nav.subItems.forEach((subItem, subIndex) => {
+            // Check direct path matches
+            if (subItem.path && isActive(subItem.path)) {
+              setOpenSubmenu({
+                type: "templates",
+                index,
+              });
+              submenuMatched = true;
+            }
+            // Check nested subItems for accordion headers
+            if (subItem.subItems && subItem.isAccordionHeader) {
+              subItem.subItems.forEach((nestedItem) => {
+                if (isActive(nestedItem.path)) {
+                  setOpenSubmenu({
+                    type: "templates",
+                    index,
+                  });
+                  setOpenNestedSubmenu({
+                    type: "templates",
+                    index,
+                    subIndex,
+                  });
+                  submenuMatched = true;
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+
+    // Check Blog Writer template navigation items
+    if (!submenuMatched) {
+      blogWriterItems.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem, subIndex) => {
             // Check direct path matches
@@ -753,10 +744,12 @@ const AppSidebar: React.FC = () => {
                 height={32}
               />
               <span className="text-xl font-bold text-gray-900 dark:text-white">
-                {pathname.startsWith('/templates/blog-writer') 
-                  ? 'Blog Writer:' 
-                  : pathname.startsWith('/templates/ai-customer-care')
+                {pathname.startsWith('/templates/ai-customer-care')
                   ? 'AI Customer Care:'
+                  : pathname.startsWith('/templates/blog-writer')
+                  ? 'Blog Writer:'
+                  : (pathname === '/admin' || pathname === '/')
+                  ? 'TIN Admin:'
                   : 'TIN Admin:'}
               </span>
             </div>
@@ -773,27 +766,54 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col overflow-y-auto  duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
-            {/* Main Navigation */}
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "xl:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(navItems, "main")}
-            </div>
-
-            {/* Other Pages */}
-            {othersItems.length > 0 && (
-              <div>
+            {/* Template Navigation */}
+          <div>
+            <h2
+              className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
+                !isExpanded && !isHovered
+                  ? "xl:justify-center"
+                  : "justify-start"
+              }`}
+            >
+              {isExpanded || isHovered || isMobileOpen ? (
+                pathname.startsWith('/templates/ai-customer-care')
+                  ? "AI Customer Care"
+                  : pathname.startsWith('/templates/blog-writer')
+                  ? "Blog Writer"
+                  : (pathname === '/admin' || pathname === '/')
+                  ? "Dashboard"
+                  : "Templates"
+              ) : (
+                <HorizontaLDots />
+              )}
+            </h2>
+            {/* Show AI Customer Care template items */}
+            {pathname.startsWith('/templates/ai-customer-care') && renderMenuItems(aiCustomerCareItems, "templates")}
+            {/* Show Blog Writer template items */}
+            {pathname.startsWith('/templates/blog-writer') && renderMenuItems(blogWriterItems, "templates")}
+            
+            {/* Show main admin navigation when on admin or root */}
+            {(pathname === '/admin' || pathname === '/') && (
+              <>
+                {renderMenuItems(navItems, "main")}
+                
+                {/* Templates Navigation */}
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
+                    !isExpanded && !isHovered
+                      ? "xl:justify-center"
+                      : "justify-start"
+                  }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? (
+                    "Templates"
+                  ) : (
+                    <HorizontaLDots />
+                  )}
+                </h2>
+                {renderMenuItems(templatesSection, "support")}
+                
+                {/* Others Navigation */}
                 <h2
                   className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
                     !isExpanded && !isHovered
@@ -808,48 +828,9 @@ const AppSidebar: React.FC = () => {
                   )}
                 </h2>
                 {renderMenuItems(othersItems, "others")}
-              </div>
+              </>
             )}
-
-            {/* Support */}
-            {supportItems.length > 0 && (
-              <div>
-                <h2
-                  className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
-                    !isExpanded && !isHovered
-                      ? "xl:justify-center"
-                      : "justify-start"
-                  }`}
-                >
-                  {isExpanded || isHovered || isMobileOpen ? (
-                    "Support"
-                  ) : (
-                    <HorizontaLDots />
-                  )}
-                </h2>
-                {renderMenuItems(supportItems, "support")}
-              </div>
-            )}
-
-            {/* Templates */}
-            {templateItems.length > 0 && (
-              <div>
-                <h2
-                  className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
-                    !isExpanded && !isHovered
-                      ? "xl:justify-center"
-                      : "justify-start"
-                  }`}
-                >
-                  {isExpanded || isHovered || isMobileOpen ? (
-                    "Templates"
-                  ) : (
-                    <HorizontaLDots />
-                  )}
-                </h2>
-                {renderMenuItems(templateItems, "templates")}
-              </div>
-            )}
+          </div>
           </div>
         </nav>
         {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}

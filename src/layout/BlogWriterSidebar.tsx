@@ -1,24 +1,16 @@
 "use client";
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  AiIcon,
-  BoxCubeIcon,
-  CalenderIcon,
   CallIcon,
-  CartIcon,
   ChatIcon,
   ChevronDownIcon,
-  GridIcon,
   HorizontaLDots,
-  ListIcon,
   MailIcon,
   PageIcon,
   PieChartIcon,
-  PlugInIcon,
   TableIcon,
   TaskIcon,
   UserCircleIcon,
@@ -144,15 +136,16 @@ const supportItems: NavItem[] = [
 ];
 
 const BlogWriterSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } = useSidebar();
   const pathname = usePathname();
 
   const renderMenuItems = (
     navItems: NavItem[],
-    menuType: "main" | "support" | "others" | "blog-writer"
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _menuType?: string
   ) => (
     <ul className="flex flex-col gap-1">
-      {navItems.map((nav, index) => (
+      {navItems.map((nav) => (
         <li key={nav.name}>
           {nav.subItems ? (
             <button
@@ -252,11 +245,10 @@ const BlogWriterSidebar: React.FC = () => {
         isMobileOpen
       ) {
         // Close mobile sidebar when clicking outside
-        const { toggleMobileSidebar } = useSidebar.getState();
         toggleMobileSidebar();
       }
     },
-    [isMobileOpen]
+    [isMobileOpen, toggleMobileSidebar]
   );
 
   useEffect(() => {
@@ -323,12 +315,12 @@ const BlogWriterSidebar: React.FC = () => {
                     <HorizontaLDots />
                   )}
                 </h2>
-                {renderMenuItems(blogWriterItems, "blog-writer")}
+                {renderMenuItems(blogWriterItems)}
               </div>
 
               {/* User Profile */}
               <div>
-                {renderMenuItems(userProfileItem, "main")}
+                {renderMenuItems(userProfileItem)}
               </div>
 
               {/* Components */}
@@ -346,7 +338,7 @@ const BlogWriterSidebar: React.FC = () => {
                     <HorizontaLDots />
                   )}
                 </h2>
-                {renderMenuItems(componentItems, "main")}
+                {renderMenuItems(componentItems)}
               </div>
 
               {/* Other Pages */}
