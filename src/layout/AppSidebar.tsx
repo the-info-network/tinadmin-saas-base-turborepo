@@ -1,4 +1,3 @@
-// AppSidebar component - Main navigation sidebar for the admin panel
 "use client";
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import Link from "next/link";
@@ -7,9 +6,22 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
   AiIcon,
+  BoxCubeIcon,
+  CalenderIcon,
+  CallIcon,
+  CartIcon,
+  ChatIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
+  ListIcon,
+  MailIcon,
+  PageIcon,
+  PieChartIcon,
+  PlugInIcon,
+  TableIcon,
+  TaskIcon,
+  UserCircleIcon,
 } from "../icons";
 import SidebarWidget from "./SidebarWidget";
 
@@ -32,13 +44,128 @@ const navItems: NavItem[] = [
   {
     name: "Dashboard",
     icon: <GridIcon />,
-    path: "/dashboard",
+    subItems: [
+      { name: "eCommerce", path: "/admin" },
+      { name: "Analytics", path: "/analytics" },
+      { name: "Marketing", path: "/marketing" },
+      { name: "CRM", path: "/crm" },
+      { name: "Stocks", path: "/stocks" },
+      { name: "SaaS", path: "/saas", new: true },
+      { name: "Logistics", path: "/logistics", new: true },
+    ],
   },
 ];
 
-const othersItems: NavItem[] = [];
+const othersItems: NavItem[] = [
+  {
+    name: "AI Tools",
+    icon: <AiIcon />,
+    new: true,
+    subItems: [
+      { name: "Text Generator", path: "/text-generator", new: true },
+      { name: "Code Generator", path: "/code-generator", new: true },
+      { name: "Image Generator", path: "/image-generator", new: true },
+      { name: "Video Generator", path: "/video-generator", new: true },
+    ],
+  },
+  {
+    name: "Charts",
+    icon: <PieChartIcon />,
+    subItems: [
+      { name: "Bar Chart", path: "/bar-chart" },
+      { name: "Line Chart", path: "/line-chart" },
+      { name: "Pie Chart", path: "/pie-chart" },
+    ],
+  },
+  {
+    name: "E-commerce",
+    icon: <CartIcon />,
+    subItems: [
+      { name: "Add Product", path: "/add-product" },
+      { name: "Billing", path: "/billing" },
+      { name: "Create Invoice", path: "/create-invoice" },
+      { name: "Invoices", path: "/invoices" },
+      { name: "Products List", path: "/products-list" },
+      { name: "Single Invoice", path: "/single-invoice" },
+      { name: "Single Transaction", path: "/single-transaction" },
+      { name: "Transactions", path: "/transactions" },
+    ],
+  },
+  {
+    name: "Email",
+    icon: <MailIcon />,
+    subItems: [
+      { name: "Inbox", path: "/inbox" },
+      { name: "Inbox Details", path: "/inbox-details" },
+    ],
+  },
+  {
+    name: "Forms",
+    icon: <PageIcon />,
+    subItems: [
+      { name: "Form Elements", path: "/form-elements" },
+      { name: "Form Layout", path: "/form-layout" },
+    ],
+  },
+  {
+    name: "Support",
+    icon: <ChatIcon />,
+    subItems: [
+      { name: "Support Ticket Reply", path: "/support-ticket-reply" },
+      { name: "Support Tickets", path: "/support-tickets" },
+    ],
+  },
+  {
+    name: "Tables",
+    icon: <TableIcon />,
+    subItems: [
+      { name: "Basic Tables", path: "/basic-tables" },
+      { name: "Data Tables", path: "/data-tables" },
+    ],
+  },
+  {
+    name: "Task",
+    icon: <TaskIcon />,
+    subItems: [
+      { name: "Task Kanban", path: "/task-kanban" },
+      { name: "Task List", path: "/task-list" },
+    ],
+  },
+  {
+    name: "Other Pages",
+    icon: <GridIcon />,
+    subItems: [
+      { name: "API Keys", path: "/api-keys" },
+      { name: "Blank", path: "/blank" },
+      { name: "Calendar", path: "/calendar" },
+      { name: "Chat", path: "/chat" },
+      { name: "FAQ", path: "/faq" },
+      { name: "File Manager", path: "/file-manager" },
+      { name: "Integrations", path: "/integrations" },
+      { name: "Multi Tenant", path: "/multi-tenant" },
+      { name: "Pricing Tables", path: "/pricing-tables" },
+      { name: "Profile", path: "/profile" },
+    ],
+  },
+];
 
 const supportItems: NavItem[] = [];
+
+// Templates section for the main admin panel
+const templatesSection: NavItem[] = [
+  {
+    name: "AI Customer Care",
+    icon: <AiIcon />,
+    new: true,
+    path: "/templates/ai-customer-care",
+  },
+  {
+    name: "Blog Writer",
+    icon: <span className="w-5 h-5 flex items-center justify-center text-xs font-bold bg-blue-500 text-white rounded">B</span>,
+    new: true,
+    path: "/templates/blog-writer",
+  },
+];
 
 // AI Customer Care specific navigation items
 const aiCustomerCareItems: NavItem[] = [
@@ -129,30 +256,6 @@ const blogWriterItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
-
-  // Determine which template is active based on the current path
-  const getCurrentTemplate = () => {
-    if (pathname.startsWith('/templates/blog-writer')) {
-      return 'blog-writer';
-    } else if (pathname.startsWith('/templates/ai-customer-care')) {
-      return 'ai-customer-care';
-    }
-    return 'ai-customer-care'; // default
-  };
-
-  // Get the appropriate template items based on current template
-  const getTemplateItems = () => {
-    const currentTemplate = getCurrentTemplate();
-    switch (currentTemplate) {
-      case 'blog-writer':
-        return blogWriterItems;
-      case 'ai-customer-care':
-      default:
-        return aiCustomerCareItems;
-    }
-  };
-
-  const templateItems = getTemplateItems();
 
   const renderMenuItems = (
     navItems: NavItem[],
@@ -434,15 +537,25 @@ const AppSidebar: React.FC = () => {
     if (!submenuMatched) {
       othersItems.forEach((nav, index) => {
         if (nav.subItems) {
-        nav.subItems.forEach((subItem) => {
-          if (subItem.path && isActive(subItem.path)) {
-            setOpenSubmenu({
-              type: "others",
-              index,
-            });
-            submenuMatched = true;
-          }
-        });
+          nav.subItems.forEach((subItem) => {
+            if (subItem.path && isActive(subItem.path)) {
+              setOpenSubmenu({
+                type: "others",
+                index,
+              });
+              submenuMatched = true;
+            }
+          });
+        }
+      });
+    }
+
+    // Check support navigation items (templates section)
+    if (!submenuMatched) {
+      templatesSection.forEach((nav, index) => {
+        if (nav.path && isActive(nav.path)) {
+          // Templates are direct links, no submenu needed
+          submenuMatched = true;
         }
       });
     }
@@ -451,22 +564,57 @@ const AppSidebar: React.FC = () => {
     if (!submenuMatched) {
       supportItems.forEach((nav, index) => {
         if (nav.subItems) {
-        nav.subItems.forEach((subItem) => {
-          if (subItem.path && isActive(subItem.path)) {
-            setOpenSubmenu({
-              type: "support",
-              index,
-            });
-            submenuMatched = true;
-          }
-        });
+          nav.subItems.forEach((subItem) => {
+            if (subItem.path && isActive(subItem.path)) {
+              setOpenSubmenu({
+                type: "support",
+                index,
+              });
+              submenuMatched = true;
+            }
+          });
         }
       });
     }
 
-    // Check template navigation items
+    // Check AI Customer Care template navigation items
     if (!submenuMatched) {
-      templateItems.forEach((nav, index) => {
+      aiCustomerCareItems.forEach((nav, index) => {
+        if (nav.subItems) {
+          nav.subItems.forEach((subItem, subIndex) => {
+            // Check direct path matches
+            if (subItem.path && isActive(subItem.path)) {
+              setOpenSubmenu({
+                type: "templates",
+                index,
+              });
+              submenuMatched = true;
+            }
+            // Check nested subItems for accordion headers
+            if (subItem.subItems && subItem.isAccordionHeader) {
+              subItem.subItems.forEach((nestedItem) => {
+                if (isActive(nestedItem.path)) {
+                  setOpenSubmenu({
+                    type: "templates",
+                    index,
+                  });
+                  setOpenNestedSubmenu({
+                    type: "templates",
+                    index,
+                    subIndex,
+                  });
+                  submenuMatched = true;
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+
+    // Check Blog Writer template navigation items
+    if (!submenuMatched) {
+      blogWriterItems.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem, subIndex) => {
             // Check direct path matches
@@ -606,6 +754,8 @@ const AppSidebar: React.FC = () => {
                   ? 'AI Customer Care:'
                   : pathname.startsWith('/templates/blog-writer')
                   ? 'Blog Writer:'
+                  : (pathname === '/admin' || pathname === '/')
+                  ? 'TIN Admin:'
                   : 'TIN Admin:'}
               </span>
             </div>
@@ -622,7 +772,7 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col overflow-y-auto  duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
-            {/* Template Navigation - Staging */}
+            {/* Template Navigation */}
           <div>
             <h2
               className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
@@ -636,12 +786,56 @@ const AppSidebar: React.FC = () => {
                   ? "AI Customer Care"
                   : pathname.startsWith('/templates/blog-writer')
                   ? "Blog Writer"
+                  : (pathname === '/admin' || pathname === '/')
+                  ? "Dashboard"
                   : "Templates"
               ) : (
                 <HorizontaLDots />
               )}
             </h2>
-            {renderMenuItems(templateItems, "templates")}
+            {/* Show AI Customer Care template items */}
+            {pathname.startsWith('/templates/ai-customer-care') && renderMenuItems(aiCustomerCareItems, "templates")}
+            {/* Show Blog Writer template items */}
+            {pathname.startsWith('/templates/blog-writer') && renderMenuItems(blogWriterItems, "templates")}
+            
+            {/* Show main admin navigation when on admin or root */}
+            {(pathname === '/admin' || pathname === '/') && (
+              <>
+                {renderMenuItems(navItems, "main")}
+                
+                {/* Templates Navigation */}
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
+                    !isExpanded && !isHovered
+                      ? "xl:justify-center"
+                      : "justify-start"
+                  }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? (
+                    "Templates"
+                  ) : (
+                    <HorizontaLDots />
+                  )}
+                </h2>
+                {renderMenuItems(templatesSection, "support")}
+                
+                {/* Others Navigation */}
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
+                    !isExpanded && !isHovered
+                      ? "xl:justify-center"
+                      : "justify-start"
+                  }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? (
+                    "Others"
+                  ) : (
+                    <HorizontaLDots />
+                  )}
+                </h2>
+                {renderMenuItems(othersItems, "others")}
+              </>
+            )}
           </div>
           </div>
         </nav>
