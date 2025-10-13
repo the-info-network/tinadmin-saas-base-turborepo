@@ -4,9 +4,7 @@ import React, { useState } from "react";
 import { 
   StarIcon,
   PlayIcon,
-  PauseIcon,
   CheckCircleIcon,
-  XCircleIcon,
   ExclamationTriangleIcon,
   ClockIcon,
   UserIcon

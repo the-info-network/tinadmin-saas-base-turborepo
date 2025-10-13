@@ -87,6 +87,7 @@ const mockAgents: Agent[] = [
 ];
 
 export default function AgentStatusOverview() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [agents, setAgents] = useState<Agent[]>(mockAgents);
   const [filter, setFilter] = useState<"all" | "voice" | "chat">("all");
 

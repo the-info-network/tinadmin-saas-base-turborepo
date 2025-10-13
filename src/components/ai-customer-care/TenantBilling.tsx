@@ -4,8 +4,6 @@ import React, { useState } from "react";
 import { 
   CreditCardIcon,
   DocumentTextIcon,
-  CalendarIcon,
-  CurrencyDollarIcon,
   ExclamationTriangleIcon
 } from "@heroicons/react/24/outline";
 

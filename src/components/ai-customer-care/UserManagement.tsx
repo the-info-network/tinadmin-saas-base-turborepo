@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { 
   UsersIcon,
-  PlusIcon,
   PencilIcon,
   TrashIcon,
   EyeIcon,

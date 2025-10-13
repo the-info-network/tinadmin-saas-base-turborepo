@@ -7,7 +7,13 @@ export default function NumberSearch() {
   const [areaCode, setAreaCode] = useState("");
   const [country, setCountry] = useState("US");
   const [capabilities, setCapabilities] = useState<string[]>([]);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<{
+    phoneNumber: string;
+    friendlyName: string;
+    capabilities: string[];
+    region: string;
+    price: string;
+  }[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
   const availableCapabilities = ["voice", "sms", "mms", "fax"];
