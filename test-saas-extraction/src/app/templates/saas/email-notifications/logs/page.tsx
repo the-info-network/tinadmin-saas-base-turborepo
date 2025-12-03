@@ -108,7 +108,7 @@ export default function EmailLogsPage() {
             {["all", "sent", "delivered", "failed", "bounced"].map((status) => (
               <Button
                 key={status}
-                variant={filter === status ? "default" : "outline"}
+                variant={filter === status ? "primary" : "outline"}
                 size="sm"
                 onClick={() => setFilter(status)}
               >
