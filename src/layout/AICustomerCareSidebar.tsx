@@ -291,7 +291,7 @@ const AICustomerCareSidebar: React.FC = () => {
               </div>
               {(isExpanded || isHovered || isMobileOpen) && (
                 <span className="text-xl font-bold text-gray-900 dark:text-white">
-                  TailAdmin
+                  SaaS Admin
                 </span>
               )}
             </Link>
