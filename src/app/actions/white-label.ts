@@ -1,10 +1,8 @@
 "use server";
 
 import { requirePermission } from "@/core/permissions";
-import { createClient, createAdminClient, type Database } from "@/core/database";
+import { createClient, type Database } from "@/core/database";
 import { getCurrentUserTenantId } from "@/core/multi-tenancy/validation";
-
-type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
 
 export interface BrandingSettings {
   companyName?: string;
@@ -59,7 +57,7 @@ export async function getBrandingSettings(): Promise<BrandingSettings> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       // If permission check fails (e.g., not authenticated), return empty
       return {};
     }
@@ -139,7 +137,7 @@ export async function getThemeSettings(): Promise<ThemeSettings> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       return {};
     }
 
@@ -211,7 +209,7 @@ export async function getEmailSettings(): Promise<EmailSettings> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       return {};
     }
 
@@ -231,7 +229,7 @@ export async function getEmailSettings(): Promise<EmailSettings> {
     }
 
     return (tenant?.email_settings as EmailSettings) || {};
-  } catch (error) {
+  } catch {
     return {};
   }
 }
@@ -281,7 +279,7 @@ export async function getCustomCSS(): Promise<string> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       return "";
     }
 
@@ -301,7 +299,7 @@ export async function getCustomCSS(): Promise<string> {
     }
 
     return tenant?.custom_css || "";
-  } catch (error) {
+  } catch {
     return "";
   }
 }
@@ -351,7 +349,7 @@ export async function getCustomDomains(): Promise<CustomDomain[]> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       return [];
     }
 
@@ -371,7 +369,7 @@ export async function getCustomDomains(): Promise<CustomDomain[]> {
     }
 
     return (tenant?.custom_domains as CustomDomain[]) || [];
-  } catch (error) {
+  } catch {
     return [];
   }
 }

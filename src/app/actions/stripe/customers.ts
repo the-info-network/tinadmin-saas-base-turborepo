@@ -1,7 +1,7 @@
 "use server";
 
 import { stripe } from "@/core/billing";
-import { createAdminClient, createClient, type Database } from "@/core/database";
+import { createAdminClient, type Database } from "@/core/database";
 
 type StripeCustomer = Database["public"]["Tables"]["stripe_customers"]["Insert"];
 
@@ -14,7 +14,6 @@ export async function createOrRetrieveCustomer(tenantId: string): Promise<{
   error?: string;
 }> {
   try {
-    const supabase = await createClient();
     const adminClient = createAdminClient();
 
     // Get tenant information

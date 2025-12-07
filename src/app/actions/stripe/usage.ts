@@ -125,7 +125,7 @@ export async function trackUsageEvent(params: {
     }
 
     // Record usage for the first metered item (you can customize this logic)
-    const usageRecord = await stripe.subscriptionItems.createUsageRecord(meteredItems[0].id, {
+    await stripe.subscriptionItems.createUsageRecord(meteredItems[0].id, {
       quantity: params.quantity,
       timestamp: Math.floor(Date.now() / 1000),
       action: "increment",

@@ -4,7 +4,6 @@ import { stripe } from "@/core/billing";
 import { createAdminClient } from "@/core/database";
 import { getCurrentTenant } from "@/core/multi-tenancy";
 import { requirePermission } from "@/core/permissions";
-import type Stripe from "stripe";
 
 /**
  * Get all payment methods for the current tenant

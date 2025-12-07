@@ -1,6 +1,6 @@
 "use server";
 
-import { createAdminClient, createClient, getUser, type Database } from "@/core/database";
+import { createAdminClient, createClient, type Database } from "@/core/database";
 
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
 type TenantInsert = Database["public"]["Tables"]["tenants"]["Insert"];

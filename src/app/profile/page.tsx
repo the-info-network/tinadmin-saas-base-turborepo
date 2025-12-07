@@ -11,7 +11,6 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import React, { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { updatePassword } from "@/app/actions/password";
 import { EyeIcon, EyeCloseIcon } from "@/icons";

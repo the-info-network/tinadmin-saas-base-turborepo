@@ -1,7 +1,7 @@
 "use server";
 
 import { stripe } from "@/core/billing";
-import { createAdminClient, createClient } from "@/core/database";
+import { createAdminClient } from "@/core/database";
 import { getCurrentTenant } from "@/core/multi-tenancy";
 import { requirePermission } from "@/core/permissions";
 import type Stripe from "stripe";

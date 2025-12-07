@@ -2,7 +2,6 @@
 
 import { stripe } from "@/core/billing";
 import { createAdminClient } from "@/core/database";
-import type Stripe from "stripe";
 
 /**
  * Sync Stripe products to database

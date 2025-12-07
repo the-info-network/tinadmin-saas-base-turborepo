@@ -28,11 +28,6 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       
       const supabase = createBrowserClient();
       
-      // Check localStorage for tenant override (from tenant switcher)
-      const storedTenantId = typeof window !== "undefined" 
-        ? localStorage.getItem("current_tenant_id")
-        : null;
-      
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
@@ -45,58 +40,31 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       // Get user's tenant_id from users table
       const { data: userData, error: userDataError } = await supabase
         .from("users")
-        .select("tenant_id, roles:role_id(name)")
+        .select("tenant_id")
         .eq("id", user.id)
         .single();
 
-      if (userDataError || !userData) {
+      if (userDataError || !userData?.tenant_id) {
         setTenant(null);
         setIsLoading(false);
         return;
       }
 
-      // Determine which tenant_id to use
-      // Priority: storedTenantId (from switcher) > userData.tenant_id
-      // Platform Admins can have tenant_id = null
-      const roleName = (userData.roles as any)?.name;
-      const isPlatformAdmin = roleName === "Platform Admin" && userData.tenant_id === null;
-      
-      let targetTenantId: string | null = null;
-      
-      if (storedTenantId) {
-        // Use tenant from switcher if available
-        targetTenantId = storedTenantId;
-      } else if (!isPlatformAdmin && userData.tenant_id) {
-        // Use user's tenant_id (unless Platform Admin)
-        targetTenantId = userData.tenant_id;
-      }
-
       // Get tenant details
-      if (targetTenantId) {
-        const { data: tenantData, error: tenantError } = await supabase
-          .from("tenants")
-          .select("*")
-          .eq("id", targetTenantId)
-          .single();
+      const { data: tenantData, error: tenantError } = await supabase
+        .from("tenants")
+        .select("*")
+        .eq("id", userData.tenant_id)
+        .single();
 
-        if (tenantError) {
-          // Don't set error for RLS policy failures when user isn't authenticated
-          if (tenantError.code !== 'PGRST301' && tenantError.code !== '42501') {
-            setError(tenantError.message);
-          }
-          setTenant(null);
-        } else {
-          setTenant(tenantData);
-        }
-      } else {
-        // Platform Admin or no tenant
+      if (tenantError) {
+        setError(tenantError.message);
         setTenant(null);
+      } else {
+        setTenant(tenantData);
       }
     } catch (err) {
-      // Don't show error for unauthenticated access
-      if (err instanceof Error && !err.message.includes('JWT')) {
-        setError(err.message);
-      }
+      setError(err instanceof Error ? err.message : "Failed to load tenant");
       setTenant(null);
     } finally {
       setIsLoading(false);
