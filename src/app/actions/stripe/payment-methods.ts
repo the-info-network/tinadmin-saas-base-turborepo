@@ -210,3 +210,87 @@ export async function createSetupIntent(): Promise<{
     };
   }
 }
+
+/**
+ * Attach a payment method to the customer
+ */
+export async function attachPaymentMethod(
+  paymentMethodId: string,
+  makeDefault: boolean = false
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await requirePermission("billing.write");
+
+    const tenantId = await getCurrentTenant();
+    if (!tenantId) {
+      return { success: false, error: "No tenant context found" };
+    }
+
+    const adminClient = createAdminClient();
+
+    // Get customer
+    const { data: customer } = await adminClient
+      .from("stripe_customers")
+      .select("stripe_customer_id")
+      .eq("tenant_id", tenantId)
+      .single();
+
+    if (!customer) {
+      return { success: false, error: "Customer not found" };
+    }
+
+    // Attach the payment method to the customer
+    const paymentMethod = await stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customer.stripe_customer_id,
+    });
+
+    // Save to database
+    const { error: insertError } = await adminClient
+      .from("stripe_payment_methods")
+      .insert({
+        tenant_id: tenantId,
+        stripe_customer_id: customer.stripe_customer_id,
+        stripe_payment_method_id: paymentMethod.id,
+        type: paymentMethod.type,
+        card_brand: paymentMethod.card?.brand,
+        card_last4: paymentMethod.card?.last4,
+        card_exp_month: paymentMethod.card?.exp_month,
+        card_exp_year: paymentMethod.card?.exp_year,
+        is_default: makeDefault,
+        billing_details: paymentMethod.billing_details as any,
+      });
+
+    if (insertError) {
+      console.error("Error saving payment method to database:", insertError);
+      // Don't fail the request if DB insert fails, as the payment method is already attached in Stripe
+    }
+
+    // Set as default if requested
+    if (makeDefault) {
+      await stripe.customers.update(customer.stripe_customer_id, {
+        invoice_settings: {
+          default_payment_method: paymentMethodId,
+        },
+      });
+
+      // Update in database
+      await adminClient
+        .from("stripe_payment_methods")
+        .update({ is_default: false })
+        .eq("tenant_id", tenantId);
+
+      await adminClient
+        .from("stripe_payment_methods")
+        .update({ is_default: true })
+        .eq("stripe_payment_method_id", paymentMethodId);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error attaching payment method:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to attach payment method",
+    };
+  }
+}
