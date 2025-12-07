@@ -3,7 +3,7 @@
 import { requirePermission } from "@/lib/auth/permission-middleware";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin-client";
-import { getCurrentUserTenantId } from "@/lib/auth/permissions";
+import { getCurrentUserTenantId } from "@/lib/tenant/validation";
 import type { Database } from "@/lib/supabase/types";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"];

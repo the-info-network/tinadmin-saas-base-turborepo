@@ -8,8 +8,8 @@
 import { createClient } from "./client";
 import { createClient as createServerClient } from "./server";
 import { createAdminClient } from "./admin-client";
-import { buildTenantQuery, buildTenantScopedQuery } from "../tenant/query-builder";
-import { ensureTenantId } from "../tenant/validation";
+import { buildTenantQuery, buildTenantScopedQuery } from "../multi-tenancy/query-builder";
+import { ensureTenantId } from "../multi-tenancy/validation";
 import type { Database } from "./types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 

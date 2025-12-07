@@ -95,7 +95,7 @@ export async function createTenant(tenant: TenantInsert) {
   
   // Validate domain format
   if (tenant.domain) {
-    const { validateTenantDomain } = await import("../tenant/validation");
+    const { validateTenantDomain } = await import("../multi-tenancy/validation");
     const validation = validateTenantDomain(tenant.domain);
     
     if (!validation.isValid) {

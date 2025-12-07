@@ -7,8 +7,8 @@
 import { createClient } from "./client";
 import { createAdminClient } from "./admin-client";
 import type { Database } from "./types";
-import { ensureTenantId, validateTenantAccess } from "../tenant/validation";
-import { requirePermission } from "../auth/permission-middleware";
+import { ensureTenantId, validateTenantAccess } from "../multi-tenancy/validation";
+import { requirePermission } from "../permissions";
 
 type Workspace = Database["public"]["Tables"]["workspaces"]["Row"];
 type WorkspaceInsert = Database["public"]["Tables"]["workspaces"]["Insert"];
