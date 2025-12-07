@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useTenant } from "@/lib/tenant/context";
+import { useTenant } from "@/core/multi-tenancy";
 import { ChevronRightIcon, BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -97,4 +97,5 @@ export default function TenantBreadcrumbs({
     </nav>
   );
 }
+
 

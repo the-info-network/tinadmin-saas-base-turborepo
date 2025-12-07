@@ -1,7 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin-client";
+import { createClient } from "@/core/database";
 
 /**
  * Send password reset email (for forgot password)
@@ -96,4 +95,5 @@ export async function resetPasswordWithToken(
     };
   }
 }
+
 

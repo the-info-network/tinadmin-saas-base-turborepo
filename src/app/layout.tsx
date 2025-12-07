@@ -4,7 +4,7 @@ import "swiper/swiper-bundle.css";
 import "simplebar-react/dist/simplebar.min.css";
 import { SidebarProvider } from "@/context/SidebarContext";
 import { ThemeProvider } from "@/context/ThemeContext";
-import { TenantProvider } from "@/lib/tenant/context";
+import { TenantProvider } from "@/core/multi-tenancy";
 import { WorkspaceProvider } from "@/lib/workspace/context";
 import { WhiteLabelProvider } from "@/context/WhiteLabelContext";
 

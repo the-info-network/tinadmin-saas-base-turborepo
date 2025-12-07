@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
-import { useTenant } from "@/lib/tenant/context";
+import { useTenant } from "@/core/multi-tenancy";
 import { useWhiteLabel } from "@/context/WhiteLabelContext";
 import {
   AiIcon,
