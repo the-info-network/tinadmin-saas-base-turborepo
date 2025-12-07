@@ -19,7 +19,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import type { Database } from "@/lib/supabase/types";
+import type { Database } from "@/core/database";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
 

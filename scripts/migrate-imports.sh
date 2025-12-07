@@ -286,3 +286,4 @@ echo "  3. Fix any remaining issues"
 echo "  4. Commit the changes: git add . && git commit -m 'Migrate to core domain structure'"
 echo ""
 
+

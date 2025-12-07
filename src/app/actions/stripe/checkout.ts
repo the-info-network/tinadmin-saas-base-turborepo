@@ -1,9 +1,9 @@
 "use server";
 
-import { stripe, formatAmountForStripe } from "@/lib/stripe/config";
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentTenant } from "@/lib/tenant/server";
+import { stripe, formatAmountForStripe } from "@/core/billing/config";
+import { createAdminClient } from "@/core/database";
+import { createClient } from "@/core/database";
+import { getCurrentTenant } from "@/core/multi-tenancy";
 
 /**
  * Create a Stripe Checkout session for subscription
@@ -261,4 +261,5 @@ export async function getCheckoutSession(sessionId: string): Promise<{
     };
   }
 }
+
 

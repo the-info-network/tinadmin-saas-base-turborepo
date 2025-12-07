@@ -17,7 +17,7 @@ import {
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { getAllOrganizationAdmins, isPlatformAdmin } from "@/app/actions/organization-admins";
-import type { Database } from "@/lib/supabase/types";
+import type { Database } from "@/core/database";
 
 type OrgAdmin = Database["public"]["Tables"]["users"]["Row"] & {
   roles?: { name: string } | null;

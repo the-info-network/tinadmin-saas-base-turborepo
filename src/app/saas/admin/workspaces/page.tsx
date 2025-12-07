@@ -10,8 +10,8 @@ import {
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { getAllWorkspaces } from "@/app/actions/workspaces";
-import { useTenant } from "@/lib/tenant/context";
-import type { Database } from "@/lib/supabase/types";
+import { useTenant } from "@/core/multi-tenancy";
+import type { Database } from "@/core/database";
 import Link from "next/link";
 
 type Workspace = Database["public"]["Tables"]["workspaces"]["Row"] & {
@@ -214,4 +214,5 @@ export default function WorkspacesPage() {
     </div>
   );
 }
+
 

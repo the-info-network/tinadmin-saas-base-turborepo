@@ -1,8 +1,8 @@
 "use server";
 
-import { stripe } from "@/lib/stripe/config";
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { requirePermission } from "@/lib/auth/permission-middleware";
+import { stripe } from "@/core/billing";
+import { createAdminClient } from "@/core/database";
+import { requirePermission } from "@/core/permissions";
 import type Stripe from "stripe";
 
 /**
@@ -408,4 +408,5 @@ export async function getConnectAccountBalance(tenantId: string): Promise<{
     };
   }
 }
+
 

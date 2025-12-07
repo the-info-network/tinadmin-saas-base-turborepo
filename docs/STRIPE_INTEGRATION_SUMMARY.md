@@ -380,3 +380,4 @@ The system is now capable of:
 - Supporting multi-tenant payment isolation
 - Enabling Stripe Connect for tenant-to-tenant payments (optional)
 
+

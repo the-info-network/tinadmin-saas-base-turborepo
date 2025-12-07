@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { hasPermission, type Permission } from "@/lib/auth/permissions";
-import { getCurrentUser } from "@/lib/supabase/users";
+import { createClient, getCurrentUser } from "@/core/database";
+import { hasPermission, type Permission } from "@/core/permissions";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

@@ -14,8 +14,8 @@ import {
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { getAllTenants } from "@/app/actions/tenants";
-import { PermissionGate } from "@/lib/auth/permission-gates";
-import type { Database } from "@/lib/supabase/types";
+import { PermissionGate } from "@/core/permissions";
+import type { Database } from "@/core/database";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"] & {
   users?: Array<{ id: string }> | null;

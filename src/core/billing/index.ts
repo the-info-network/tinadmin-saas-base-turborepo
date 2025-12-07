@@ -175,3 +175,4 @@ export function requiresPayment(status: string): boolean {
   return ['past_due', 'unpaid', 'incomplete'].includes(status);
 }
 
+

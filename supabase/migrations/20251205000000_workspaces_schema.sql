@@ -177,3 +177,4 @@ CREATE TRIGGER create_default_workspace_on_tenant_create
   FOR EACH ROW
   EXECUTE FUNCTION create_default_workspace();
 
+

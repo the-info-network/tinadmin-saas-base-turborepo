@@ -1,15 +1,8 @@
-/**
- * Workspace Context Provider
- * 
- * Provides workspace context similar to tenant context
- */
-
 "use client";
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { createClient } from "@/lib/supabase/client";
-import type { Database } from "@/lib/supabase/types";
-import { useTenant } from "@/lib/tenant/context";
+import { createBrowserClient, type Database } from "@/core/database";
+import { useTenant } from "@/core/multi-tenancy";
 
 type Workspace = Database["public"]["Tables"]["workspaces"]["Row"];
 
@@ -25,7 +18,7 @@ interface WorkspaceContextType {
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
-  const { tenant, tenantId } = useTenant();
+  const { tenantId } = useTenant();
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,23 +27,25 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       if (!tenantId) {
         setWorkspace(null);
         setIsLoading(false);
         return;
       }
 
-      const supabase = createClient();
-      
+      const supabase = createBrowserClient();
+
       // Check localStorage for workspace override
-      const storedWorkspaceId = typeof window !== "undefined" 
-        ? localStorage.getItem("current_workspace_id")
-        : null;
-      
+      const storedWorkspaceId =
+        typeof window !== "undefined" ? localStorage.getItem("current_workspace_id") : null;
+
       // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
       if (userError || !user) {
         setWorkspace(null);
         setIsLoading(false);
@@ -76,12 +71,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       // Otherwise, get user's workspaces and use the first one
       const { data: workspaceUsers, error: workspaceUsersError } = await supabase
         .from("workspace_users")
-          .select(`
-            workspace_id,
-            workspaces!workspace_users_workspace_id_fkey (*)
-          `)
-          .eq("user_id", user.id)
-          .limit(1);
+        .select(`
+          workspace_id,
+          workspaces!workspace_users_workspace_id_fkey (*)
+        `)
+        .eq("user_id", user.id)
+        .limit(1);
 
       if (workspaceUsersError) {
         // Try to get default workspace for tenant
@@ -160,4 +155,3 @@ export function useWorkspace() {
   }
   return context;
 }
-

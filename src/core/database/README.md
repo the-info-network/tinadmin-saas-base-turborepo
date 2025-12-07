@@ -430,3 +430,4 @@ supabase migration new my_migration_name
 - [Row-Level Security Guide](https://supabase.com/docs/guides/auth/row-level-security)
 - [TypeScript Type Generation](https://supabase.com/docs/guides/api/generating-types)
 
+

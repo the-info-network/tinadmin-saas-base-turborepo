@@ -83,3 +83,4 @@ export function supportsFeature(feature: 'oauth' | 'mfa' | 'sso' | 'passwordless
   return featureMatrix[provider]?.[feature] || false;
 }
 
+

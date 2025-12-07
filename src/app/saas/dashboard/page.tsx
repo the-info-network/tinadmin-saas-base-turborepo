@@ -1,7 +1,7 @@
 "use client";
 
 import TenantBreadcrumbs from "@/components/tenant/TenantBreadcrumbs";
-import { useTenant } from "@/lib/tenant/context";
+import { useTenant } from "@/core/multi-tenancy";
 import React from "react";
 
 export default function DashboardPage() {

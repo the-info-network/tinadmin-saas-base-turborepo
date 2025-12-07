@@ -6,7 +6,7 @@ import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { getCurrentUser } from "@/app/actions/user";
-import type { Database } from "@/lib/supabase/types";
+import type { Database } from "@/core/database";
 
 type User = Database["public"]["Tables"]["users"]["Row"] & {
   roles?: { name: string } | null;

@@ -31,6 +31,12 @@ export {
   useTenant,
 } from './context';
 
+// Workspace context (client-side)
+export {
+  WorkspaceProvider,
+  useWorkspace,
+} from './workspace-context';
+
 // ============================================================================
 // TENANT RESOLUTION (Server-side)
 // ============================================================================
@@ -147,4 +153,5 @@ export function isValidTenantDomain(domain: string): boolean {
   
   return domain.endsWith(`.${baseDomain}`) && domain !== baseDomain;
 }
+
 

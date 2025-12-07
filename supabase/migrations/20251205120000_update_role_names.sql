@@ -29,3 +29,4 @@ UPDATE roles
 SET description = 'Read-only access to organization data: dashboards, reports, and analytics without modification rights.'
 WHERE name = 'Viewer';
 
+

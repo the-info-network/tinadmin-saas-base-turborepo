@@ -1,9 +1,6 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { createClient } from "@/lib/supabase/server";
-import { getUser } from "@/lib/supabase/users";
-import type { Database } from "@/lib/supabase/types";
+import { createAdminClient, createClient, getUser, type Database } from "@/core/database";
 
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
 type TenantInsert = Database["public"]["Tables"]["tenants"]["Insert"];

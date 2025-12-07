@@ -1,3 +1,86 @@
+# Email Domain
+
+Centralized email provider abstraction with primary/fallback routing, white-label support, and React Email templates.
+
+## Features
+- Provider registry with Amazon SES, Resend, and Inbucket (local) implementations.
+- Primary/fallback selection from environment variables with health checks.
+- Retry with exponential backoff and optional send logging.
+- White-label support (custom domains, colors) using tenant branding.
+- Template sending via React Email (optional, graceful fallback if not installed).
+
+## Public API
+Import only from the domain entrypoint:
+```ts
+import {
+  sendEmail,
+  sendBulkEmails,
+  sendTemplateEmail,
+  checkEmailHealth,
+} from '@/core/email';
+```
+
+## Environment Variables
+- `EMAIL_PROVIDER` — `ses` | `resend` | `inbucket`
+- `EMAIL_FALLBACK_PROVIDER` — optional fallback provider
+- Provider credentials:
+  - SES: `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+  - Resend: `RESEND_API_KEY`
+  - Inbucket (local): none required
+
+## Usage
+### Simple email
+```ts
+await sendEmail({
+  to: 'user@example.com',
+  from: 'noreply@yoursaas.com',
+  subject: 'Welcome!',
+  html: '<h1>Hello</h1>',
+});
+```
+
+### Template email
+```ts
+import WelcomeEmail from '@/core/email/templates/auth/welcome';
+
+await sendTemplateEmail(
+  { to: 'user@example.com', from: 'noreply@yoursaas.com', subject: 'Welcome!' },
+  WelcomeEmail,
+  { userName: 'Jane Doe', tenantName: 'Acme Corp' }
+);
+```
+
+### White-label
+Pass `tenantId` and optional `customDomain`; branding/colors will be applied when present.
+```ts
+await sendEmail({
+  to: 'user@example.com',
+  from: 'noreply@yoursaas.com',
+  subject: 'Welcome',
+  html: '<p>Hi!</p>',
+  tenantId: 'tenant-uuid',
+  customDomain: 'tenant.acme.com',
+});
+```
+
+## Health Check
+```ts
+const status = await checkEmailHealth();
+// { healthy: boolean, primary?, fallback?, error? }
+```
+
+## Provider Configuration Helpers
+```ts
+import { getProviderConfigFromEnv, getFallbackProviderConfig } from '@/core/email';
+```
+
+## Testing
+- Unit tests can mock providers by implementing the `EmailProvider` interface.
+- React Email templates are optional; without `@react-email/render` installed, the service returns a placeholder HTML string and logs a warning.
+
+## Notes
+- This module is server-only; do not import in client components.
+- Logging is currently console-based; can be extended to persist to `email_logs`.
 # 📧 EMAIL DOMAIN
 
 Central email service module for the SaaS platform.
