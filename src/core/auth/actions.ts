@@ -3,7 +3,6 @@
 import { createClient } from "@/core/database/server";
 import { createAdminClient } from "@/core/database/admin-client";
 import type { Database } from "@/core/database";
-import { getUser } from "@/core/database";
 
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
 type TenantInsert = Database["public"]["Tables"]["tenants"]["Insert"];
@@ -60,10 +59,12 @@ export async function signUp(data: SignUpData) {
       console.warn("Function error detected, trying alternative query method...");
       // Try querying all tenants and filtering in code (admin client should bypass RLS)
       try {
-        const { data: allTenants, error: altError } = await adminClient
+        const tenantsResult: { data: { domain: string; id: string }[] | null; error: any } = await adminClient
           .from("tenants")
           .select("*");
         
+        const allTenants = tenantsResult.data;
+        const altError = tenantsResult.error;
         if (!altError && allTenants) {
           existingTenant = allTenants.find(t => t.domain === data.tenantDomain) || null;
           checkError = null;
@@ -77,8 +78,8 @@ export async function signUp(data: SignUpData) {
 
     if (existingTenant) {
       // Tenant exists, use it
-      tenant = existingTenant;
-      console.log("Using existing tenant:", tenant.id);
+      tenant = existingTenant as any;
+      console.log("Using existing tenant:", (tenant as any).id);
     } else {
       // Create new tenant
       const tenantData: TenantInsert = {
@@ -89,11 +90,13 @@ export async function signUp(data: SignUpData) {
         status: "pending",
       };
 
-      const { data: newTenant, error: tenantError } = await adminClient
-        .from("tenants")
-        .insert(tenantData)
+      const tenantInsertResult: { data: any | null; error: any } = await ((adminClient
+        .from("tenants") as any)
+        .insert(tenantData as any)
         .select()
-        .single();
+        .single());
+      const newTenant = tenantInsertResult.data;
+      const tenantError = tenantInsertResult.error;
 
       if (tenantError || !newTenant) {
         // Handle unique constraint violation (domain already exists)
@@ -119,14 +122,14 @@ export async function signUp(data: SignUpData) {
       }
     }
 
-    // 2. Sign up user with Supabase Auth using admin client
+      // 2. Sign up user with Supabase Auth using admin client
     const { data: authData, error: authError } = await adminClient.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
         data: {
           full_name: data.fullName,
-          tenant_id: tenant.id,
+          tenant_id: (tenant as any).id,
         },
       },
     });
@@ -136,7 +139,7 @@ export async function signUp(data: SignUpData) {
       // Don't delete existing tenants!
       if (isNewTenant) {
         try {
-          await adminClient.from("tenants").delete().eq("id", tenant.id);
+          await adminClient.from("tenants").delete().eq("id", (tenant as any).id);
         } catch (cleanupError) {
           console.error("Failed to cleanup tenant:", cleanupError);
         }
@@ -157,11 +160,12 @@ export async function signUp(data: SignUpData) {
 
     // 3. Create user record in users table using admin client
     // Get default "Organization Admin" role
-    const { data: defaultRole } = await adminClient
+    const roleResult: { data: { id: string } | null; error: any } = await adminClient
       .from("roles")
       .select("id")
       .eq("name", "Organization Admin")
       .single();
+    const defaultRole = roleResult.data;
 
     // Platform Admins should have tenant_id = NULL
     // Regular users belong to their tenant
@@ -169,7 +173,7 @@ export async function signUp(data: SignUpData) {
       id: authData.user.id,
       email: data.email,
       full_name: data.fullName,
-      tenant_id: tenant.id,  // Regular users belong to tenant
+      tenant_id: (tenant as any).id,  // Regular users belong to tenant
       role_id: defaultRole?.id || null,
       plan: data.plan || "starter",
       status: "active",
@@ -178,18 +182,20 @@ export async function signUp(data: SignUpData) {
     // Note: If creating a Platform Admin during signup, you would set tenant_id = null
     // But signup typically creates Organization Admins, not Platform Admins
 
-    const { data: user, error: userError } = await adminClient
-      .from("users")
-      .insert(userData)
+    const userInsertResult: { data: any | null; error: any } = await ((adminClient
+      .from("users") as any)
+      .insert(userData as any)
       .select()
-      .single();
+      .single());
+    const user = userInsertResult.data;
+    const userError = userInsertResult.error;
 
     if (userError || !user) {
       // If user creation fails, clean up ONLY if we created a new tenant
       // Don't delete existing tenants!
       if (isNewTenant) {
         try {
-          await adminClient.from("tenants").delete().eq("id", tenant.id);
+          await adminClient.from("tenants").delete().eq("id", (tenant as any).id);
         } catch (cleanupError) {
           console.error("Failed to cleanup tenant:", cleanupError);
         }
@@ -251,7 +257,7 @@ export async function signIn(data: SignInData) {
   console.log("[signIn] Auth successful, user ID:", authData.user.id);
 
   // Get user with tenant context using admin client
-  const { data: user, error: userError } = await adminClient
+  const userResult: { data: { id: string; email: string; role_id: string | null; tenant_id: string | null; roles: { name: string } | null } | null; error: any } = await adminClient
     .from("users")
     .select(`
       *,
@@ -271,9 +277,10 @@ export async function signIn(data: SignInData) {
     .eq("id", authData.user.id)
     .single();
 
-  if (userError || !user) {
-    console.error("[signIn] Error fetching user:", userError);
-    throw userError || new Error("Failed to fetch user");
+  const user = userResult.data;
+  if (userResult.error || !user) {
+    console.error("[signIn] Error fetching user:", userResult.error);
+    throw userResult.error || new Error("Failed to fetch user");
   }
 
   console.log("[signIn] User fetched successfully:");
@@ -284,10 +291,10 @@ export async function signIn(data: SignInData) {
   console.log("[signIn]   - Tenant ID:", user.tenant_id);
 
   // Update last active timestamp
-  await adminClient
-    .from("users")
-    .update({ last_active_at: new Date().toISOString() })
-    .eq("id", authData.user.id);
+  await ((adminClient
+    .from("users") as any)
+    .update({ last_active_at: new Date().toISOString() } as any)
+    .eq("id", authData.user.id));
 
   // Verify the role is Platform Admin
   const roleName = (user.roles as any)?.name;

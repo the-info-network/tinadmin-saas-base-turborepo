@@ -56,12 +56,13 @@ export default function UpgradeToProPage() {
         return;
       }
 
-      const { data: userData } = await supabase
+      const userResult: { data: { tenant_id: string | null } | null; error: any } = await supabase
         .from("users")
         .select("tenant_id")
         .eq("id", user.id)
         .single();
 
+      const userData = userResult.data;
       if (!userData?.tenant_id) {
         alert("Unable to determine tenant. Please try again.");
         return;
@@ -97,16 +98,16 @@ export default function UpgradeToProPage() {
       }
 
       // Create checkout session
-      const result = await createCheckoutSession({
+      const checkoutResult = await createCheckoutSession({
         priceId: price.id,
         successUrl: `${window.location.origin}/saas/billing/dashboard?success=true`,
         cancelUrl: `${window.location.origin}/saas/billing/upgrade-to-pro?canceled=true`
       });
 
-      if (result.success && result.url) {
-        window.location.href = result.url;
+      if (checkoutResult.success && checkoutResult.url) {
+        window.location.href = checkoutResult.url;
       } else {
-        alert(result.error || "Failed to start checkout. Please try again.");
+        alert(checkoutResult.error || "Failed to start checkout. Please try again.");
       }
     } catch (error) {
       console.error("Error upgrading:", error);
