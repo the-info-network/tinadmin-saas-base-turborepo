@@ -54,14 +54,18 @@ export { createClient as createBrowserClient } from './client';
 
 /**
  * Tenant-aware Supabase client
- * Automatically applies tenant context
+ * ⚠️ SERVER-ONLY: Import directly from './tenant-client' in server-side code:
+ *   import { createTenantAwareClient, createTenantAwareServerClient, createTenantAwareAdminClient, TenantAwareClient } from '@/core/database/tenant-client';
+ *
+ * Use this ONLY in server-side code:
+ * - Server Components
+ * - Server Actions
+ * - API Routes
+ * - Middleware
+ *
+ * NEVER expose to the client!
  */
-export {
-  createTenantAwareClient,
-  createTenantAwareServerClient,
-  createTenantAwareAdminClient,
-  TenantAwareClient
-} from './tenant-client';
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // USER MANAGEMENT
