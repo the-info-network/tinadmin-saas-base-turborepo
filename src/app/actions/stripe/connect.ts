@@ -105,7 +105,7 @@ export async function createConnectAccountLink(
     const adminClient = createAdminClient();
 
     // Get connect account
-    let { data: connectAccount } = await adminClient
+    const { data: connectAccount } = await adminClient
       .from("stripe_connect_accounts")
       .select("stripe_account_id")
       .eq("tenant_id", tenantId)

@@ -4,7 +4,6 @@ import { stripe } from "@/core/billing/config";
 import { createAdminClient } from "@/core/database/admin-client";
 import { getCurrentTenant } from "@/core/multi-tenancy";
 import { requirePermission } from "@/core/permissions/middleware";
-import type Stripe from "stripe";
 
 /**
  * Record usage for a metered subscription
@@ -14,7 +13,7 @@ export async function recordUsage(params: {
   quantity: number;
   timestamp?: number;
   action?: "increment" | "set";
-}): Promise<{ success: boolean; usageRecord?: any; error?: string }> {
+}): Promise<{ success: boolean; usageRecord?: Record<string, unknown>; error?: string }> {
   try {
     await requirePermission("billing.write");
 
@@ -51,7 +50,7 @@ export async function getUsageRecords(
   limit: number = 100
 ): Promise<{
   success: boolean;
-  usageRecords?: any[];
+  usageRecords?: Record<string, unknown>[];
   error?: string;
 }> {
   try {
@@ -68,7 +67,7 @@ export async function getUsageRecords(
       { limit }
     );
 
-    return { success: true, usageRecords: usageRecords.data as any };
+    return { success: true, usageRecords: usageRecords.data as Record<string, unknown>[] };
   } catch (error) {
     console.error("Error fetching usage records:", error);
     return {

@@ -10,7 +10,7 @@ import { requirePermission } from "@/core/permissions/middleware";
  */
 export async function getPaymentMethods(): Promise<{
   success: boolean;
-  paymentMethods?: any[];
+  paymentMethods?: Record<string, unknown>[];
   error?: string;
 }> {
   try {
@@ -261,7 +261,7 @@ export async function attachPaymentMethod(
         card_exp_month: paymentMethod.card?.exp_month,
         card_exp_year: paymentMethod.card?.exp_year,
         is_default: makeDefault,
-        billing_details: paymentMethod.billing_details as any,
+        billing_details: paymentMethod.billing_details as Record<string, unknown>,
       });
 
     if (insertError) {

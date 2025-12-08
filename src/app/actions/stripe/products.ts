@@ -64,7 +64,7 @@ export async function syncProducts(): Promise<{
               type: price.type,
               interval: price.recurring?.interval || null,
               interval_count: price.recurring?.interval_count || null,
-              metadata: price.metadata as any,
+              metadata: price.metadata as Record<string, unknown>,
             },
             {
               onConflict: 'stripe_price_id',
