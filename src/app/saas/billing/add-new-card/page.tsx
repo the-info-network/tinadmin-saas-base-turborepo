@@ -21,14 +21,15 @@ function AddPaymentMethodForm({ router }: { router: ReturnType<typeof useRouter>
       const supabase = createBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: userData } = await supabase
-          .from("users")
-          .select("tenant_id")
-          .eq("id", user.id)
-          .single();
-        if (userData?.tenant_id) {
-          setTenantId(userData.tenant_id);
-        }
+      const result: { data: { tenant_id: string | null } | null; error: any } = await supabase
+        .from("users")
+        .select("tenant_id")
+        .eq("id", user.id)
+        .single();
+      const userData = result.data;
+      if (userData?.tenant_id) {
+        setTenantId(userData.tenant_id);
+      }
       }
     }
     getTenantId();
@@ -113,12 +114,13 @@ export default function AddNewCardPage() {
           return;
         }
 
-        const { data: userData } = await supabase
+        const userResult: { data: { tenant_id: string | null } | null; error: any } = await supabase
           .from("users")
           .select("tenant_id")
           .eq("id", user.id)
           .single();
 
+        const userData = userResult.data;
         if (!userData?.tenant_id) {
           console.error("User has no tenant");
           return;
@@ -127,9 +129,9 @@ export default function AddNewCardPage() {
         setTenantId(userData.tenant_id);
 
         // Create setup intent
-        const result = await createSetupIntent();
-        if (result.success && result.clientSecret) {
-          setClientSecret(result.clientSecret);
+        const setupResult = await createSetupIntent();
+        if (setupResult.success && setupResult.clientSecret) {
+          setClientSecret(setupResult.clientSecret);
         }
       } catch (error) {
         console.error("Error setting up payment form:", error);

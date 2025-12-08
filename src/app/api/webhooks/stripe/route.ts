@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   const adminClient = createAdminClient();
 
   // Log the webhook event
-  await adminClient.from("stripe_webhook_events").insert({
+  await (adminClient.from("stripe_webhook_events") as any).insert({
     stripe_event_id: event.id,
     event_type: event.type,
     livemode: event.livemode,
@@ -77,25 +77,25 @@ export async function POST(req: NextRequest) {
     }
 
     // Mark event as processed
-    await adminClient
-      .from("stripe_webhook_events")
+    await ((adminClient
+      .from("stripe_webhook_events") as any)
       .update({
         processed: true,
         processed_at: new Date().toISOString(),
-      })
-      .eq("stripe_event_id", event.id);
+      } as any)
+      .eq("stripe_event_id", event.id));
 
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error(`Error processing webhook event ${event.type}:`, error);
 
     // Log error
-    await adminClient
-      .from("stripe_webhook_events")
+    await ((adminClient
+      .from("stripe_webhook_events") as any)
       .update({
         error_message: error instanceof Error ? error.message : "Unknown error",
-      })
-      .eq("stripe_event_id", event.id);
+      } as any)
+      .eq("stripe_event_id", event.id));
 
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Webhook processing failed" },
@@ -113,8 +113,8 @@ async function handleCustomerEvent(customer: Stripe.Customer) {
     return;
   }
 
-  await adminClient
-    .from("stripe_customers")
+  await ((adminClient
+    .from("stripe_customers") as any)
     .upsert(
       {
         tenant_id: tenantId,
@@ -124,11 +124,11 @@ async function handleCustomerEvent(customer: Stripe.Customer) {
         phone: customer.phone || null,
         address: customer.address as any,
         metadata: customer.metadata as any,
-      },
+      } as any,
       {
         onConflict: "stripe_customer_id",
       }
-    );
+    ));
 }
 
 async function handleSubscriptionEvent(subscription: Stripe.Subscription) {
@@ -143,8 +143,8 @@ async function handleSubscriptionEvent(subscription: Stripe.Subscription) {
   const price = subscription.items.data[0]?.price;
   const product = typeof price?.product === "string" ? price.product : price?.product?.id;
 
-  await adminClient
-    .from("stripe_subscriptions")
+  await ((adminClient
+    .from("stripe_subscriptions") as any)
     .upsert(
       {
         tenant_id: tenantId,
@@ -173,9 +173,9 @@ async function handleSubscriptionEvent(subscription: Stripe.Subscription) {
         billing_cycle: price?.recurring?.interval || null,
         currency: price?.currency || "usd",
         metadata: subscription.metadata as any,
-      },
+      } as any,
       { onConflict: 'stripe_subscription_id' }
-    );
+    ));
 }
 
 async function handleInvoiceEvent(invoice: Stripe.Invoice) {
@@ -187,8 +187,8 @@ async function handleInvoiceEvent(invoice: Stripe.Invoice) {
     return;
   }
 
-  await adminClient
-    .from("stripe_invoices")
+  await ((adminClient
+    .from("stripe_invoices") as any)
     .upsert(
       {
         tenant_id: tenantId,
@@ -214,11 +214,11 @@ async function handleInvoiceEvent(invoice: Stripe.Invoice) {
         invoice_hosted_url: invoice.hosted_invoice_url || null,
         line_items: invoice.lines?.data as any,
         metadata: invoice.metadata as any,
-      },
+      } as any,
       {
         onConflict: "stripe_invoice_id",
       }
-    );
+    ));
 }
 
 async function handlePaymentMethodEvent(
@@ -247,19 +247,20 @@ async function handlePaymentMethodEvent(
     return;
   }
 
-  const { data: customer } = await adminClient
+  const result: { data: { tenant_id: string } | null; error: any } = await adminClient
     .from("stripe_customers")
     .select("tenant_id")
     .eq("stripe_customer_id", customerId)
     .single();
 
+  const customer = result.data;
   if (!customer) {
     console.warn("Customer not found in database:", customerId);
     return;
   }
 
-  await adminClient
-    .from("stripe_payment_methods")
+  await ((adminClient
+    .from("stripe_payment_methods") as any)
     .upsert(
       {
         tenant_id: customer.tenant_id,
@@ -272,9 +273,9 @@ async function handlePaymentMethodEvent(
         card_exp_year: paymentMethod.card?.exp_year || null,
         billing_details: paymentMethod.billing_details as any,
         metadata: paymentMethod.metadata as any,
-      },
+      } as any,
       { onConflict: 'stripe_payment_method_id' }
-    );
+    ));
 }
 
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
