@@ -67,7 +67,8 @@ export async function syncProducts(): Promise<{
               metadata: price.metadata as any,
             },
             {
-              onConflict: "stripe_price_id",
+              onConflict: 'stripe_price_id',
+              ignoreDuplicates: false,
             }
           );
       }

@@ -14,7 +14,7 @@ export async function recordUsage(params: {
   quantity: number;
   timestamp?: number;
   action?: "increment" | "set";
-}): Promise<{ success: boolean; usageRecord?: Stripe.UsageRecord; error?: string }> {
+}): Promise<{ success: boolean; usageRecord?: any; error?: string }> {
   try {
     await requirePermission("billing.write");
 
@@ -51,7 +51,7 @@ export async function getUsageRecords(
   limit: number = 100
 ): Promise<{
   success: boolean;
-  usageRecords?: Stripe.UsageRecord[];
+  usageRecords?: any[];
   error?: string;
 }> {
   try {
@@ -65,9 +65,7 @@ export async function getUsageRecords(
     // Fetch usage records from Stripe
     const usageRecords = await stripe.subscriptionItems.listUsageRecordSummaries(
       subscriptionItemId,
-      {
-        limit,
-      }
+      { limit }
     );
 
     return { success: true, usageRecords: usageRecords.data as any };
@@ -194,16 +192,17 @@ export async function getCurrentUsage(): Promise<{
       stripeSubscription.items.data
         .filter((item) => item.price.recurring?.usage_type === "metered")
         .map(async (item) => {
-          const summaries = await stripe.subscriptionItems.listUsageRecordSummaries(item.id, {
-            limit: 1,
-          });
+          const summaries = await stripe.subscriptionItems.listUsageRecordSummaries(
+            item.id,
+            { limit: 1 }
+          );
 
           return {
             subscriptionItemId: item.id,
             totalUsage: summaries.data[0]?.total_usage || 0,
             period: {
-              start: stripeSubscription.current_period_start,
-              end: stripeSubscription.current_period_end,
+              start: (stripeSubscription as any).current_period_start,
+              end: (stripeSubscription as any).current_period_end,
             },
           };
         })

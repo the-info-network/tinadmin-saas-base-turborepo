@@ -238,9 +238,15 @@ export async function attachPaymentMethod(
     }
 
     // Attach the payment method to the customer
-    const paymentMethod = await stripe.paymentMethods.attach(paymentMethodId, {
-      customer: customer.stripe_customer_id,
-    });
+    await stripe.paymentMethods.attach(
+      paymentMethodId,
+      {
+        customer: customer.stripe_customer_id,
+      }
+    );
+
+    // Get the payment method details
+    const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
 
     // Save to database
     const { error: insertError } = await adminClient

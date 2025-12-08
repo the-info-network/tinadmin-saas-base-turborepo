@@ -40,11 +40,21 @@ export async function createOrRetrieveCustomer(tenantId: string): Promise<{
     }
 
     // Get primary user for tenant (for email)
+    const { data: roleData } = await adminClient
+      .from("roles")
+      .select("id")
+      .eq("name", "Organization Admin")
+      .single();
+
+    if (!roleData?.id) {
+      return { success: false, error: "Organization Admin role not found" };
+    }
+
     const { data: primaryUser } = await adminClient
       .from("users")
       .select("email, full_name")
       .eq("tenant_id", tenantId)
-      .eq("role_id", (await adminClient.from("roles").select("id").eq("name", "Organization Admin").single()).data?.id)
+      .eq("role_id", roleData.id)
       .limit(1)
       .single();
 

@@ -105,24 +105,28 @@ export async function createConnectAccountLink(
     const adminClient = createAdminClient();
 
     // Get connect account
-    const { data: connectAccount } = await adminClient
+    let { data: connectAccount } = await adminClient
       .from("stripe_connect_accounts")
       .select("stripe_account_id")
       .eq("tenant_id", tenantId)
       .single();
 
-    if (!connectAccount) {
+    let stripeAccountId: string;
+
+    if (!connectAccount || !connectAccount.stripe_account_id) {
       // Create account first
       const createResult = await createConnectAccount(tenantId);
       if (!createResult.success || !createResult.accountId) {
         return { success: false, error: "Failed to create connect account" };
       }
-      connectAccount.stripe_account_id = createResult.accountId;
+      stripeAccountId = createResult.accountId;
+    } else {
+      stripeAccountId = connectAccount.stripe_account_id;
     }
 
     // Create account link
     const accountLink = await stripe.accountLinks.create({
-      account: connectAccount.stripe_account_id,
+      account: stripeAccountId,
       refresh_url: refreshUrl,
       return_url: returnUrl,
       type: "account_onboarding",

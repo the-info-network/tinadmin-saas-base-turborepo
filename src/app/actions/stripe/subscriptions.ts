@@ -333,9 +333,11 @@ export async function getUpcomingInvoice(): Promise<{
     }
 
     // Get upcoming invoice
-    const invoice = await stripe.invoices.retrieveUpcoming({
+    const invoice = await stripe.invoices.list({
       customer: customer.stripe_customer_id,
-    });
+      limit: 1,
+      status: 'draft',
+    }).then(result => result.data[0]);
 
     return { success: true, invoice };
   } catch (error) {
