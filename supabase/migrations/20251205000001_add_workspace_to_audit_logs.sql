@@ -30,3 +30,4 @@ COMMENT ON COLUMN audit_logs.workspace_id IS
   'Optional workspace_id for workspace-scoped audit logs. NULL indicates tenant-level action.';
 
 
+

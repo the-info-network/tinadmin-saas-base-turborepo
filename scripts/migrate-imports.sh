@@ -287,3 +287,4 @@ echo "  4. Commit the changes: git add . && git commit -m 'Migrate to core domai
 echo ""
 
 
+

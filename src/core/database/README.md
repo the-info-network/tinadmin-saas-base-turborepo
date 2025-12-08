@@ -431,3 +431,4 @@ supabase migration new my_migration_name
 - [TypeScript Type Generation](https://supabase.com/docs/guides/api/generating-types)
 
 
+

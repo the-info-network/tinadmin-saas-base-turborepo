@@ -29,3 +29,4 @@ These files can be safely deleted after:
 ## Migration Guide
 
 See `docs/CORE_REORGANIZATION_SUMMARY.md` for details on the new structure.
+

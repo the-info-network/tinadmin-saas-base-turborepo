@@ -76,3 +76,4 @@ COMMENT ON TABLE audit_logs IS
   'Stores audit trail of all permission checks and access attempts for compliance and security';
 
 
+
