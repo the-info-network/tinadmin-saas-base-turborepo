@@ -22,12 +22,13 @@ export async function createConnectAccount(
     const adminClient = createAdminClient();
 
     // Check if account already exists
-    const { data: existingAccount } = await adminClient
+    const accountResult: { data: { stripe_account_id: string } | null; error: any } = await adminClient
       .from("stripe_connect_accounts")
       .select("stripe_account_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const existingAccount = accountResult.data;
     if (existingAccount) {
       return {
         success: true,
@@ -36,12 +37,13 @@ export async function createConnectAccount(
     }
 
     // Get tenant details
-    const { data: tenant } = await adminClient
+    const tenantResult: { data: { name: string } | null; error: any } = await adminClient
       .from("tenants")
       .select("name")
       .eq("id", tenantId)
       .single();
 
+    const tenant = tenantResult.data;
     if (!tenant) {
       return { success: false, error: "Tenant not found" };
     }
@@ -67,6 +69,7 @@ export async function createConnectAccount(
     const account = await stripe.accounts.create(accountParams);
 
     // Save to database
+    // @ts-expect-error - Supabase type inference issue with Database types
     await adminClient.from("stripe_connect_accounts").insert({
       tenant_id: tenantId,
       stripe_account_id: account.id,
@@ -105,12 +108,13 @@ export async function createConnectAccountLink(
     const adminClient = createAdminClient();
 
     // Get connect account
-    const { data: connectAccount } = await adminClient
+    const accountResult1: { data: { stripe_account_id: string } | null; error: any } = await adminClient
       .from("stripe_connect_accounts")
       .select("stripe_account_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const connectAccount = accountResult1.data;
     let stripeAccountId: string;
 
     if (!connectAccount || !connectAccount.stripe_account_id) {
@@ -156,12 +160,13 @@ export async function createConnectLoginLink(tenantId: string): Promise<{
     const adminClient = createAdminClient();
 
     // Get connect account
-    const { data: connectAccount } = await adminClient
+    const accountResult2: { data: { stripe_account_id: string } | null; error: any } = await adminClient
       .from("stripe_connect_accounts")
       .select("stripe_account_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const connectAccount = accountResult2.data;
     if (!connectAccount) {
       return { success: false, error: "Connect account not found" };
     }
@@ -191,11 +196,14 @@ export async function getConnectAccount(tenantId: string): Promise<{
     const adminClient = createAdminClient();
 
     // Get connect account from database
-    const { data: connectAccount, error } = await adminClient
+    const accountResult3: { data: any | null; error: any } = await adminClient
       .from("stripe_connect_accounts")
       .select("*")
       .eq("tenant_id", tenantId)
       .single();
+
+    const connectAccount = accountResult3.data;
+    const error = accountResult3.error;
 
     if (error || !connectAccount) {
       return { success: false, error: "Connect account not found" };
@@ -207,7 +215,7 @@ export async function getConnectAccount(tenantId: string): Promise<{
     return {
       success: true,
       account: {
-        ...connectAccount,
+        ...(connectAccount as Record<string, unknown>),
         stripe_details: stripeAccount,
       },
     };
@@ -253,6 +261,7 @@ export async function updateConnectAccount(
 
     await adminClient
       .from("stripe_connect_accounts")
+      // @ts-expect-error - Supabase type inference issue with Database types
       .update(updateData)
       .eq("stripe_account_id", accountId);
 
@@ -279,23 +288,25 @@ export async function createConnectedPayment(
     const adminClient = createAdminClient();
 
     // Get connect account
-    const { data: connectAccount } = await adminClient
+    const accountResult4: { data: { stripe_account_id: string } | null; error: any } = await adminClient
       .from("stripe_connect_accounts")
       .select("stripe_account_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const connectAccount = accountResult4.data;
     if (!connectAccount) {
       return { success: false, error: "Connect account not found" };
     }
 
     // Get customer
-    const { data: customer } = await adminClient
+    const customerResult: { data: { stripe_customer_id: string } | null; error: any } = await adminClient
       .from("stripe_customers")
       .select("stripe_customer_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const customer = customerResult.data;
     if (!customer) {
       return { success: false, error: "Customer not found" };
     }
@@ -342,12 +353,13 @@ export async function createPayout(
     const adminClient = createAdminClient();
 
     // Get connect account
-    const { data: connectAccount } = await adminClient
+    const accountResultPayout: { data: { stripe_account_id: string } | null; error: any } = await adminClient
       .from("stripe_connect_accounts")
       .select("stripe_account_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const connectAccount = accountResultPayout.data;
     if (!connectAccount) {
       return { success: false, error: "Connect account not found" };
     }
@@ -388,12 +400,13 @@ export async function getConnectAccountBalance(tenantId: string): Promise<{
     const adminClient = createAdminClient();
 
     // Get connect account
-    const { data: connectAccount } = await adminClient
+    const accountResult6: { data: { stripe_account_id: string } | null; error: any } = await adminClient
       .from("stripe_connect_accounts")
       .select("stripe_account_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const connectAccount = accountResult6.data;
     if (!connectAccount) {
       return { success: false, error: "Connect account not found" };
     }
