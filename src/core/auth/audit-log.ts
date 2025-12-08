@@ -4,7 +4,8 @@
  * Logs all permission checks and access attempts for compliance and security
  */
 
-import { createAdminClient, type Database } from "@/core/database";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 
 type AuditLogInsert = Database["public"]["Tables"]["audit_logs"]["Insert"];
 

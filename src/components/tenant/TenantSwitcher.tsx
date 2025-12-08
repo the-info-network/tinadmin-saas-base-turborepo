@@ -8,7 +8,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { createBrowserClient } from "@/core/database";
+import { createClient as createBrowserClient } from "@/core/database/client";
 import { useTenant } from "@/core/multi-tenancy";
 import { getAllTenants } from "@/app/actions/tenants";
 import { isPlatformAdmin } from "@/app/actions/organization-admins";
@@ -19,7 +19,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import type { Database } from "@/core/database";
+import type { Database } from "@/core/database/types";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
 

@@ -1,6 +1,8 @@
 "use server";
 
-import { createAdminClient, createClient, type Database } from "@/core/database";
+import { createClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 import { getUser } from "@/core/database";
 
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];

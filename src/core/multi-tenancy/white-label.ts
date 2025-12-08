@@ -1,7 +1,9 @@
 "use server";
 
-import { requirePermission } from "@/core/permissions";
-import { createClient, createAdminClient, type Database } from "@/core/database";
+import { requirePermission } from "@/core/permissions/middleware";
+import { createClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 import { getCurrentUserTenantId } from "./validation";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"];

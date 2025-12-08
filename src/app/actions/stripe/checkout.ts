@@ -1,8 +1,8 @@
 "use server";
 
 import { stripe, formatAmountForStripe } from "@/core/billing/config";
-import { createAdminClient } from "@/core/database";
-import { createClient } from "@/core/database";
+import { createAdminClient } from "@/core/database/admin-client";
+import { createClient } from "@/core/database/server";
 import { getCurrentTenant } from "@/core/multi-tenancy";
 
 /**

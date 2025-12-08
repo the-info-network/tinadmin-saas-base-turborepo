@@ -1,6 +1,8 @@
 "use server";
 
-import { createClient, createAdminClient, type Database } from "@/core/database";
+import { createClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 
 type User = Database["public"]["Tables"]["users"]["Row"] & {
   roles?: { name: string } | null;

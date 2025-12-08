@@ -19,13 +19,7 @@ export type {
 // ============================================================================
 // TENANT CONTEXT
 // ============================================================================
-export {
-  getTenantContext,
-  setTenantContext,
-  clearTenantContext,
-} from './context';
-
-// For React components
+// React hooks and providers
 export {
   TenantProvider,
   useTenant,
@@ -38,77 +32,44 @@ export {
 } from './workspace-context';
 
 // ============================================================================
-// TENANT RESOLUTION (Server-side)
+// TENANT RESOLUTION (Server-side - Import directly from files when needed)
 // ============================================================================
-export {
-  resolveTenantFromRequest,
-  resolveTenantFromSubdomain,
-  resolveTenantFromHeader,
-  resolveTenantFromPath,
-} from './resolver';
+// These are server-side functions - import directly from resolver.ts when needed
 
 // ============================================================================
-// TENANT VALIDATION
+// TENANT VALIDATION (Server-side - Import directly from files when needed)
 // ============================================================================
-export {
-  validateTenantAccess,
-  validateTenantStatus,
-} from './validation';
+// These are server-side functions - import directly from validation.ts when needed
 
 // ============================================================================
-// SUBDOMAIN ROUTING
+// SUBDOMAIN ROUTING (Client-safe utilities - Import directly when needed)
 // ============================================================================
-export {
-  getSubdomainFromRequest,
-  getTenantDomain,
-  isTenantSubdomain,
-} from './subdomain-routing';
+// These are imported directly in middleware and server-side code
 
 // ============================================================================
-// DATABASE QUERIES (Tenant-Aware)
+// DATABASE QUERIES (Tenant-Aware - Import directly when needed)
 // ============================================================================
-export {
-  createTenantQuery,
-  applyTenantFilter,
-  getTenantAwareClient,
-} from './query-builder';
+// These are utility functions - import directly from query-builder.ts when needed
 
 // ============================================================================
-// SERVER UTILITIES
+// SERVER UTILITIES (Server-side - Import directly when needed)
 // ============================================================================
-export {
-  getCurrentTenantId,
-  getCurrentTenant,
-} from './server';
+// These are server-side functions - import directly from server.ts when needed
 
 // ============================================================================
-// ACTIONS (Server Actions)
+// ACTIONS (Server Actions - Import directly when needed)
 // ============================================================================
-export {
-  createTenantAction,
-  updateTenantAction,
-  deleteTenantAction,
-  getTenantAction,
-  listTenantsAction,
-} from './actions';
+// These are server actions - import directly from actions.ts when needed
 
 // ============================================================================
-// TENANT ROLES
+// TENANT ROLES (Server Actions - Import directly when needed)
 // ============================================================================
-export {
-  assignTenantRoleAction,
-  removeTenantRoleAction,
-} from './tenant-roles';
+// These are server actions - import directly from tenant-roles.ts when needed
 
 // ============================================================================
-// WORKSPACES
+// WORKSPACES (Server Actions - Import directly when needed)
 // ============================================================================
-export {
-  createWorkspaceAction,
-  getWorkspacesAction,
-  updateWorkspaceAction,
-  deleteWorkspaceAction,
-} from './workspaces';
+// These are server actions - import directly from workspaces.ts when needed
 
 // ============================================================================
 // WHITE-LABEL SETTINGS

@@ -8,8 +8,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { createBrowserClient } from "@/core/database";
-import { hasPermission, type Permission } from "@/core/permissions";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import { hasPermissionClient, type Permission } from "@/core/permissions";
 
 interface ProtectedRouteWithPermissionProps {
   permission: Permission;
@@ -37,7 +37,7 @@ export default function ProtectedRouteWithPermission({
       }
 
       try {
-        const access = await hasPermission(user.id, permission);
+        const access = await hasPermissionClient(user.id, permission);
         if (!access) {
           router.push(redirectTo);
           return;

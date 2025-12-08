@@ -1,9 +1,9 @@
 "use server";
 
-import { stripe } from "@/core/billing";
-import { createAdminClient } from "@/core/database";
+import { stripe } from "@/core/billing/config";
+import { createAdminClient } from "@/core/database/admin-client";
 import { getCurrentTenant } from "@/core/multi-tenancy";
-import { requirePermission } from "@/core/permissions";
+import { requirePermission } from "@/core/permissions/middleware";
 
 /**
  * Get all payment methods for the current tenant

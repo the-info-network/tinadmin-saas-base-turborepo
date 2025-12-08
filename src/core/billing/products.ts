@@ -1,7 +1,7 @@
 "use server";
 
 import { stripe } from "@/core/billing/config";
-import { createAdminClient } from "@/core/database";
+import { createAdminClient } from "@/core/database/admin-client";
 import type Stripe from "stripe";
 
 /**

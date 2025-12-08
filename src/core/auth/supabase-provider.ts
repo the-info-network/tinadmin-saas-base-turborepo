@@ -1,7 +1,8 @@
-import { createBrowserClient, createAdminClient } from "@/core/database";
-import { createUser, getUser } from "@/core/database";
-import { createTenant } from "@/core/database";
-import type { Database } from "@/core/database";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import { createAdminClient } from "@/core/database/admin-client";
+import { createUser, getUser } from "@/core/database/users";
+import { createTenant } from "@/core/database/tenants";
+import type { Database } from "@/core/database/types";
 
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
 type TenantInsert = Database["public"]["Tables"]["tenants"]["Insert"];

@@ -4,7 +4,9 @@
  * Resolves tenant from various sources: subdomain, URL params, session, headers
  */
 
-import { createClient as createServerClient, createAdminClient, type Database } from "@/core/database";
+import { createClient as createServerClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 import { extractTenantFromSubdomain, extractTenantIdFromRequest } from "./query-builder";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"];

@@ -1,8 +1,9 @@
 -- Stripe Integration Tables
 -- This migration creates tables for managing Stripe customers, subscriptions, and payments
 
--- Stripe Customers Table
-CREATE TABLE IF NOT EXISTS stripe_customers (
+-- Stripe Customers Table (drop and recreate to fix schema)
+DROP TABLE IF EXISTS stripe_customers CASCADE;
+CREATE TABLE stripe_customers (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   user_id UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -17,8 +18,9 @@ CREATE TABLE IF NOT EXISTS stripe_customers (
   UNIQUE(tenant_id, stripe_customer_id)
 );
 
--- Stripe Subscriptions Table
-CREATE TABLE IF NOT EXISTS stripe_subscriptions (
+-- Stripe Subscriptions Table (drop and recreate to fix schema)
+DROP TABLE IF EXISTS stripe_subscriptions CASCADE;
+CREATE TABLE stripe_subscriptions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   stripe_customer_id TEXT NOT NULL REFERENCES stripe_customers(stripe_customer_id) ON DELETE CASCADE,
@@ -41,8 +43,9 @@ CREATE TABLE IF NOT EXISTS stripe_subscriptions (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Stripe Payment Methods Table
-CREATE TABLE IF NOT EXISTS stripe_payment_methods (
+-- Stripe Payment Methods Table (drop and recreate to fix schema)
+DROP TABLE IF EXISTS stripe_payment_methods CASCADE;
+CREATE TABLE stripe_payment_methods (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   stripe_customer_id TEXT NOT NULL REFERENCES stripe_customers(stripe_customer_id) ON DELETE CASCADE,
@@ -59,8 +62,9 @@ CREATE TABLE IF NOT EXISTS stripe_payment_methods (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Stripe Invoices Table
-CREATE TABLE IF NOT EXISTS stripe_invoices (
+-- Stripe Invoices Table (drop and recreate to fix schema)
+DROP TABLE IF EXISTS stripe_invoices CASCADE;
+CREATE TABLE stripe_invoices (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   stripe_customer_id TEXT NOT NULL REFERENCES stripe_customers(stripe_customer_id) ON DELETE CASCADE,
@@ -84,8 +88,9 @@ CREATE TABLE IF NOT EXISTS stripe_invoices (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Stripe Payment Intents Table (for one-time payments)
-CREATE TABLE IF NOT EXISTS stripe_payment_intents (
+-- Stripe Payment Intents Table (drop and recreate to fix schema)
+DROP TABLE IF EXISTS stripe_payment_intents CASCADE;
+CREATE TABLE stripe_payment_intents (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   stripe_customer_id TEXT REFERENCES stripe_customers(stripe_customer_id) ON DELETE SET NULL,
@@ -99,8 +104,9 @@ CREATE TABLE IF NOT EXISTS stripe_payment_intents (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Stripe Webhook Events Table (for tracking webhook deliveries)
-CREATE TABLE IF NOT EXISTS stripe_webhook_events (
+-- Stripe Webhook Events Table (drop and recreate to fix schema)
+DROP TABLE IF EXISTS stripe_webhook_events CASCADE;
+CREATE TABLE stripe_webhook_events (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   stripe_event_id TEXT NOT NULL UNIQUE,
   event_type TEXT NOT NULL,
@@ -112,8 +118,10 @@ CREATE TABLE IF NOT EXISTS stripe_webhook_events (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Stripe Products and Prices (for plan management)
-CREATE TABLE IF NOT EXISTS stripe_products (
+-- Stripe Products and Prices (drop and recreate to fix schema)
+DROP TABLE IF EXISTS stripe_products CASCADE;
+DROP TABLE IF EXISTS stripe_prices CASCADE;
+CREATE TABLE stripe_products (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   stripe_product_id TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,

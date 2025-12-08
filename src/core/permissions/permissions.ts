@@ -1,4 +1,7 @@
-import { createAdminClient, type Database } from "@/core/database";
+import "server-only";
+
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 import { getEffectiveRole } from "@/core/database";
 
 type Role = Database["public"]["Tables"]["roles"]["Row"];

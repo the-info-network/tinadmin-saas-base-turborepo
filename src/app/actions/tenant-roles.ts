@@ -1,6 +1,6 @@
 "use server";
 
-import { requirePermission } from "@/core/permissions";
+import { requirePermission } from "@/core/permissions/middleware";
 import { assignTenantRole, removeTenantRole, getUserTenantRoles } from "@/core/database";
 import type { Database } from "@/core/database";
 

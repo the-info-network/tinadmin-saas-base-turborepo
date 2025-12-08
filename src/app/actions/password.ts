@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/core/database";
+import { createClient } from "@/core/database/server";
 
 /**
  * Send password reset email (for forgot password)

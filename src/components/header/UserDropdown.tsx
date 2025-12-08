@@ -6,8 +6,8 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { signOut } from "@/app/actions/auth";
 import { getCurrentUser } from "@/app/actions/user";
-import { createBrowserClient } from "@/core/database";
-import type { Database } from "@/core/database";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import type { Database } from "@/core/database/types";
 
 type User = Database["public"]["Tables"]["users"]["Row"] & {
   roles?: { name: string } | null;

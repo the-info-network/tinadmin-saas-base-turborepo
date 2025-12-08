@@ -7,7 +7,7 @@ import Label from "@/components/form/Label";
 import Input from "@/components/form/input/InputField";
 import { assignTenantRoleAction, removeTenantRoleAction, getUserTenantRolesAction } from "@/app/actions/tenant-roles";
 import { getAllTenants } from "@/app/actions/tenants";
-import type { Database } from "@/core/database";
+import type { Database } from "@/core/database/types";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
 type UserTenantRole = Database["public"]["Tables"]["user_tenant_roles"]["Row"] & {

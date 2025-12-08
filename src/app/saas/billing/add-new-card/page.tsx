@@ -7,7 +7,7 @@ import { getStripe } from "@/core/billing/client";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createBrowserClient } from "@/core/database";
+import { createClient as createBrowserClient } from "@/core/database/client";
 
 function AddPaymentMethodForm({ router }: { router: ReturnType<typeof useRouter> }) {
   const stripe = useStripe();

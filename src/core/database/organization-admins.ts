@@ -1,7 +1,9 @@
 "use server";
 
-import { createAdminClient, createClient, type Database } from "@/core/database";
-import { requirePermission } from "@/core/permissions";
+import { createClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
+import { requirePermission } from "@/core/permissions/middleware";
 
 type OrganizationAdmin = Database["public"]["Tables"]["users"]["Row"] & {
   roles?: { 

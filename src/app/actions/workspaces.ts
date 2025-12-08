@@ -12,7 +12,7 @@ import {
   getUserWorkspaces,
   getWorkspaceMembers
 } from "@/core/database";
-import { requirePermission } from "@/core/permissions";
+import { requirePermission } from "@/core/permissions/middleware";
 import type { Database } from "@/core/database";
 
 type WorkspaceInsert = Database["public"]["Tables"]["workspaces"]["Insert"];

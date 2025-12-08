@@ -9,7 +9,7 @@ import { resolve } from "path";
 // Load .env.local file
 config({ path: resolve(process.cwd(), ".env.local") });
 
-import { createAdminClient } from "@/core/database";
+import { createAdminClient } from "../src/core/database/admin-client";
 
 async function createPlatformAdmin(email: string, password: string, fullName: string) {
   const adminClient = createAdminClient();

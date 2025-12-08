@@ -19,15 +19,15 @@ export type {
 // ============================================================================
 // PERMISSION CHECKING (Server-Side)
 // ============================================================================
-export {
-  getUserPermissions,
-  hasPermission,
-  hasAnyPermission,
-  hasAllPermissions,
-  requirePermission,
-  requireAnyPermission,
-  requireAllPermissions,
-} from './permissions';
+// ⚠️ SERVER-ONLY: Import directly from './permissions' in server-side code:
+//   import { getUserPermissions, hasPermission, hasAnyPermission, hasAllPermissions } from '@/core/permissions/permissions';
+// 
+// These functions use createAdminClient and should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// - Middleware
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // PERMISSION CHECKING (Client-Side)
@@ -44,35 +44,46 @@ export {
 // ============================================================================
 export {
   PermissionGate,
-  PermissionAnyGate,
-  PermissionAllGate,
-  RoleGate,
+  RequirePermission,
+  RequireAnyPermission,
+  RequireAllPermissions,
 } from './gates';
 
 // ============================================================================
-// MIDDLEWARE
+// MIDDLEWARE (Server-Side Permission Checks)
 // ============================================================================
-export {
-  requirePermission as requirePermissionMiddleware,
-  withPermission,
-  checkPermission,
-} from './middleware';
+// ⚠️ SERVER-ONLY: Import directly from './middleware' in server-side code:
+//   import { checkPermission, checkAnyPermission, checkAllPermissions, requirePermission, requireAnyPermission, requireAllPermissions } from '@/core/permissions/middleware';
+// 
+// These functions use createClient and should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// - Middleware
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // TENANT PERMISSIONS
 // ============================================================================
-export {
-  getTenantPermissions,
-  hasTenantPermission,
-  requireTenantPermission,
-} from './tenant-permissions';
+// ⚠️ SERVER-ONLY: Import directly from './tenant-permissions' in server-side code:
+//   import { getTenantPermissions, hasTenantPermission, getWorkspacePermissions, getPermissionSource, applyPermissionInheritance } from '@/core/permissions/tenant-permissions';
+// 
+// These functions use createAdminClient and should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// - Middleware
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // ACTIONS (Server Actions)
 // ============================================================================
 export {
-  checkUserPermissionAction,
-  getUserPermissionsAction,
+  getCurrentUserPermissions,
+  getCurrentUserTenantPermissions,
+  checkCurrentUserPermission,
+  checkCurrentUserTenantPermission,
+  getCurrentUserPermissionSource,
 } from './actions';
 
 // ============================================================================

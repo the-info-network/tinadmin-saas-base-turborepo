@@ -5,8 +5,8 @@
 
 "use client";
 
-import { createBrowserClient } from "@/core/database";
-import type { Database } from "@/core/database";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import type { Database } from "@/core/database/types";
 import type { Permission, UserPermissions } from "./permissions";
 
 /**

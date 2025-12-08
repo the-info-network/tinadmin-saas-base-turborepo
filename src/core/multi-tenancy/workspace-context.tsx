@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { createBrowserClient, type Database } from "@/core/database";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import type { Database } from "@/core/database/types";
 import { useTenant } from "@/core/multi-tenancy";
 
 type Workspace = Database["public"]["Tables"]["workspaces"]["Row"];

@@ -8,7 +8,7 @@ import Label from "../form/Label";
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
 import { getCurrentUser } from "@/app/actions/user";
-import type { Database } from "@/core/database";
+import type { Database } from "@/core/database/types";
 
 type User = Database["public"]["Tables"]["users"]["Row"] & {
   roles?: { name: string } | null;

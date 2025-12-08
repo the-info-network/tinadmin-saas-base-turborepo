@@ -2,7 +2,7 @@
  * Server-side tenant utilities
  */
 
-import { createClient } from "@/core/database";
+import { createClient } from "@/core/database/server";
 import { cookies, headers } from "next/headers";
 
 /**

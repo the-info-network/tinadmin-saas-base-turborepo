@@ -1,8 +1,8 @@
 "use server";
 
-import { stripe } from "@/core/billing";
-import { createAdminClient } from "@/core/database";
-import { requirePermission } from "@/core/permissions";
+import { stripe } from "@/core/billing/config";
+import { createAdminClient } from "@/core/database/admin-client";
+import { requirePermission } from "@/core/permissions/middleware";
 import type Stripe from "stripe";
 
 /**

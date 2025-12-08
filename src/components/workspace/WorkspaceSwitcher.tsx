@@ -18,7 +18,7 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import type { Database } from "@/core/database";
+import type { Database } from "@/core/database/types";
 
 type Workspace = Database["public"]["Tables"]["workspaces"]["Row"];
 

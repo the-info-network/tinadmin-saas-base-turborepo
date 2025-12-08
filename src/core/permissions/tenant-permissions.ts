@@ -4,7 +4,9 @@
  * Implements tenant-scoped permissions and permission inheritance
  */
 
-import { createClient as createServerClient, createAdminClient, type Database } from "@/core/database";
+import { createClient as createServerClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 import { getUserPermissions, type Permission } from "./permissions";
 
 type TenantPermission = Database["public"]["Tables"]["tenants"]["Row"] & {

@@ -1,8 +1,10 @@
 "use server";
 
-import { createClient, createAdminClient, type Database } from "@/core/database";
+import { createClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 import { isPlatformAdmin } from "./organization-admins";
-import { requirePermission } from "@/core/permissions";
+import { requirePermission } from "@/core/permissions/middleware";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"] & {
   userCount?: number;

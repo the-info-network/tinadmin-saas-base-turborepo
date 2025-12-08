@@ -5,7 +5,7 @@
  */
 
 import { headers } from "next/headers";
-import { createAdminClient } from "@/core/database";
+import { createAdminClient } from "@/core/database/admin-client";
 
 export interface SubdomainInfo {
   subdomain: string | null;

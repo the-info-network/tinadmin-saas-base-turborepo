@@ -4,7 +4,8 @@
  * Provides validation functions for tenant operations and access control
  */
 
-import { createClient as createServerClient, createAdminClient } from "@/core/database";
+import { createClient as createServerClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
 import { isPlatformAdmin } from "@/app/actions/organization-admins";
 import type { Database } from "@/core/database";
 

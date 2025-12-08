@@ -1,7 +1,9 @@
 "use server";
 
 import { stripe } from "@/core/billing/config";
-import { createAdminClient, createClient, type Database } from "@/core/database";
+import { createClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 
 type StripeCustomer = Database["public"]["Tables"]["stripe_customers"]["Insert"];
 

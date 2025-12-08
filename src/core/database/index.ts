@@ -18,9 +18,17 @@ export type { Database } from './types';
 
 /**
  * Server-side Supabase client (SSR-aware)
- * Use this in Server Components, Server Actions, and API Routes
+ * ⚠️ SERVER-ONLY: Import directly from './server' in server-side code:
+ *   import { createClient } from '@/core/database/server';
+ * 
+ * Use this in:
+ * - Server Components
+ * - Server Actions
+ * - API Routes
+ * - Middleware
  */
-export { createClient, createServerClient } from './server';
+// Note: Not exported from index to prevent client bundling
+// Import directly: import { createClient } from '@/core/database/server';
 
 /**
  * Client-side Supabase client (Browser)
@@ -30,28 +38,36 @@ export { createClient as createBrowserClient } from './client';
 
 /**
  * Admin Supabase client (Bypasses RLS)
- * Use this ONLY in server-side admin operations
+ * ⚠️ SERVER-ONLY: Import directly from './admin-client' in server-side code:
+ *   import { createAdminClient } from '@/core/database/admin-client';
+ * 
+ * Use this ONLY in server-side admin operations:
+ * - Server Components
+ * - Server Actions
+ * - API Routes
+ * - Middleware
+ * 
  * NEVER expose to the client!
  */
-export { createAdminClient } from './admin-client';
+// Note: Not exported from index to prevent client bundling
+// Import directly: import { createAdminClient } from '@/core/database/admin-client';
 
 /**
  * Tenant-aware Supabase client
  * Automatically applies tenant context
  */
-export { createTenantClient } from './tenant-client';
+export {
+  createTenantAwareClient,
+  createTenantAwareServerClient,
+  createTenantAwareAdminClient,
+  TenantAwareClient
+} from './tenant-client';
 
 // ============================================================================
 // USER MANAGEMENT
 // ============================================================================
 export {
-  getUser,
-  getUserByEmail,
-  createUser,
-  updateUser,
-  deleteUser,
-  listUsers,
-  getUsersForTenant,
+  getAllUsers,
 } from './users';
 
 // ============================================================================
@@ -59,20 +75,18 @@ export {
 // ============================================================================
 export {
   getTenant,
-  getTenantByDomain,
+  getTenants,
   createTenant,
   updateTenant,
   deleteTenant,
-  listTenants,
 } from './tenants';
 
 // ============================================================================
 // ROLE MANAGEMENT
 // ============================================================================
 export {
-  getRole,
-  getRoleByName,
-  listRoles,
+  getRoleById,
+  getRoles,
   createRole,
   updateRole,
   deleteRole,
@@ -83,7 +97,7 @@ export {
 // ============================================================================
 export {
   getWorkspace,
-  listWorkspaces,
+  getWorkspaces,
   createWorkspace,
   updateWorkspace,
   deleteWorkspace,
@@ -103,9 +117,8 @@ export {
 // ORGANIZATION ADMINS
 // ============================================================================
 export {
-  getOrganizationAdmins,
-  addOrganizationAdmin,
-  removeOrganizationAdmin,
+  getAllOrganizationAdmins,
+  isPlatformAdmin,
 } from './organization-admins';
 
 // ============================================================================
@@ -148,33 +161,11 @@ export function getDatabaseInfo(): {
   };
 }
 
-/**
- * Health check for database connection
- */
-export async function checkDatabaseHealth(): Promise<{
-  healthy: boolean;
-  latency?: number;
-  error?: string;
-}> {
-  try {
-    const start = Date.now();
-    const client = await createClient();
-    
-    // Simple query to test connection
-    const { error } = await client.from('roles').select('id').limit(1);
-    
-    if (error) {
-      return { healthy: false, error: error.message };
-    }
-    
-    const latency = Date.now() - start;
-    return { healthy: true, latency };
-  } catch (error) {
-    return {
-      healthy: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
-}
+// ============================================================================
+// SERVER-ONLY UTILITIES
+// ============================================================================
+// Note: checkDatabaseHealth() has been moved to ./server-utils.ts
+// Import it directly from there in server-side code only:
+// import { checkDatabaseHealth } from '@/core/database/server-utils';
 
 

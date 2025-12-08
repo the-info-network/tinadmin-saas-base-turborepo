@@ -4,7 +4,7 @@
  * Server-side middleware for checking permissions in API routes and server actions
  */
 
-import { createClient } from "@/core/database";
+import { createClient } from "@/core/database/server";
 import { getUserPermissions, hasPermission, hasAnyPermission, hasAllPermissions, type Permission } from "./permissions";
 import { hasTenantPermission } from "./tenant-permissions";
 import { getCurrentUserTenantId } from "@/core/multi-tenancy/validation";

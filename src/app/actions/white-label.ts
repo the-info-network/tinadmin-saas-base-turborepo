@@ -1,7 +1,8 @@
 "use server";
 
-import { requirePermission } from "@/core/permissions";
-import { createClient, type Database } from "@/core/database";
+import { requirePermission } from "@/core/permissions/middleware";
+import { createClient } from "@/core/database/server";
+import type { Database } from "@/core/database";
 import { getCurrentUserTenantId } from "@/core/multi-tenancy/validation";
 
 export interface BrandingSettings {

@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/core/database";
-import { resolveTenant, getSubdomainFromRequest, getTenantIdFromSubdomain } from "@/core/multi-tenancy";
+import { resolveTenant } from "@/core/multi-tenancy/resolver";
+import { getSubdomainFromRequest, getTenantIdFromSubdomain } from "@/core/multi-tenancy/subdomain-routing";
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({

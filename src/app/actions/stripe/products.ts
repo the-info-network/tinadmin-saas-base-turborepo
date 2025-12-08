@@ -1,7 +1,7 @@
 "use server";
 
-import { stripe } from "@/core/billing";
-import { createAdminClient } from "@/core/database";
+import { stripe } from "@/core/billing/config";
+import { createAdminClient } from "@/core/database/admin-client";
 
 /**
  * Sync Stripe products to database

@@ -6,8 +6,8 @@
 
 "use server";
 
-import { createClient } from "@/core/database";
-import { getUserPermissions, hasPermission, type Permission } from "@/core/permissions";
+import { createClient } from "@/core/database/server";
+import { getUserPermissions, hasPermission, type Permission } from "@/core/permissions/permissions";
 import { getTenantPermissions, hasTenantPermission, getPermissionSource } from "@/core/permissions/tenant-permissions";
 import { getCurrentUserTenantId } from "@/core/multi-tenancy/validation";
 
