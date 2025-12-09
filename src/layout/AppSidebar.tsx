@@ -617,39 +617,45 @@ const AppSidebar: React.FC = () => {
   useEffect(() => {
     // Check if the current path matches any submenu item (including nested)
     let submenuMatched = false;
-    ["main", "support", "others"].forEach((menuType) => {
+    
+    // Use a labeled loop to break out of nested loops
+    outerLoop: for (const menuType of ["main", "support", "others"] as const) {
       const items =
         menuType === "main"
           ? navItems
           : menuType === "support"
           ? supportItems
           : othersItems;
-      items.forEach((nav, index) => {
+      for (let index = 0; index < items.length; index++) {
+        const nav = items[index];
         if (nav.subItems) {
-          nav.subItems.forEach((subItem, subIndex) => {
+          for (let subIndex = 0; subIndex < nav.subItems.length; subIndex++) {
+            const subItem = nav.subItems[subIndex];
             // Check if subItem has nested subItems
             if ('subItems' in subItem && subItem.subItems) {
-              subItem.subItems.forEach((nestedItem) => {
+              for (const nestedItem of subItem.subItems) {
                 if (nestedItem.path && isActive(nestedItem.path)) {
                   setOpenSubmenu({
-                    type: menuType as "main" | "support" | "others",
+                    type: menuType,
                     index,
                     subIndex,
                   });
                   submenuMatched = true;
+                  break outerLoop; // Exit all loops once we find a match
                 }
-              });
+              }
             } else if (subItem.path && isActive(subItem.path)) {
               setOpenSubmenu({
-                type: menuType as "main" | "support" | "others",
+                type: menuType,
                 index,
               });
               submenuMatched = true;
+              break outerLoop; // Exit all loops once we find a match
             }
-          });
+          }
         }
-      });
-    });
+      }
+    }
 
     // If no submenu item matches, close the open submenu
     if (!submenuMatched) {
@@ -661,12 +667,18 @@ const AppSidebar: React.FC = () => {
     // Set the height of the submenu items when the submenu is opened
     if (openSubmenu !== null) {
       const key = `${openSubmenu.type}-${openSubmenu.index}`;
-      if (subMenuRefs.current[key]) {
-        setSubMenuHeight((prevHeights) => ({
-          ...prevHeights,
-          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
-        }));
-      }
+      // Use requestAnimationFrame to ensure DOM is updated before calculating height
+      requestAnimationFrame(() => {
+        if (subMenuRefs.current[key]) {
+          setSubMenuHeight((prevHeights) => ({
+            ...prevHeights,
+            [key]: subMenuRefs.current[key]?.scrollHeight || 0,
+          }));
+        }
+      });
+    } else {
+      // Clear heights when submenu is closed
+      setSubMenuHeight({});
     }
   }, [openSubmenu]);
 
