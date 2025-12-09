@@ -70,7 +70,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       }
 
       // Otherwise, get user's workspaces and use the first one
-      const { data: workspaceUsers, error: workspaceUsersError } = await supabase
+      const workspaceUsersResult: { data: Array<{ workspace_id: string; workspaces: Workspace }> | null; error: any } = await supabase
         .from("workspace_users")
         .select(`
           workspace_id,
@@ -79,16 +79,18 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         .eq("user_id", user.id)
         .limit(1);
 
-      if (workspaceUsersError) {
+      const workspaceUsers = workspaceUsersResult.data;
+      if (workspaceUsersResult.error) {
         // Try to get default workspace for tenant
-        const { data: defaultWorkspace, error: defaultError } = await supabase
+        const defaultResult: { data: Workspace | null; error: any } = await supabase
           .from("workspaces")
           .select("*")
           .eq("tenant_id", tenantId)
           .eq("slug", "default")
           .single();
 
-        if (!defaultError && defaultWorkspace) {
+        const defaultWorkspace = defaultResult.data;
+        if (!defaultResult.error && defaultWorkspace) {
           setWorkspace(defaultWorkspace);
         } else {
           setWorkspace(null);
