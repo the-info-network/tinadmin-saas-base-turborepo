@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
+// Import utility functions directly to avoid server-only imports
 import {
   matchesPermission,
   getPermissionsForRole,
   roleHasPermission,
-} from '@/core/permissions';
+} from '@/core/permissions/utils';
 
 describe('permissions core', () => {
   it('matchesPermission supports wildcards', () => {
