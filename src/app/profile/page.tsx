@@ -10,15 +10,24 @@ import {
   KeyIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { updatePassword } from "@/app/actions/password";
 import { EyeIcon, EyeCloseIcon } from "@/icons";
 
 type TabType = "profile" | "account" | "password" | "support";
 
-export default function UserProfilePage() {
-  const [activeTab, setActiveTab] = useState<TabType>("profile");
+function UserProfileContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const tabFromUrl = searchParams.get("tab") as TabType | null;
+  const [activeTab, setActiveTab] = useState<TabType>(tabFromUrl || "profile");
+
+  useEffect(() => {
+    if (tabFromUrl && ["profile", "account", "password", "support"].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
 
   return (
     <div className="space-y-8">
@@ -47,7 +56,10 @@ export default function UserProfilePage() {
       <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <div className="flex flex-wrap gap-2 border-b border-gray-200 dark:border-gray-800">
           <button
-            onClick={() => setActiveTab("profile")}
+            onClick={() => {
+              setActiveTab("profile");
+              router.push("/profile?tab=profile");
+            }}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === "profile"
                 ? "border-b-2 border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400"
@@ -78,7 +90,10 @@ export default function UserProfilePage() {
             </div>
           </button>
           <button
-            onClick={() => setActiveTab("account")}
+            onClick={() => {
+              setActiveTab("account");
+              router.push("/profile?tab=account");
+            }}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === "account"
                 ? "border-b-2 border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400"
@@ -109,7 +124,10 @@ export default function UserProfilePage() {
             </div>
           </button>
           <button
-            onClick={() => setActiveTab("password")}
+            onClick={() => {
+              setActiveTab("password");
+              router.push("/profile?tab=password");
+            }}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === "password"
                 ? "border-b-2 border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400"
@@ -122,7 +140,10 @@ export default function UserProfilePage() {
             </div>
           </button>
           <button
-            onClick={() => setActiveTab("support")}
+            onClick={() => {
+              setActiveTab("support");
+              router.push("/profile?tab=support");
+            }}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === "support"
                 ? "border-b-2 border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400"
@@ -823,6 +844,14 @@ function SupportSection() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function UserProfilePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <UserProfileContent />
+    </Suspense>
   );
 }
 

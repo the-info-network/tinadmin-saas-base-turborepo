@@ -262,9 +262,9 @@ const navItems: NavItem[] = [
     icon: <UserCircleIcon />,
     name: "User Profile",
     subItems: [
-      { name: "My Profile", path: "/saas/userprofile" },
-      { name: "Account Settings", path: "/profile" },
-      { name: "Change Password", path: "/change-password" },
+      { name: "Edit Profile", path: "/profile?tab=profile" },
+      { name: "Account Settings", path: "/profile?tab=account" },
+      { name: "Change Password", path: "/profile?tab=password" },
     ],
   },
   {
