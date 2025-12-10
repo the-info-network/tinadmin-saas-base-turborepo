@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe, stripeConfig } from "@/core/billing/config";
+import { getStripe, stripeConfig, isStripeConfigured } from "@/core/billing/config";
 import { createAdminClient } from "@/core/database/admin-client";
 import Stripe from "stripe";
 
@@ -8,6 +8,16 @@ import Stripe from "stripe";
  * Handles events from Stripe and updates the database accordingly
  */
 export async function POST(req: NextRequest) {
+  // Check if Stripe is configured
+  if (!isStripeConfigured()) {
+    return NextResponse.json(
+      { 
+        error: "Stripe is not configured. To enable payment processing, please set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET in your environment variables." 
+      },
+      { status: 503 }
+    );
+  }
+
   const body = await req.text();
   const signature = req.headers.get("stripe-signature");
 
@@ -17,12 +27,16 @@ export async function POST(req: NextRequest) {
 
   if (!stripeConfig.webhookSecret) {
     console.error("STRIPE_WEBHOOK_SECRET is not set");
-    return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Webhook secret not configured. Please set STRIPE_WEBHOOK_SECRET in your environment variables." },
+      { status: 500 }
+    );
   }
 
   let event: Stripe.Event;
 
   try {
+    const stripe = getStripe();
     event = stripe.webhooks.constructEvent(body, signature, stripeConfig.webhookSecret);
   } catch (err) {
     console.error("Webhook signature verification failed:", err);

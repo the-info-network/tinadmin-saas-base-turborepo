@@ -1,6 +1,6 @@
 "use server";
 
-import { stripe, formatAmountForStripe } from "@/core/billing/config";
+import { getStripe, formatAmountForStripe, isStripeConfigured } from "@/core/billing/config";
 import { createClient } from "@/core/database/server";
 import { createAdminClient } from "@/core/database/admin-client";
 import { getCurrentTenant } from "@/core/multi-tenancy/server";
@@ -16,6 +16,13 @@ export async function createCheckoutSession(params: {
   promotionCode?: string;
 }): Promise<{ success: boolean; sessionId?: string; url?: string; error?: string }> {
   try {
+    if (!isStripeConfigured()) {
+      return {
+        success: false,
+        error: "Stripe is not configured. To enable payment processing, please set STRIPE_SECRET_KEY in your environment variables.",
+      };
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -27,6 +34,8 @@ export async function createCheckoutSession(params: {
     if (!tenantId) {
       return { success: false, error: "No tenant context found" };
     }
+
+    const stripe = getStripe();
 
     const adminClient = createAdminClient();
 
@@ -127,6 +136,13 @@ export async function createBillingPortalSession(
   returnUrl: string
 ): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
+    if (!isStripeConfigured()) {
+      return {
+        success: false,
+        error: "Stripe is not configured. To enable payment processing, please set STRIPE_SECRET_KEY in your environment variables.",
+      };
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -139,6 +155,7 @@ export async function createBillingPortalSession(
       return { success: false, error: "No tenant context found" };
     }
 
+    const stripe = getStripe();
     const adminClient = createAdminClient();
 
     // Get customer
@@ -181,6 +198,13 @@ export async function createPaymentSession(params: {
   metadata?: Record<string, string>;
 }): Promise<{ success: boolean; sessionId?: string; url?: string; error?: string }> {
   try {
+    if (!isStripeConfigured()) {
+      return {
+        success: false,
+        error: "Stripe is not configured. To enable payment processing, please set STRIPE_SECRET_KEY in your environment variables.",
+      };
+    }
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -193,6 +217,7 @@ export async function createPaymentSession(params: {
       return { success: false, error: "No tenant context found" };
     }
 
+    const stripe = getStripe();
     const adminClient = createAdminClient();
 
     // Get or create customer
@@ -252,6 +277,14 @@ export async function getCheckoutSession(sessionId: string): Promise<{
   error?: string;
 }> {
   try {
+    if (!isStripeConfigured()) {
+      return {
+        success: false,
+        error: "Stripe is not configured. To enable payment processing, please set STRIPE_SECRET_KEY in your environment variables.",
+      };
+    }
+
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
       expand: ["customer", "subscription", "payment_intent"],
     });
