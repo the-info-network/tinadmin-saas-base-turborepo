@@ -8,8 +8,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { useTenant } from "@/lib/tenant/context";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import { useTenant } from "@/core/multi-tenancy";
 import { getAllTenants } from "@/app/actions/tenants";
 import { isPlatformAdmin } from "@/app/actions/organization-admins";
 import {
@@ -19,7 +19,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import type { Database } from "@/lib/supabase/types";
+import type { Database } from "@/core/database/types";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
 
@@ -84,7 +84,7 @@ export default function TenantSwitcher({ className = "" }: TenantSwitcherProps) 
     }
 
     try {
-      const supabase = createClient();
+      const supabase = createBrowserClient();
       
       // Set tenant context in session/localStorage
       localStorage.setItem("current_tenant_id", newTenantId);
@@ -234,4 +234,5 @@ export default function TenantSwitcher({ className = "" }: TenantSwitcherProps) 
     </div>
   );
 }
+
 

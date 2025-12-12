@@ -3,11 +3,11 @@
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import Button from "@/components/ui/button/Button";
 import { createSetupIntent, attachPaymentMethod } from "@/app/actions/stripe/payment-methods";
-import { getStripe } from "@/lib/stripe/client";
+import { getStripe } from "@/core/billing/client";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient as createBrowserClient } from "@/core/database/client";
 
 function AddPaymentMethodForm({ router }: { router: ReturnType<typeof useRouter> }) {
   const stripe = useStripe();
@@ -18,17 +18,18 @@ function AddPaymentMethodForm({ router }: { router: ReturnType<typeof useRouter>
 
   useEffect(() => {
     async function getTenantId() {
-      const supabase = createClient();
+      const supabase = createBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: userData } = await supabase
-          .from("users")
-          .select("tenant_id")
-          .eq("id", user.id)
-          .single();
-        if (userData?.tenant_id) {
-          setTenantId(userData.tenant_id);
-        }
+      const result: { data: { tenant_id: string | null } | null; error: any } = await supabase
+        .from("users")
+        .select("tenant_id")
+        .eq("id", user.id)
+        .single();
+      const userData = result.data;
+      if (userData?.tenant_id) {
+        setTenantId(userData.tenant_id);
+      }
       }
     }
     getTenantId();
@@ -60,7 +61,7 @@ function AddPaymentMethodForm({ router }: { router: ReturnType<typeof useRouter>
       }
 
       // Attach payment method to customer
-      const result = await attachPaymentMethod(tenantId, paymentMethod.id, true);
+      const result = await attachPaymentMethod(paymentMethod.id, true);
 
       if (result.success) {
         router.push("/saas/billing/dashboard");
@@ -105,7 +106,7 @@ export default function AddNewCardPage() {
   useEffect(() => {
     async function setup() {
       try {
-        const supabase = createClient();
+        const supabase = createBrowserClient();
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) {
@@ -113,12 +114,13 @@ export default function AddNewCardPage() {
           return;
         }
 
-        const { data: userData } = await supabase
+        const userResult: { data: { tenant_id: string | null } | null; error: any } = await supabase
           .from("users")
           .select("tenant_id")
           .eq("id", user.id)
           .single();
 
+        const userData = userResult.data;
         if (!userData?.tenant_id) {
           console.error("User has no tenant");
           return;
@@ -127,9 +129,9 @@ export default function AddNewCardPage() {
         setTenantId(userData.tenant_id);
 
         // Create setup intent
-        const result = await createSetupIntent(userData.tenant_id);
-        if (result.success && result.clientSecret) {
-          setClientSecret(result.clientSecret);
+        const setupResult = await createSetupIntent();
+        if (setupResult.success && setupResult.clientSecret) {
+          setClientSecret(setupResult.clientSecret);
         }
       } catch (error) {
         console.error("Error setting up payment form:", error);

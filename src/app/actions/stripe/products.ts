@@ -1,8 +1,7 @@
 "use server";
 
-import { stripe } from "@/lib/stripe/config";
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import type Stripe from "stripe";
+import { stripe } from "@/core/billing/config";
+import { createAdminClient } from "@/core/database/admin-client";
 
 /**
  * Sync Stripe products to database
@@ -34,7 +33,7 @@ export async function syncProducts(): Promise<{
             description: product.description || null,
             active: product.active,
             metadata: product.metadata as any,
-          },
+          } as any,
           {
             onConflict: "stripe_product_id",
           }
@@ -60,16 +59,13 @@ export async function syncProducts(): Promise<{
               stripe_price_id: price.id,
               stripe_product_id: product.id,
               active: price.active,
-              unit_amount: price.unit_amount || null,
+              unit_amount: price.unit_amount ? price.unit_amount / 100 : null, // Convert from cents
               currency: price.currency,
-              type: price.type,
-              interval: price.recurring?.interval || null,
-              interval_count: price.recurring?.interval_count || null,
-              metadata: price.metadata as any,
-            },
-            {
-              onConflict: "stripe_price_id",
-            }
+              billing_cycle: price.recurring?.interval === 'year' ? 'annual' : 'monthly',
+              interval_count: price.recurring?.interval_count || 1,
+              metadata: price.metadata as Record<string, unknown>,
+            } as any,
+            { onConflict: 'stripe_price_id' }
           );
       }
 

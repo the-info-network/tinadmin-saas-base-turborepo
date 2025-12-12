@@ -3,17 +3,17 @@
 import { 
   getWorkspaces, 
   getWorkspace, 
-  createWorkspace, 
-  updateWorkspace, 
+  createWorkspace,
+  updateWorkspace,
   deleteWorkspace,
   addUserToWorkspace,
   removeUserFromWorkspace,
   updateWorkspaceUser,
   getUserWorkspaces,
   getWorkspaceMembers
-} from "@/lib/supabase/workspaces";
-import { requirePermission } from "@/lib/auth/permission-middleware";
-import type { Database } from "@/lib/supabase/types";
+} from "@/core/database/workspaces";
+import { requirePermission } from "@/core/permissions/middleware";
+import type { Database } from "@/core/database";
 
 type WorkspaceInsert = Database["public"]["Tables"]["workspaces"]["Insert"];
 type WorkspaceUpdate = Database["public"]["Tables"]["workspaces"]["Update"];

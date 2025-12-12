@@ -4,6 +4,7 @@ import Button from "@/components/ui/button/Button";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { createBrowserClient } from "@/core/database";
 
 const proFeatures = [
   "50,000 orders per month",
@@ -48,35 +49,36 @@ export default function UpgradeToProPage() {
     setLoading(true);
     try {
       // Get tenant ID
-      const supabase = createClient();
+      const supabase = createBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         router.push("/signin");
         return;
       }
 
-      const { data: userData } = await supabase
+      const userResult: { data: { tenant_id: string | null } | null; error: any } = await supabase
         .from("users")
         .select("tenant_id")
         .eq("id", user.id)
         .single();
 
+      const userData = userResult.data;
       if (!userData?.tenant_id) {
         alert("Unable to determine tenant. Please try again.");
         return;
       }
 
       // Get plans and find the Pro plan price
-      const { getPlans } = await import("@/app/actions/stripe/products");
-      const { createCheckoutSession } = await import("@/app/actions/stripe/subscriptions");
-      
-      const plansResult = await getPlans();
-      if (!plansResult.success || !plansResult.plans) {
+      const { getProducts } = await import("@/app/actions/stripe/products");
+      const { createCheckoutSession } = await import("@/app/actions/stripe/checkout");
+
+      const plansResult = await getProducts();
+      if (!plansResult.success || !plansResult.products) {
         alert("Unable to load plans. Please try again.");
         return;
       }
 
-      const proPlanFromStripe = plansResult.plans.find((p: any) => 
+      const proPlanFromStripe = plansResult.products.find((p: any) =>
         p.name.toLowerCase().includes("pro")
       );
 
@@ -96,17 +98,16 @@ export default function UpgradeToProPage() {
       }
 
       // Create checkout session
-      const result = await createCheckoutSession(
-        userData.tenant_id,
-        price.id,
-        `${window.location.origin}/saas/billing/dashboard?success=true`,
-        `${window.location.origin}/saas/billing/upgrade-to-pro?canceled=true`
-      );
+      const checkoutResult = await createCheckoutSession({
+        priceId: price.id,
+        successUrl: `${window.location.origin}/saas/billing/dashboard?success=true`,
+        cancelUrl: `${window.location.origin}/saas/billing/upgrade-to-pro?canceled=true`
+      });
 
-      if (result.success && result.url) {
-        window.location.href = result.url;
+      if (checkoutResult.success && checkoutResult.url) {
+        window.location.href = checkoutResult.url;
       } else {
-        alert(result.error || "Failed to start checkout. Please try again.");
+        alert(checkoutResult.error || "Failed to start checkout. Please try again.");
       }
     } catch (error) {
       console.error("Error upgrading:", error);

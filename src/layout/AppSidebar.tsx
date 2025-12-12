@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
-import { useTenant } from "@/lib/tenant/context";
+import { useTenant } from "@/core/multi-tenancy";
 import { useWhiteLabel } from "@/context/WhiteLabelContext";
 import {
   AiIcon,
@@ -43,6 +43,17 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Dashboard",
     path: "/saas/dashboard",
+  },
+  {
+    name: "CRM",
+    icon: <UserCircleIcon />,
+    new: true,
+    subItems: [
+      { name: "Contacts", path: "/crm/contacts" },
+      { name: "Companies", path: "/crm/companies" },
+      { name: "Deals", path: "/crm/deals" },
+      { name: "Tasks", path: "/crm/tasks" },
+    ],
   },
   {
     name: "AI Assistant",
@@ -111,6 +122,15 @@ const navItems: NavItem[] = [
       { name: "Tenant Management", path: "/saas/admin/entity/tenant-management" },
       { name: "Organization Management", path: "/saas/admin/entity/organization-management" },
       { name: "Role Management", path: "/saas/admin/entity/role-management" },
+      {
+        name: "Email & Notifications",
+        subItems: [
+          { name: "Templates", path: "/saas/email-notifications/templates" },
+          { name: "Settings", path: "/saas/email-notifications/settings" },
+          { name: "Logs", path: "/saas/email-notifications/logs" },
+          { name: "Campaigns", path: "/saas/email-notifications/campaigns" },
+        ],
+      },
     ],
   },
   {
@@ -157,7 +177,6 @@ const navItems: NavItem[] = [
     new: true,
     subItems: [
       { name: "Dashboard", path: "/saas/dashboard" },
-      { name: "User Profile", path: "/profile" },
       {
         name: "Usage & Metering",
         subItems: [
@@ -177,15 +196,6 @@ const navItems: NavItem[] = [
           { name: "IP Restrictions", path: "/saas/security/ip-restrictions" },
           { name: "Audit Logs", path: "/saas/security/audit-logs" },
           { name: "Compliance", path: "/saas/security/compliance" },
-        ],
-      },
-      {
-        name: "Email & Notifications",
-        subItems: [
-          { name: "Templates", path: "/saas/email-notifications/templates" },
-          { name: "Settings", path: "/saas/email-notifications/settings" },
-          { name: "Logs", path: "/saas/email-notifications/logs" },
-          { name: "Campaigns", path: "/saas/email-notifications/campaigns" },
         ],
       },
       {
@@ -261,8 +271,12 @@ const navItems: NavItem[] = [
   },
   {
     icon: <UserCircleIcon />,
-    name: "Profile",
-    path: "/profile",
+    name: "User Profile",
+    subItems: [
+      { name: "Edit Profile", path: "/profile?tab=profile" },
+      { name: "Account Settings", path: "/profile?tab=account" },
+      { name: "Change Password", path: "/profile?tab=password" },
+    ],
   },
   {
     name: "Task",
@@ -614,39 +628,45 @@ const AppSidebar: React.FC = () => {
   useEffect(() => {
     // Check if the current path matches any submenu item (including nested)
     let submenuMatched = false;
-    ["main", "support", "others"].forEach((menuType) => {
+    
+    // Use a labeled loop to break out of nested loops
+    outerLoop: for (const menuType of ["main", "support", "others"] as const) {
       const items =
         menuType === "main"
           ? navItems
           : menuType === "support"
           ? supportItems
           : othersItems;
-      items.forEach((nav, index) => {
+      for (let index = 0; index < items.length; index++) {
+        const nav = items[index];
         if (nav.subItems) {
-          nav.subItems.forEach((subItem, subIndex) => {
+          for (let subIndex = 0; subIndex < nav.subItems.length; subIndex++) {
+            const subItem = nav.subItems[subIndex];
             // Check if subItem has nested subItems
             if ('subItems' in subItem && subItem.subItems) {
-              subItem.subItems.forEach((nestedItem) => {
+              for (const nestedItem of subItem.subItems) {
                 if (nestedItem.path && isActive(nestedItem.path)) {
                   setOpenSubmenu({
-                    type: menuType as "main" | "support" | "others",
+                    type: menuType,
                     index,
                     subIndex,
                   });
                   submenuMatched = true;
+                  break outerLoop; // Exit all loops once we find a match
                 }
-              });
+              }
             } else if (subItem.path && isActive(subItem.path)) {
               setOpenSubmenu({
-                type: menuType as "main" | "support" | "others",
+                type: menuType,
                 index,
               });
               submenuMatched = true;
+              break outerLoop; // Exit all loops once we find a match
             }
-          });
+          }
         }
-      });
-    });
+      }
+    }
 
     // If no submenu item matches, close the open submenu
     if (!submenuMatched) {
@@ -658,12 +678,18 @@ const AppSidebar: React.FC = () => {
     // Set the height of the submenu items when the submenu is opened
     if (openSubmenu !== null) {
       const key = `${openSubmenu.type}-${openSubmenu.index}`;
-      if (subMenuRefs.current[key]) {
-        setSubMenuHeight((prevHeights) => ({
-          ...prevHeights,
-          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
-        }));
-      }
+      // Use requestAnimationFrame to ensure DOM is updated before calculating height
+      requestAnimationFrame(() => {
+        if (subMenuRefs.current[key]) {
+          setSubMenuHeight((prevHeights) => ({
+            ...prevHeights,
+            [key]: subMenuRefs.current[key]?.scrollHeight || 0,
+          }));
+        }
+      });
+    } else {
+      // Clear heights when submenu is closed
+      setSubMenuHeight({});
     }
   }, [openSubmenu]);
 

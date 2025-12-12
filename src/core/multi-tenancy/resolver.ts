@@ -4,10 +4,9 @@
  * Resolves tenant from various sources: subdomain, URL params, session, headers
  */
 
-import { createClient } from "@/lib/supabase/client";
-import { createClient as createServerClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import type { Database } from "@/lib/supabase/types";
+import { createClient as createServerClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 import { extractTenantFromSubdomain, extractTenantIdFromRequest } from "./query-builder";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
@@ -36,13 +35,14 @@ export async function resolveTenantFromSubdomain(
 
   try {
     const adminClient = createAdminClient();
-    const { data: tenant, error } = await adminClient
+    const tenantResult: { data: Tenant | null; error: any } = await adminClient
       .from("tenants")
       .select("*")
       .eq("domain", subdomain)
       .single();
 
-    if (error || !tenant) {
+    const tenant = tenantResult.data;
+    if (tenantResult.error || !tenant) {
       return {
         tenant: null,
         tenantId: null,
@@ -82,13 +82,14 @@ export async function resolveTenantFromUrl(
 
   try {
     const adminClient = createAdminClient();
-    const { data: tenant, error } = await adminClient
+    const tenantResult2: { data: Tenant | null; error: any } = await adminClient
       .from("tenants")
       .select("*")
       .eq("id", tenantId)
       .single();
 
-    if (error || !tenant) {
+    const tenant = tenantResult2.data;
+    if (tenantResult2.error || !tenant) {
       return {
         tenant: null,
         tenantId: null,
@@ -128,13 +129,14 @@ export async function resolveTenantFromHeaders(
 
   try {
     const adminClient = createAdminClient();
-    const { data: tenant, error } = await adminClient
+    const tenantResult3: { data: Tenant | null; error: any } = await adminClient
       .from("tenants")
       .select("*")
       .eq("id", tenantId)
       .single();
 
-    if (error || !tenant) {
+    const tenant = tenantResult3.data;
+    if (tenantResult3.error || !tenant) {
       return {
         tenant: null,
         tenantId: null,
@@ -172,12 +174,13 @@ export async function resolveTenantFromSession(): Promise<TenantResolutionResult
       };
     }
 
-    const { data: userData } = await supabase
+    const userDataResult: { data: { tenant_id: string | null } | null; error: any } = await supabase
       .from("users")
       .select("tenant_id")
       .eq("id", user.id)
       .single();
 
+    const userData = userDataResult.data;
     if (!userData?.tenant_id) {
       return {
         tenant: null,
@@ -186,11 +189,14 @@ export async function resolveTenantFromSession(): Promise<TenantResolutionResult
       };
     }
 
-    const { data: tenant, error } = await supabase
+    const tenantResult4: { data: Tenant | null; error: any } = await supabase
       .from("tenants")
       .select("*")
       .eq("id", userData.tenant_id)
       .single();
+    
+    const tenant = tenantResult4.data;
+    const error = tenantResult4.error;
 
     if (error || !tenant) {
       return {

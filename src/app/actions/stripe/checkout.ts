@@ -1,9 +1,9 @@
 "use server";
 
-import { stripe, formatAmountForStripe } from "@/lib/stripe/config";
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { createClient } from "@/lib/supabase/server";
-import { getCurrentTenant } from "@/lib/tenant/server";
+import { stripe, formatAmountForStripe } from "@/core/billing/config";
+import { createAdminClient } from "@/core/database/admin-client";
+import { createClient } from "@/core/database/server";
+import { getCurrentTenant } from "@/core/multi-tenancy/server";
 
 /**
  * Create a Stripe Checkout session for subscription
@@ -32,21 +32,24 @@ export async function createCheckoutSession(params: {
 
     // Get or create customer
     let customerId: string | undefined;
-    const { data: existingCustomer } = await adminClient
+    const customerResult: { data: { stripe_customer_id: string } | null; error: any } = await adminClient
       .from("stripe_customers")
       .select("stripe_customer_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const existingCustomer = customerResult.data;
     if (existingCustomer) {
       customerId = existingCustomer.stripe_customer_id;
     } else {
       // Create customer
-      const { data: tenant } = await adminClient
+      const tenantResult: { data: { name: string } | null; error: any } = await adminClient
         .from("tenants")
         .select("name")
         .eq("id", tenantId)
         .single();
+      
+      const tenant = tenantResult.data;
 
       const customer = await stripe.customers.create({
         email: user.email,
@@ -58,6 +61,7 @@ export async function createCheckoutSession(params: {
       });
 
       // Save to database
+      // @ts-expect-error - Supabase type inference issue with Database types
       await adminClient.from("stripe_customers").insert({
         tenant_id: tenantId,
         stripe_customer_id: customer.id,
@@ -140,12 +144,13 @@ export async function createBillingPortalSession(
     const adminClient = createAdminClient();
 
     // Get customer
-    const { data: customer } = await adminClient
+    const customerResult: { data: { stripe_customer_id: string } | null; error: any } = await adminClient
       .from("stripe_customers")
       .select("stripe_customer_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const customer = customerResult.data;
     if (!customer) {
       return { success: false, error: "Customer not found. Please subscribe first." };
     }
@@ -194,12 +199,13 @@ export async function createPaymentSession(params: {
 
     // Get or create customer
     let customerId: string | undefined;
-    const { data: existingCustomer } = await adminClient
+    const customerResult: { data: { stripe_customer_id: string } | null; error: any } = await adminClient
       .from("stripe_customers")
       .select("stripe_customer_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const existingCustomer = customerResult.data;
     if (existingCustomer) {
       customerId = existingCustomer.stripe_customer_id;
     }
@@ -261,4 +267,5 @@ export async function getCheckoutSession(sessionId: string): Promise<{
     };
   }
 }
+
 

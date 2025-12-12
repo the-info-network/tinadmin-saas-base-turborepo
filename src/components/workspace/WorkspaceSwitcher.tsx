@@ -8,9 +8,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { useWorkspace } from "@/lib/workspace/context";
-import { useTenant } from "@/lib/tenant/context";
+import { useWorkspace } from "@/core/multi-tenancy/workspace-context";
+import { useTenant } from "@/core/multi-tenancy";
 import { getAllWorkspaces } from "@/app/actions/workspaces";
 import {
   BuildingOffice2Icon,
@@ -19,7 +18,7 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import type { Database } from "@/lib/supabase/types";
+import type { Database } from "@/core/database/types";
 
 type Workspace = Database["public"]["Tables"]["workspaces"]["Row"];
 
@@ -206,4 +205,5 @@ export default function WorkspaceSwitcher({ className = "" }: WorkspaceSwitcherP
     </div>
   );
 }
+
 

@@ -12,8 +12,7 @@ import { resolve } from "path";
 // Load .env.local file
 config({ path: resolve(process.cwd(), ".env.local") });
 
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { assignTenantRole } from "@/lib/supabase/user-tenant-roles";
+import { createAdminClient, assignTenantRole } from "@/core/database";
 
 async function assignRole(email: string, tenantId: string, roleName: string) {
   const adminClient = createAdminClient();
@@ -93,4 +92,5 @@ assignRole(email, tenantId, roleName).catch((error) => {
   console.error("❌ Unexpected error:", error);
   process.exit(1);
 });
+
 

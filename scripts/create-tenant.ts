@@ -9,7 +9,7 @@ import { resolve } from "path";
 // Load .env.local file
 config({ path: resolve(process.cwd(), ".env.local") });
 
-import { createAdminClient } from "@/lib/supabase/admin-client";
+import { createAdminClient } from "@/core/database";
 
 async function createTenant(name: string, domain: string, plan: string = "starter") {
   const adminClient = createAdminClient();
@@ -76,4 +76,5 @@ createTenant(name, domain, plan).catch((error) => {
   console.error("❌ Unexpected error:", error);
   process.exit(1);
 });
+
 

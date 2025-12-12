@@ -1,7 +1,7 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin-client";
+import { createClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
 
 /**
  * Send password reset email (for forgot password)

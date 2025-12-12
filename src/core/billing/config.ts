@@ -1,12 +1,45 @@
 import Stripe from "stripe";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY is not set in environment variables");
+// Lazy initialization - only create Stripe instance when needed
+let stripeInstance: Stripe | null = null;
+
+/**
+ * Get Stripe instance (lazy initialization)
+ * Throws helpful error if credentials are not configured
+ */
+export function getStripe(): Stripe {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error(
+      "Stripe is not configured. To enable payment processing, please set STRIPE_SECRET_KEY in your environment variables. " +
+      "The application will continue to work, but payment features will be unavailable."
+    );
+  }
+
+  if (!stripeInstance) {
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2025-11-17.clover" as any,
+      typescript: true,
+    });
+  }
+
+  return stripeInstance;
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-12-18.acacia",
-  typescript: true,
+/**
+ * Check if Stripe is configured
+ */
+export function isStripeConfigured(): boolean {
+  return !!process.env.STRIPE_SECRET_KEY;
+}
+
+/**
+ * Get Stripe instance (for backward compatibility)
+ * @deprecated Use getStripe() instead
+ */
+export const stripe = new Proxy({} as Stripe, {
+  get(_target, prop) {
+    return getStripe()[prop as keyof Stripe];
+  },
 });
 
 export const stripeConfig = {

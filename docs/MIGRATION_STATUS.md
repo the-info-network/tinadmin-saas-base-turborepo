@@ -162,3 +162,6 @@ supabase logs
 psql postgresql://postgres:postgres@localhost:54322/postgres -c "SELECT version, name FROM supabase_migrations.schema_migrations ORDER BY version;"
 ```
 
+
+
+

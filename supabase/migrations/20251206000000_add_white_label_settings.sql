@@ -19,3 +19,6 @@ COMMENT ON COLUMN tenants.email_settings IS 'Email customization: {fromName, fro
 COMMENT ON COLUMN tenants.custom_css IS 'Custom CSS code for white-label customization';
 COMMENT ON COLUMN tenants.custom_domains IS 'Array of custom domains: [{domain, type, status, sslStatus, verified}]';
 
+
+
+

@@ -5,8 +5,8 @@
  * This is useful when a tenant was created but the user creation failed
  */
 
-import { createAdminClient } from "../src/lib/supabase/admin-client";
-import type { Database } from "../src/lib/supabase/types";
+import { createAdminClient } from "../src/core/database/admin-client";
+import type { Database } from "../src/core/database/types";
 
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
 

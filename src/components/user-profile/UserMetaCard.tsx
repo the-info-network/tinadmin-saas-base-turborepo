@@ -8,7 +8,7 @@ import Label from "../form/Label";
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
 import { getCurrentUser } from "@/app/actions/user";
-import type { Database } from "@/lib/supabase/types";
+import type { Database } from "@/core/database/types";
 
 type User = Database["public"]["Tables"]["users"]["Row"] & {
   roles?: { name: string } | null;
@@ -60,7 +60,6 @@ export default function UserMetaCard() {
     
     const roleColorMap: Record<string, "primary" | "success" | "info" | "warning" | "dark"> = {
       "Platform Admin": "primary",
-      "Organization Admin": "success",
       "Organization Admin": "success",
       "Billing Owner": "warning",
       "Developer": "info",

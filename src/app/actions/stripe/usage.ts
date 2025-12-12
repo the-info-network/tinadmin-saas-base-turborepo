@@ -1,10 +1,9 @@
 "use server";
 
-import { stripe } from "@/lib/stripe/config";
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { getCurrentTenant } from "@/lib/tenant/server";
-import { requirePermission } from "@/lib/auth/permission-middleware";
-import type Stripe from "stripe";
+import { stripe } from "@/core/billing/config";
+import { createAdminClient } from "@/core/database/admin-client";
+import { getCurrentTenant } from "@/core/multi-tenancy/server";
+import { requirePermission } from "@/core/permissions/middleware";
 
 /**
  * Record usage for a metered subscription
@@ -14,7 +13,7 @@ export async function recordUsage(params: {
   quantity: number;
   timestamp?: number;
   action?: "increment" | "set";
-}): Promise<{ success: boolean; usageRecord?: Stripe.UsageRecord; error?: string }> {
+}): Promise<{ success: boolean; usageRecord?: Record<string, unknown>; error?: string }> {
   try {
     await requirePermission("billing.write");
 
@@ -24,7 +23,7 @@ export async function recordUsage(params: {
     }
 
     // Create usage record in Stripe
-    const usageRecord = await stripe.subscriptionItems.createUsageRecord(
+    const usageRecord = await (stripe.subscriptionItems as any).createUsageRecord(
       params.subscriptionItemId,
       {
         quantity: params.quantity,
@@ -51,7 +50,7 @@ export async function getUsageRecords(
   limit: number = 100
 ): Promise<{
   success: boolean;
-  usageRecords?: Stripe.UsageRecord[];
+  usageRecords?: Record<string, unknown>[];
   error?: string;
 }> {
   try {
@@ -63,14 +62,12 @@ export async function getUsageRecords(
     }
 
     // Fetch usage records from Stripe
-    const usageRecords = await stripe.subscriptionItems.listUsageRecordSummaries(
+    const usageRecords = await (stripe.subscriptionItems as any).listUsageRecordSummaries(
       subscriptionItemId,
-      {
-        limit,
-      }
+      { limit }
     );
 
-    return { success: true, usageRecords: usageRecords.data as any };
+    return { success: true, usageRecords: usageRecords.data as Record<string, unknown>[] };
   } catch (error) {
     console.error("Error fetching usage records:", error);
     return {
@@ -99,13 +96,14 @@ export async function trackUsageEvent(params: {
     const adminClient = createAdminClient();
 
     // Get active subscription with metered billing
-    const { data: subscription } = await adminClient
+    const result: { data: { stripe_subscription_id: string } | null; error: any } = await adminClient
       .from("stripe_subscriptions")
       .select("stripe_subscription_id")
       .eq("tenant_id", tenantId)
       .in("status", ["active", "trialing"])
       .single();
 
+    const subscription = result.data;
     if (!subscription) {
       return { success: false, error: "No active subscription found" };
     }
@@ -125,7 +123,7 @@ export async function trackUsageEvent(params: {
     }
 
     // Record usage for the first metered item (you can customize this logic)
-    const usageRecord = await stripe.subscriptionItems.createUsageRecord(meteredItems[0].id, {
+    await (stripe.subscriptionItems as any).createUsageRecord(meteredItems[0].id, {
       quantity: params.quantity,
       timestamp: Math.floor(Date.now() / 1000),
       action: "increment",
@@ -173,13 +171,14 @@ export async function getCurrentUsage(): Promise<{
     const adminClient = createAdminClient();
 
     // Get active subscription
-    const { data: subscription } = await adminClient
+    const result: { data: { stripe_subscription_id: string; current_period_start: string; current_period_end: string } | null; error: any } = await adminClient
       .from("stripe_subscriptions")
       .select("stripe_subscription_id, current_period_start, current_period_end")
       .eq("tenant_id", tenantId)
       .in("status", ["active", "trialing"])
       .single();
 
+    const subscription = result.data;
     if (!subscription) {
       return { success: false, error: "No active subscription found" };
     }
@@ -194,16 +193,17 @@ export async function getCurrentUsage(): Promise<{
       stripeSubscription.items.data
         .filter((item) => item.price.recurring?.usage_type === "metered")
         .map(async (item) => {
-          const summaries = await stripe.subscriptionItems.listUsageRecordSummaries(item.id, {
-            limit: 1,
-          });
+          const summaries = await (stripe.subscriptionItems as any).listUsageRecordSummaries(
+            item.id,
+            { limit: 1 }
+          );
 
           return {
             subscriptionItemId: item.id,
             totalUsage: summaries.data[0]?.total_usage || 0,
             period: {
-              start: stripeSubscription.current_period_start,
-              end: stripeSubscription.current_period_end,
+              start: (stripeSubscription as any).current_period_start,
+              end: (stripeSubscription as any).current_period_end,
             },
           };
         })
@@ -218,4 +218,5 @@ export async function getCurrentUsage(): Promise<{
     };
   }
 }
+
 

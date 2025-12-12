@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // ESLint configuration - don't fail build on warnings
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  
+  // TypeScript configuration - don't fail build on type errors during dev
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  
   // Optimize images
   images: {
     formats: ["image/avif", "image/webp"],
@@ -13,7 +23,7 @@ const nextConfig: NextConfig = {
   compress: true,
   
   // Optimize production builds
-  swcMinify: true,
+  // swcMinify is deprecated in Next.js 15+ (always enabled)
   
   // Bundle optimization
   experimental: {

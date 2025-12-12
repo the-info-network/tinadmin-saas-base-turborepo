@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { hasPermission, type Permission } from "@/lib/auth/permissions";
-import { getCurrentUser } from "@/lib/supabase/users";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import { getCurrentUser } from "@/app/actions/user";
+import { hasPermissionClient, type Permission } from "@/core/permissions";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -25,7 +25,7 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     async function checkAuth() {
-      const supabase = createClient();
+      const supabase = createBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user && requireAuth) {
@@ -41,7 +41,7 @@ export default function ProtectedRoute({
 
       // If permission is required, check it
       if (requiredPermission) {
-        const hasAccess = await hasPermission(user.id, requiredPermission);
+        const hasAccess = await hasPermissionClient(user.id, requiredPermission);
         if (!hasAccess) {
           router.push("/unauthorized");
           return;

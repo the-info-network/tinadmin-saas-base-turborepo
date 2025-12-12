@@ -1,9 +1,8 @@
 "use server";
 
-import { stripe } from "@/lib/stripe/config";
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/supabase/types";
+import { stripe } from "@/core/billing/config";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 
 type StripeCustomer = Database["public"]["Tables"]["stripe_customers"]["Insert"];
 
@@ -16,39 +15,55 @@ export async function createOrRetrieveCustomer(tenantId: string): Promise<{
   error?: string;
 }> {
   try {
-    const supabase = await createClient();
     const adminClient = createAdminClient();
 
     // Get tenant information
-    const { data: tenant, error: tenantError } = await adminClient
+    const tenantResult: { data: any | null; error: any } = await adminClient
       .from("tenants")
       .select("*")
       .eq("id", tenantId)
       .single();
+
+    const tenant = tenantResult.data;
+    const tenantError = tenantResult.error;
 
     if (tenantError || !tenant) {
       return { success: false, error: "Tenant not found" };
     }
 
     // Check if customer already exists
-    const { data: existingCustomer } = await adminClient
+    const customerResult: { data: { stripe_customer_id: string } | null; error: any } = await adminClient
       .from("stripe_customers")
       .select("stripe_customer_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const existingCustomer = customerResult.data;
     if (existingCustomer) {
       return { success: true, customerId: existingCustomer.stripe_customer_id };
     }
 
     // Get primary user for tenant (for email)
-    const { data: primaryUser } = await adminClient
+    const roleResult: { data: { id: string } | null; error: any } = await adminClient
+      .from("roles")
+      .select("id")
+      .eq("name", "Organization Admin")
+      .single();
+
+    const roleData = roleResult.data;
+    if (!roleData?.id) {
+      return { success: false, error: "Organization Admin role not found" };
+    }
+
+    const userResult: { data: { email: string; full_name: string } | null; error: any } = await adminClient
       .from("users")
       .select("email, full_name")
       .eq("tenant_id", tenantId)
-      .eq("role_id", (await adminClient.from("roles").select("id").eq("name", "Organization Admin").single()).data?.id)
+      .eq("role_id", roleData.id)
       .limit(1)
       .single();
+    
+    const primaryUser = userResult.data;
 
     // Create Stripe customer
     const customer = await stripe.customers.create({
@@ -62,18 +77,31 @@ export async function createOrRetrieveCustomer(tenantId: string): Promise<{
     });
 
     // Save customer to database
+    let userId: string | null = null;
+    if (primaryUser) {
+      const userIdResult: { data: { id: string } | null; error: any } = await adminClient
+        .from("users")
+        .select("id")
+        .eq("email", primaryUser.email)
+        .single();
+      userId = userIdResult.data?.id || null;
+    }
+
     const customerData: StripeCustomer = {
       tenant_id: tenantId,
-      user_id: primaryUser ? (await adminClient.from("users").select("id").eq("email", primaryUser.email).single()).data?.id : null,
+      user_id: userId,
       stripe_customer_id: customer.id,
       email: customer.email || primaryUser?.email || "",
       name: customer.name || tenant.name,
       metadata: customer.metadata as any,
     };
 
-    const { error: insertError } = await adminClient
+    const insertResult: { error: any } = await adminClient
       .from("stripe_customers")
+      // @ts-expect-error - Supabase type inference issue with Database types
       .insert(customerData);
+    
+    const insertError = insertResult.error;
 
     if (insertError) {
       // If insert fails, try to delete the Stripe customer
@@ -102,11 +130,14 @@ export async function getCustomer(tenantId: string): Promise<{
   try {
     const adminClient = createAdminClient();
 
-    const { data: customer, error } = await adminClient
+    const customerResult: { data: any | null; error: any } = await adminClient
       .from("stripe_customers")
       .select("*")
       .eq("tenant_id", tenantId)
       .single();
+
+    const customer = customerResult.data;
+    const error = customerResult.error;
 
     if (error || !customer) {
       return { success: false, error: "Customer not found" };
@@ -140,12 +171,13 @@ export async function updateCustomer(
   try {
     const adminClient = createAdminClient();
 
-    const { data: customer } = await adminClient
+    const customerResult: { data: { stripe_customer_id: string } | null; error: any } = await adminClient
       .from("stripe_customers")
       .select("stripe_customer_id")
       .eq("tenant_id", tenantId)
       .single();
 
+    const customer = customerResult.data;
     if (!customer) {
       return { success: false, error: "Customer not found" };
     }
@@ -159,8 +191,9 @@ export async function updateCustomer(
     });
 
     // Update in database
-    const { error } = await adminClient
+    const updateResult: { error: any } = await adminClient
       .from("stripe_customers")
+      // @ts-expect-error - Supabase type inference issue with Database types
       .update({
         email: updates.email,
         name: updates.name,
@@ -169,6 +202,7 @@ export async function updateCustomer(
       })
       .eq("tenant_id", tenantId);
 
+    const error = updateResult.error;
     if (error) {
       return { success: false, error: error.message };
     }

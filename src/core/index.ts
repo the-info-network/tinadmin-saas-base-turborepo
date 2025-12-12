@@ -192,17 +192,30 @@ export function getCoreInfo() {
 export { signIn, signUp, signOut, getCurrentUser } from './auth';
 
 // Multi-Tenancy
-export { getCurrentTenant, useTenant, TenantProvider } from './multi-tenancy';
+// Note: getCurrentTenant is server-only and should be imported directly:
+//   import { getCurrentTenant } from '@/core/multi-tenancy/server';
+export { useTenant, TenantProvider } from './multi-tenancy';
 
 // Billing
-export { createCheckoutSession, getActiveSubscription } from './billing';
+// Note: Billing functions are server-only and should be imported directly:
+//   import { createCheckoutSession, getActiveSubscription } from '@/core/billing/checkout';
+//   import { getActiveSubscription } from '@/core/billing/subscriptions';
+// Client-safe utilities like formatCurrency, centsToDollars can be imported from '@/core/billing'
+export { formatCurrency, centsToDollars, dollarsToCents, getSubscriptionStatusLabel, getSubscriptionStatusColor, isSubscriptionActive } from './billing';
 
 // Permissions
-export { hasPermission, requirePermission, PermissionGate } from './permissions';
+// Note: hasPermission and requirePermission are server-only and should be imported directly:
+//   import { hasPermission } from '@/core/permissions/permissions';
+//   import { requirePermission } from '@/core/permissions/middleware';
+export { PermissionGate } from './permissions';
 
 // Database
-export { createClient, createAdminClient } from './database';
+// Note: createClient and createAdminClient are server-only and should be imported directly:
+//   import { createClient } from '@/core/database/server';
+//   import { createAdminClient } from '@/core/database/admin-client';
 
 // Shared
 export { sleep, retry, isValidEmail, APP_CONFIG } from './shared';
+
+
 

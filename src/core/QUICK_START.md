@@ -174,3 +174,6 @@ const { data: orders } = await supabase.from('orders').select('*');
 
 **Happy coding! 🎉**
 
+
+
+

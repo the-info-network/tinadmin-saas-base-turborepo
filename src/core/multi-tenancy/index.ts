@@ -10,115 +10,83 @@
 // ============================================================================
 // TYPES
 // ============================================================================
-export type {
-  TenantContext,
-  TenantResolutionSource,
-  TenantValidationResult,
-} from './types';
+// Database types are re-exported from database domain
+export type { Database } from './types';
 
 // ============================================================================
 // TENANT CONTEXT
 // ============================================================================
-export {
-  getTenantContext,
-  setTenantContext,
-  clearTenantContext,
-} from './context';
-
-// For React components
+// React hooks and providers
 export {
   TenantProvider,
   useTenant,
 } from './context';
 
-// ============================================================================
-// TENANT RESOLUTION (Server-side)
-// ============================================================================
+// Workspace context (client-side)
 export {
-  resolveTenantFromRequest,
-  resolveTenantFromSubdomain,
-  resolveTenantFromHeader,
-  resolveTenantFromPath,
-} from './resolver';
+  WorkspaceProvider,
+  useWorkspace,
+} from './workspace-context';
 
 // ============================================================================
-// TENANT VALIDATION
+// TENANT RESOLUTION (Server-side - Import directly from files when needed)
 // ============================================================================
-export {
-  validateTenantAccess,
-  validateTenantStatus,
-} from './validation';
+// These are server-side functions - import directly from resolver.ts when needed
 
 // ============================================================================
-// SUBDOMAIN ROUTING
+// TENANT VALIDATION (Server-side - Import directly from files when needed)
 // ============================================================================
-export {
-  getSubdomainFromRequest,
-  getTenantDomain,
-  isTenantSubdomain,
-} from './subdomain-routing';
+// These are server-side functions - import directly from validation.ts when needed
 
 // ============================================================================
-// DATABASE QUERIES (Tenant-Aware)
+// SUBDOMAIN ROUTING (Client-safe utilities - Import directly when needed)
 // ============================================================================
-export {
-  createTenantQuery,
-  applyTenantFilter,
-  getTenantAwareClient,
-} from './query-builder';
+// These are imported directly in middleware and server-side code
 
 // ============================================================================
-// SERVER UTILITIES
+// DATABASE QUERIES (Tenant-Aware - Import directly when needed)
 // ============================================================================
-export {
-  getCurrentTenantId,
-  getCurrentTenant,
-} from './server';
+// These are utility functions - import directly from query-builder.ts when needed
 
 // ============================================================================
-// ACTIONS (Server Actions)
+// SERVER UTILITIES (Server-side)
 // ============================================================================
-export {
-  createTenantAction,
-  updateTenantAction,
-  deleteTenantAction,
-  getTenantAction,
-  listTenantsAction,
-} from './actions';
+// ⚠️ SERVER-ONLY: Import directly from './server' in server-side code:
+//   import { getCurrentTenant, getCurrentTenantDetails, validateTenantAccess } from '@/core/multi-tenancy/server';
+// 
+// These functions use createClient from '@/core/database/server' and should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// - Middleware
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
-// TENANT ROLES
+// ACTIONS (Server Actions - Import directly when needed)
 // ============================================================================
-export {
-  assignTenantRoleAction,
-  removeTenantRoleAction,
-} from './tenant-roles';
+// These are server actions - import directly from actions.ts when needed
 
 // ============================================================================
-// WORKSPACES
+// TENANT ROLES (Server Actions - Import directly when needed)
 // ============================================================================
-export {
-  createWorkspaceAction,
-  getWorkspacesAction,
-  updateWorkspaceAction,
-  deleteWorkspaceAction,
-} from './workspaces';
+// These are server actions - import directly from tenant-roles.ts when needed
+
+// ============================================================================
+// WORKSPACES (Server Actions - Import directly when needed)
+// ============================================================================
+// These are server actions - import directly from workspaces.ts when needed
 
 // ============================================================================
 // WHITE-LABEL SETTINGS
 // ============================================================================
-export {
-  getBrandingSettings,
-  saveBrandingSettings,
-  getThemeSettings,
-  saveThemeSettings,
-  getEmailSettings,
-  saveEmailSettings,
-  getCustomCSS,
-  saveCustomCSS,
-  getCustomDomains,
-  saveCustomDomains,
-} from './white-label';
+// ⚠️ SERVER-ONLY: These are server actions - import directly from './white-label' in server-side code:
+//   import { getBrandingSettings, saveBrandingSettings, getThemeSettings, saveThemeSettings, getEmailSettings, saveEmailSettings, getCustomCSS, saveCustomCSS, getCustomDomains, saveCustomDomains } from '@/core/multi-tenancy/white-label';
+// 
+// These functions use createClient from '@/core/database/server' and should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // UTILITIES
@@ -147,4 +115,5 @@ export function isValidTenantDomain(domain: string): boolean {
   
   return domain.endsWith(`.${baseDomain}`) && domain !== baseDomain;
 }
+
 

@@ -1,6 +1,8 @@
+import "server-only";
+
 /**
  * Tenant-Aware Supabase Client Wrapper
- * 
+ *
  * Provides a wrapper around Supabase clients that automatically
  * includes tenant context in queries
  */

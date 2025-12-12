@@ -1,12 +1,9 @@
 "use server";
 
-import { requirePermission } from "@/lib/auth/permission-middleware";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { getCurrentUserTenantId } from "@/lib/tenant/validation";
-import type { Database } from "@/lib/supabase/types";
-
-type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
+import { requirePermission } from "@/core/permissions/middleware";
+import { createClient } from "@/core/database/server";
+import type { Database } from "@/core/database";
+import { getCurrentUserTenantId } from "@/core/multi-tenancy/validation";
 
 export interface BrandingSettings {
   companyName?: string;
@@ -61,7 +58,7 @@ export async function getBrandingSettings(): Promise<BrandingSettings> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       // If permission check fails (e.g., not authenticated), return empty
       return {};
     }
@@ -71,14 +68,15 @@ export async function getBrandingSettings(): Promise<BrandingSettings> {
       return {};
     }
 
-    const { data: tenant, error } = await supabase
+    const result: { data: { branding: Record<string, unknown> | null } | null; error: any } = await supabase
       .from("tenants")
       .select("branding")
       .eq("id", tenantId)
       .single();
 
-    if (error) {
-      console.error("Error fetching branding settings:", error);
+    const tenant = result.data;
+    if (result.error) {
+      console.error("Error fetching branding settings:", result.error);
       return {};
     }
 
@@ -108,10 +106,11 @@ export async function saveBrandingSettings(settings: BrandingSettings): Promise<
       return { success: false, error: "No tenant context" };
     }
 
-    const { error } = await supabase
-      .from("tenants")
-      .update({ branding: settings })
-      .eq("id", tenantId);
+    const updateResult = await ((supabase
+      .from("tenants") as any)
+      .update({ branding: settings as Record<string, unknown> } as any)
+      .eq("id", tenantId));
+    const { error } = updateResult as { error: any };
 
     if (error) {
       console.error("Error saving branding settings:", error);
@@ -141,7 +140,7 @@ export async function getThemeSettings(): Promise<ThemeSettings> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       return {};
     }
 
@@ -150,14 +149,15 @@ export async function getThemeSettings(): Promise<ThemeSettings> {
       return {};
     }
 
-    const { data: tenant, error } = await supabase
+    const result: { data: { theme_settings: Record<string, unknown> | null } | null; error: any } = await supabase
       .from("tenants")
       .select("theme_settings")
       .eq("id", tenantId)
       .single();
 
-    if (error) {
-      console.error("Error fetching theme settings:", error);
+    const tenant = result.data;
+    if (result.error) {
+      console.error("Error fetching theme settings:", result.error);
       return {};
     }
 
@@ -182,10 +182,11 @@ export async function saveThemeSettings(settings: ThemeSettings): Promise<{ succ
       return { success: false, error: "No tenant context" };
     }
 
-    const { error } = await supabase
-      .from("tenants")
-      .update({ theme_settings: settings })
-      .eq("id", tenantId);
+    const updateResult = await ((supabase
+      .from("tenants") as any)
+      .update({ theme_settings: settings as Record<string, unknown> } as any)
+      .eq("id", tenantId));
+    const { error } = updateResult as { error: any };
 
     if (error) {
       return { success: false, error: error.message };
@@ -213,7 +214,7 @@ export async function getEmailSettings(): Promise<EmailSettings> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       return {};
     }
 
@@ -222,18 +223,19 @@ export async function getEmailSettings(): Promise<EmailSettings> {
       return {};
     }
 
-    const { data: tenant, error } = await supabase
+    const result: { data: { email_settings: Record<string, unknown> | null } | null; error: any } = await supabase
       .from("tenants")
       .select("email_settings")
       .eq("id", tenantId)
       .single();
 
-    if (error) {
+    const tenant = result.data;
+    if (result.error) {
       return {};
     }
 
     return (tenant?.email_settings as EmailSettings) || {};
-  } catch (error) {
+  } catch {
     return {};
   }
 }
@@ -252,10 +254,11 @@ export async function saveEmailSettings(settings: EmailSettings): Promise<{ succ
       return { success: false, error: "No tenant context" };
     }
 
-    const { error } = await supabase
-      .from("tenants")
-      .update({ email_settings: settings })
-      .eq("id", tenantId);
+    const updateResult = await ((supabase
+      .from("tenants") as any)
+      .update({ email_settings: settings as Record<string, unknown> } as any)
+      .eq("id", tenantId));
+    const { error } = updateResult as { error: any };
 
     if (error) {
       return { success: false, error: error.message };
@@ -283,7 +286,7 @@ export async function getCustomCSS(): Promise<string> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       return "";
     }
 
@@ -292,18 +295,19 @@ export async function getCustomCSS(): Promise<string> {
       return "";
     }
 
-    const { data: tenant, error } = await supabase
+    const result: { data: { custom_css: string | null } | null; error: any } = await supabase
       .from("tenants")
       .select("custom_css")
       .eq("id", tenantId)
       .single();
 
-    if (error) {
+    const tenant = result.data;
+    if (result.error) {
       return "";
     }
 
     return tenant?.custom_css || "";
-  } catch (error) {
+  } catch {
     return "";
   }
 }
@@ -322,10 +326,11 @@ export async function saveCustomCSS(css: string): Promise<{ success: boolean; er
       return { success: false, error: "No tenant context" };
     }
 
-    const { error } = await supabase
-      .from("tenants")
-      .update({ custom_css: css })
-      .eq("id", tenantId);
+    const updateResult = await ((supabase
+      .from("tenants") as any)
+      .update({ custom_css: css } as any)
+      .eq("id", tenantId));
+    const { error } = updateResult as { error: any };
 
     if (error) {
       return { success: false, error: error.message };
@@ -353,7 +358,7 @@ export async function getCustomDomains(): Promise<CustomDomain[]> {
     // Check permission, but don't throw if not authenticated
     try {
       await requirePermission("settings.read");
-    } catch (error) {
+    } catch {
       return [];
     }
 
@@ -362,18 +367,19 @@ export async function getCustomDomains(): Promise<CustomDomain[]> {
       return [];
     }
 
-    const { data: tenant, error } = await supabase
+    const result: { data: { custom_domains: unknown[] | null } | null; error: any } = await supabase
       .from("tenants")
       .select("custom_domains")
       .eq("id", tenantId)
       .single();
 
-    if (error) {
+    const tenant = result.data;
+    if (result.error) {
       return [];
     }
 
-    return (tenant?.custom_domains as CustomDomain[]) || [];
-  } catch (error) {
+    return (tenant?.custom_domains as unknown as CustomDomain[]) || [];
+  } catch {
     return [];
   }
 }
@@ -392,10 +398,11 @@ export async function saveCustomDomains(domains: CustomDomain[]): Promise<{ succ
       return { success: false, error: "No tenant context" };
     }
 
-    const { error } = await supabase
-      .from("tenants")
-      .update({ custom_domains: domains })
-      .eq("id", tenantId);
+    const updateResult = await ((supabase
+      .from("tenants") as any)
+      .update({ custom_domains: domains as unknown as string[] } as any)
+      .eq("id", tenantId));
+    const { error } = updateResult as { error: any };
 
     if (error) {
       return { success: false, error: error.message };

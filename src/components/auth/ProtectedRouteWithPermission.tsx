@@ -8,8 +8,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { hasPermission, type Permission } from "@/lib/auth/permissions";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import { hasPermissionClient, type Permission } from "@/core/permissions";
 
 interface ProtectedRouteWithPermissionProps {
   permission: Permission;
@@ -28,7 +28,7 @@ export default function ProtectedRouteWithPermission({
 
   useEffect(() => {
     async function checkAccess() {
-      const supabase = createClient();
+      const supabase = createBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
@@ -37,7 +37,7 @@ export default function ProtectedRouteWithPermission({
       }
 
       try {
-        const access = await hasPermission(user.id, permission);
+        const access = await hasPermissionClient(user.id, permission);
         if (!access) {
           router.push(redirectTo);
           return;
@@ -68,4 +68,5 @@ export default function ProtectedRouteWithPermission({
 
   return <>{children}</>;
 }
+
 

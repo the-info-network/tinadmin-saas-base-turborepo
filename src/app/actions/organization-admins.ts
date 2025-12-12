@@ -1,9 +1,9 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { createClient } from "@/lib/supabase/server";
-import { requirePermission } from "@/lib/auth/permission-middleware";
-import type { Database } from "@/lib/supabase/types";
+import { createClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
+import { requirePermission } from "@/core/permissions/middleware";
 
 type OrganizationAdmin = Database["public"]["Tables"]["users"]["Row"] & {
   roles?: { 
@@ -31,11 +31,14 @@ async function isPlatformAdminServer(): Promise<boolean> {
     if (userError || !user) return false;
 
     const adminClient = createAdminClient();
-    const { data: currentUser, error: queryError } = await adminClient
+    const userResult: { data: { role_id: string | null; tenant_id: string | null; roles: { name: string } | null } | null; error: any } = await adminClient
       .from("users")
       .select("role_id, tenant_id, roles:role_id(name)")
       .eq("id", user.id)
       .single();
+
+    const currentUser = userResult.data;
+    const queryError = userResult.error;
 
     if (queryError || !currentUser) return false;
 
@@ -69,18 +72,19 @@ export async function getAllOrganizationAdmins(): Promise<OrganizationAdmin[]> {
     const adminClient = createAdminClient();
     
     // First get the Organization Admin role ID
-    const { data: workspaceAdminRole } = await adminClient
+    const roleResult: { data: { id: string } | null; error: any } = await adminClient
       .from("roles")
       .select("id")
       .eq("name", "Organization Admin")
       .single();
 
+    const workspaceAdminRole = roleResult.data;
     if (!workspaceAdminRole) {
       throw new Error("Organization Admin role not found");
     }
 
     // Get all Organization Admins (tenant-scoped users only)
-    const { data, error } = await adminClient
+    const queryResult: { data: any[] | null; error: any } = await adminClient
       .from("users")
       .select(`
         *,
@@ -100,6 +104,9 @@ export async function getAllOrganizationAdmins(): Promise<OrganizationAdmin[]> {
       .not("tenant_id", "is", null)  // Only tenant-scoped users
       .eq("role_id", workspaceAdminRole.id)  // Organization Admin role
       .order("created_at", { ascending: false });
+
+    const data = queryResult.data;
+    const error = queryResult.error;
 
     if (error) {
       console.error("[getAllOrganizationAdmins] Error fetching Organization Admins:", error);

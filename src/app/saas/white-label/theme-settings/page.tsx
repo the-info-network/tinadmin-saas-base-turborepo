@@ -32,8 +32,8 @@ export default function ThemeSettingsPage() {
         setTheme({
           themeMode: settings.themeMode || "light",
           fontFamily: settings.fontFamily || "Inter",
-          fontSize: settings.fontSize || "medium",
-          borderRadius: settings.borderRadius || "medium",
+          fontSize: (settings.fontSize as "small" | "medium" | "large") || "medium",
+          borderRadius: (settings.borderRadius as "none" | "small" | "medium" | "large") || "medium",
           enableAnimations: settings.enableAnimations ?? true,
           enableRipple: settings.enableRipple ?? true,
         });
@@ -119,7 +119,7 @@ export default function ThemeSettingsPage() {
               <select
                 id="font-size"
                 value={theme.fontSize}
-                onChange={(e) => setTheme({ ...theme, fontSize: e.target.value })}
+                onChange={(e) => setTheme({ ...theme, fontSize: e.target.value as "small" | "medium" | "large" })}
                 className="mt-2 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:ring-2 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
               >
                 <option value="small">Small</option>
@@ -140,7 +140,7 @@ export default function ThemeSettingsPage() {
             <select
               id="border-radius"
               value={theme.borderRadius}
-              onChange={(e) => setTheme({ ...theme, borderRadius: e.target.value })}
+              onChange={(e) => setTheme({ ...theme, borderRadius: e.target.value as "none" | "small" | "medium" | "large" })}
               className="mt-2 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 focus:border-brand-300 focus:ring-2 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800 dark:text-white/90"
             >
               <option value="none">None</option>

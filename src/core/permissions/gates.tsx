@@ -7,8 +7,9 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { hasPermissionClient, hasAnyPermissionClient, hasAllPermissionsClient, type Permission } from "./permissions-client";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import { hasPermissionClient, hasAnyPermissionClient, hasAllPermissionsClient } from "./permissions-client";
+import type { Permission } from "./permissions";
 
 interface PermissionGateProps {
   permission: Permission | Permission[];
@@ -31,7 +32,7 @@ export function PermissionGate({
 
   useEffect(() => {
     async function checkPermission() {
-      const supabase = createClient();
+      const supabase = createBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {

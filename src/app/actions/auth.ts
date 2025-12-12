@@ -1,12 +1,28 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { createClient } from "@/lib/supabase/server";
-import { getUser } from "@/lib/supabase/users";
-import type { Database } from "@/lib/supabase/types";
+import { createClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
 type TenantInsert = Database["public"]["Tables"]["tenants"]["Insert"];
+type TenantRow = Database["public"]["Tables"]["tenants"]["Row"];
+type UserRow = Database["public"]["Tables"]["users"]["Row"];
+
+type UserWithRelations = UserRow & {
+  roles: {
+    id: string;
+    name: string;
+    description: string;
+    coverage: string;
+    permissions: string[];
+  } | null;
+  tenants: {
+    id: string;
+    name: string;
+    domain: string;
+  } | null;
+};
 
 export interface SignUpData {
   email: string;
@@ -32,7 +48,7 @@ export async function signUp(data: SignUpData) {
 
   try {
     // 1. Check if tenant already exists, if so use it
-    let tenant;
+    let tenant: TenantRow | null = null;
     let isNewTenant = false;
     
     // Use admin client to bypass RLS when checking for existing tenant
@@ -60,9 +76,12 @@ export async function signUp(data: SignUpData) {
       console.warn("Function error detected, trying alternative query method...");
       // Try querying all tenants and filtering in code (admin client should bypass RLS)
       try {
-        const { data: allTenants, error: altError } = await adminClient
+        const result: { data: TenantRow[] | null; error: any } = await adminClient
           .from("tenants")
           .select("*");
+        
+        const allTenants = result.data;
+        const altError = result.error;
         
         if (!altError && allTenants) {
           existingTenant = allTenants.find(t => t.domain === data.tenantDomain) || null;
@@ -89,22 +108,27 @@ export async function signUp(data: SignUpData) {
         status: "pending",
       };
 
-      const { data: newTenant, error: tenantError } = await adminClient
+      const result: { data: TenantRow | null; error: any } = await adminClient
         .from("tenants")
+        // @ts-expect-error - Supabase type inference issue with Database types
         .insert(tenantData)
         .select()
         .single();
+      
+      const newTenant = result.data;
+      const tenantError = result.error;
 
       if (tenantError || !newTenant) {
         // Handle unique constraint violation (domain already exists)
         if (tenantError?.code === "23505") {
           // Try to get the existing tenant
-          const { data: existing } = await adminClient
+          const existingResult: { data: TenantRow | null; error: any } = await adminClient
             .from("tenants")
             .select("*")
             .eq("domain", data.tenantDomain)
             .single();
           
+          const existing = existingResult.data;
           if (existing) {
             tenant = existing;
           } else {
@@ -157,11 +181,13 @@ export async function signUp(data: SignUpData) {
 
     // 3. Create user record in users table using admin client
     // Get default "Organization Admin" role
-    const { data: defaultRole } = await adminClient
+    const roleResult: { data: { id: string } | null; error: any } = await adminClient
       .from("roles")
       .select("id")
       .eq("name", "Organization Admin")
       .single();
+    
+    const defaultRole = roleResult.data;
 
     // Platform Admins should have tenant_id = NULL
     // Regular users belong to their tenant
@@ -178,11 +204,15 @@ export async function signUp(data: SignUpData) {
     // Note: If creating a Platform Admin during signup, you would set tenant_id = null
     // But signup typically creates Organization Admins, not Platform Admins
 
-    const { data: user, error: userError } = await adminClient
+    const userResult: { data: UserRow | null; error: any } = await adminClient
       .from("users")
+      // @ts-expect-error - Supabase type inference issue with Database types
       .insert(userData)
       .select()
       .single();
+    
+    const user = userResult.data;
+    const userError = userResult.error;
 
     if (userError || !user) {
       // If user creation fails, clean up ONLY if we created a new tenant
@@ -251,7 +281,7 @@ export async function signIn(data: SignInData) {
   console.log("[signIn] Auth successful, user ID:", authData.user.id);
 
   // Get user with tenant context using admin client
-  const { data: user, error: userError } = await adminClient
+  const userResult: { data: UserWithRelations | null; error: any } = await adminClient
     .from("users")
     .select(`
       *,
@@ -270,6 +300,9 @@ export async function signIn(data: SignInData) {
     `)
     .eq("id", authData.user.id)
     .single();
+  
+  const user = userResult.data;
+  const userError = userResult.error;
 
   if (userError || !user) {
     console.error("[signIn] Error fetching user:", userError);
@@ -284,10 +317,15 @@ export async function signIn(data: SignInData) {
   console.log("[signIn]   - Tenant ID:", user.tenant_id);
 
   // Update last active timestamp
-  await adminClient
+  const updateResult: { error: any } = await adminClient
     .from("users")
+    // @ts-expect-error - Supabase type inference issue with Database types
     .update({ last_active_at: new Date().toISOString() })
     .eq("id", authData.user.id);
+  
+  if (updateResult.error) {
+    console.error("[signIn] Error updating last_active_at:", updateResult.error);
+  }
 
   // Verify the role is Platform Admin
   const roleName = (user.roles as any)?.name;

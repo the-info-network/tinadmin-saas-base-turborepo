@@ -289,3 +289,6 @@ Your Stripe integration is ready to process payments. Start by creating products
 
 Happy billing! 💰
 
+
+
+

@@ -5,8 +5,8 @@
  */
 
 import 'dotenv/config';
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { getUserPermissions } from "@/lib/auth/permissions";
+import { createAdminClient } from "@/core/database";
+import { getUserPermissions } from "@/core/permissions";
 
 // Menu structure from AppSidebar.tsx
 const menuStructure = {
@@ -114,4 +114,5 @@ async function verifyMenuFunctionality() {
 }
 
 verifyMenuFunctionality().catch(console.error);
+
 

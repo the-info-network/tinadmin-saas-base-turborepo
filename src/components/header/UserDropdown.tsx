@@ -1,14 +1,13 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { signOut } from "@/app/actions/auth";
 import { getCurrentUser } from "@/app/actions/user";
-import { createClient } from "@/lib/supabase/client";
-import type { Database } from "@/lib/supabase/types";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import type { Database } from "@/core/database/types";
 
 type User = Database["public"]["Tables"]["users"]["Row"] & {
   roles?: { name: string } | null;
@@ -68,7 +67,7 @@ export default function UserDropdown() {
     loadUser();
 
     // Listen for auth changes
-    const supabase = createClient();
+    const supabase = createBrowserClient();
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
       loadUser();
     });
@@ -81,7 +80,7 @@ export default function UserDropdown() {
   async function handleSignOut() {
     try {
       // Clear session from browser client
-      const supabase = createClient();
+      const supabase = createBrowserClient();
       await supabase.auth.signOut();
       
       // Also call server action

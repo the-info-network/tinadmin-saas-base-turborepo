@@ -4,11 +4,10 @@
  * Implements tenant-scoped permissions and permission inheritance
  */
 
-import { createClient } from "@/lib/supabase/client";
-import { createClient as createServerClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin-client";
+import { createClient as createServerClient } from "@/core/database/server";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database";
 import { getUserPermissions, type Permission } from "./permissions";
-import type { Database } from "@/lib/supabase/types";
 
 type TenantPermission = Database["public"]["Tables"]["tenants"]["Row"] & {
   custom_permissions?: Permission[];
@@ -34,19 +33,20 @@ export async function getTenantPermissions(
   const rolePermissions = await getUserPermissions(userId);
   
   // Get tenant-specific permission overrides
-  const { data: tenant } = await supabase
+  const tenantResult: { data: { features: any } | null; error: any } = await supabase
     .from("tenants")
     .select("features")
     .eq("id", tenantId)
     .single();
 
+  const tenant = tenantResult.data;
   // Start with role permissions
   let permissions: Permission[] = [...rolePermissions.permissions];
 
   // Apply tenant-specific permission overrides from features
   // Features array can contain permission strings
   if (tenant?.features && Array.isArray(tenant.features)) {
-    const tenantFeaturePermissions = tenant.features.filter((f): f is Permission =>
+    const tenantFeaturePermissions = tenant.features.filter((f: any): f is Permission =>
       typeof f === "string" && f.includes(".")
     ) as Permission[];
     
@@ -143,12 +143,13 @@ export async function applyPermissionInheritance(
   const adminClient = createAdminClient();
   
   // Get tenant
-  const { data: tenant } = await adminClient
+  const tenantResult2: { data: { id: string; features: any } | null; error: any } = await adminClient
     .from("tenants")
     .select("id, features")
     .eq("id", tenantId)
     .single();
 
+  const tenant = tenantResult2.data;
   if (!tenant) {
     return [];
   }
@@ -156,7 +157,7 @@ export async function applyPermissionInheritance(
   // For now, return tenant features as permissions
   // In the future, this can check for parent_tenant_id and inherit
   const permissions = (tenant.features || []).filter(
-    (f): f is Permission => typeof f === "string" && f.includes(".")
+    (f: any): f is Permission => typeof f === "string" && f.includes(".")
   ) as Permission[];
 
   return permissions;

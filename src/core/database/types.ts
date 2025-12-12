@@ -652,4 +652,3 @@ export interface Database {
     };
   };
 }
-

@@ -1,8 +1,6 @@
-import { createClient } from "@/lib/supabase/client";
-import { createAdminClient } from "@/lib/supabase/admin-client";
-import { createUser, getUser } from "@/lib/supabase/users";
-import { createTenant } from "@/lib/supabase/tenants";
-import type { Database } from "@/lib/supabase/types";
+import { createClient as createBrowserClient } from "@/core/database/client";
+import { createAdminClient } from "@/core/database/admin-client";
+import type { Database } from "@/core/database/types";
 
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
 type TenantInsert = Database["public"]["Tables"]["tenants"]["Insert"];
@@ -26,7 +24,7 @@ export interface SignInData {
  * Sign up a new user and create their tenant
  */
 export async function signUp(data: SignUpData) {
-  const supabase = createClient();
+  const supabase = createBrowserClient();
   
   // Use admin client for tenant creation (bypasses RLS)
   // This is safe because we're creating the tenant as part of signup
@@ -41,11 +39,13 @@ export async function signUp(data: SignUpData) {
     status: "pending",
   };
 
-  const { data: tenant, error: tenantError } = await adminClient
-    .from("tenants")
-    .insert(tenantData)
+  const tenantResult: { data: any | null; error: any } = await ((adminClient
+    .from("tenants") as any)
+    .insert(tenantData as any)
     .select()
-    .single();
+    .single());
+  const tenant = tenantResult.data;
+  const tenantError = tenantResult.error;
 
   if (tenantError || !tenant) {
     throw tenantError || new Error("Failed to create tenant");
@@ -55,41 +55,44 @@ export async function signUp(data: SignUpData) {
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
-    options: {
-      data: {
-        full_name: data.fullName,
-        tenant_id: tenant.id,
+      options: {
+        data: {
+          full_name: data.fullName,
+          tenant_id: (tenant as any).id,
+        },
       },
-    },
   });
 
   if (authError || !authData.user) {
     throw authError || new Error("Failed to create user");
   }
 
-  // 3. Create user record in users table using admin client
-  // Get default "Organization Admin" role
-  const { data: defaultRole } = await adminClient
-    .from("roles")
-    .select("id")
-    .eq("name", "Organization Admin")
-    .single();
+    // 3. Create user record in users table using admin client
+    // Get default "Organization Admin" role
+    const roleResult: { data: { id: string } | null; error: any } = await adminClient
+      .from("roles")
+      .select("id")
+      .eq("name", "Organization Admin")
+      .single();
+    const defaultRole = roleResult.data;
 
-  const userData: UserInsert = {
-    id: authData.user.id,
-    email: data.email,
-    full_name: data.fullName,
-    tenant_id: tenant.id,
-    role_id: defaultRole?.id || null,
-    plan: data.plan || "starter",
-    status: "active",
-  };
+    const userData: UserInsert = {
+      id: authData.user.id,
+      email: data.email,
+      full_name: data.fullName,
+      tenant_id: (tenant as any).id,
+      role_id: defaultRole?.id || null,
+      plan: data.plan || "starter",
+      status: "active",
+    };
 
-  const { data: user, error: userError } = await adminClient
-    .from("users")
-    .insert(userData)
-    .select()
-    .single();
+    const userInsertResult: { data: any | null; error: any } = await ((adminClient
+      .from("users") as any)
+      .insert(userData as any)
+      .select()
+      .single());
+    const user = userInsertResult.data;
+    const userError = userInsertResult.error;
 
   if (userError || !user) {
     throw userError || new Error("Failed to create user record");
@@ -106,7 +109,7 @@ export async function signUp(data: SignUpData) {
  * Sign in existing user
  */
 export async function signIn(data: SignInData) {
-  const supabase = createClient();
+  const supabase = createBrowserClient();
 
   const { data: authData, error } = await supabase.auth.signInWithPassword({
     email: data.email,
@@ -117,14 +120,24 @@ export async function signIn(data: SignInData) {
     throw error || new Error("Failed to sign in");
   }
 
-  // Get user with tenant context
-  const user = await getUser(authData.user.id);
+  // Get user with tenant context using admin client
+  const adminClient = createAdminClient();
+  const userResult: { data: any | null; error: any } = await adminClient
+    .from("users")
+    .select("*")
+    .eq("id", authData.user.id)
+    .single();
+  
+  const user = userResult.data;
+  if (userResult.error || !user) {
+    throw userResult.error || new Error("Failed to fetch user");
+  }
 
   // Update last active timestamp
-  await supabase
-    .from("users")
-    .update({ last_active_at: new Date().toISOString() })
-    .eq("id", authData.user.id);
+  await ((supabase
+    .from("users") as any)
+    .update({ last_active_at: new Date().toISOString() } as any)
+    .eq("id", authData.user.id));
 
   return {
     user,
@@ -136,17 +149,36 @@ export async function signIn(data: SignInData) {
  * Sign out current user
  */
 export async function signOut() {
-  const supabase = createClient();
+  const supabase = createBrowserClient();
   const { error } = await supabase.auth.signOut();
   
   if (error) throw error;
 }
 
 /**
+ * Get current user
+ */
+export async function getCurrentUser() {
+  const supabase = createBrowserClient();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  
+  if (error || !user) return null;
+  
+  const adminClient = createAdminClient();
+  const userResult: { data: any | null; error: any } = await adminClient
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+  
+  return userResult.data || null;
+}
+
+/**
  * Get current session
  */
-export async function getSession() {
-  const supabase = createClient();
+export async function getCurrentSession() {
+  const supabase = createBrowserClient();
   const { data: { session }, error } = await supabase.auth.getSession();
   
   if (error) throw error;
@@ -157,7 +189,7 @@ export async function getSession() {
  * Reset password
  */
 export async function resetPassword(email: string) {
-  const supabase = createClient();
+  const supabase = createBrowserClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/auth/reset-password`,
   });
@@ -169,7 +201,7 @@ export async function resetPassword(email: string) {
  * Update password
  */
 export async function updatePassword(newPassword: string) {
-  const supabase = createClient();
+  const supabase = createBrowserClient();
   const { error } = await supabase.auth.updateUser({
     password: newPassword,
   });

@@ -18,9 +18,17 @@ export type { Database } from './types';
 
 /**
  * Server-side Supabase client (SSR-aware)
- * Use this in Server Components, Server Actions, and API Routes
+ * ⚠️ SERVER-ONLY: Import directly from './server' in server-side code:
+ *   import { createClient } from '@/core/database/server';
+ * 
+ * Use this in:
+ * - Server Components
+ * - Server Actions
+ * - API Routes
+ * - Middleware
  */
-export { createClient, createServerClient } from './server';
+// Note: Not exported from index to prevent client bundling
+// Import directly: import { createClient } from '@/core/database/server';
 
 /**
  * Client-side Supabase client (Browser)
@@ -30,49 +38,65 @@ export { createClient as createBrowserClient } from './client';
 
 /**
  * Admin Supabase client (Bypasses RLS)
- * Use this ONLY in server-side admin operations
+ * ⚠️ SERVER-ONLY: Import directly from './admin-client' in server-side code:
+ *   import { createAdminClient } from '@/core/database/admin-client';
+ * 
+ * Use this ONLY in server-side admin operations:
+ * - Server Components
+ * - Server Actions
+ * - API Routes
+ * - Middleware
+ * 
  * NEVER expose to the client!
  */
-export { createAdminClient } from './admin-client';
+// Note: Not exported from index to prevent client bundling
+// Import directly: import { createAdminClient } from '@/core/database/admin-client';
 
 /**
  * Tenant-aware Supabase client
- * Automatically applies tenant context
+ * ⚠️ SERVER-ONLY: Import directly from './tenant-client' in server-side code:
+ *   import { createTenantAwareClient, createTenantAwareServerClient, createTenantAwareAdminClient, TenantAwareClient } from '@/core/database/tenant-client';
+ *
+ * Use this ONLY in server-side code:
+ * - Server Components
+ * - Server Actions
+ * - API Routes
+ * - Middleware
+ *
+ * NEVER expose to the client!
  */
-export { createTenantClient } from './tenant-client';
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // USER MANAGEMENT
 // ============================================================================
-export {
-  getUser,
-  getUserByEmail,
-  createUser,
-  updateUser,
-  deleteUser,
-  listUsers,
-  getUsersForTenant,
-} from './users';
+// ⚠️ SERVER-ONLY: Import directly from './users' in server-side code:
+//   import { getAllUsers } from '@/core/database/users';
+// 
+// These functions use createClient from '@/core/database/server' and should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // TENANT MANAGEMENT
 // ============================================================================
-export {
-  getTenant,
-  getTenantByDomain,
-  createTenant,
-  updateTenant,
-  deleteTenant,
-  listTenants,
-} from './tenants';
+// ⚠️ SERVER-ONLY: These are server actions - import directly from './tenants' in server-side code:
+//   import { getTenant, getTenants, createTenant, updateTenant, deleteTenant } from '@/core/database/tenants';
+// 
+// These functions should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // ROLE MANAGEMENT
 // ============================================================================
 export {
-  getRole,
-  getRoleByName,
-  listRoles,
+  getRoleById,
+  getRoles,
   createRole,
   updateRole,
   deleteRole,
@@ -81,32 +105,39 @@ export {
 // ============================================================================
 // WORKSPACE MANAGEMENT
 // ============================================================================
-export {
-  getWorkspace,
-  listWorkspaces,
-  createWorkspace,
-  updateWorkspace,
-  deleteWorkspace,
-} from './workspaces';
+// ⚠️ SERVER-ONLY: These are server actions - import directly from './workspaces' in server-side code:
+//   import { getWorkspace, getWorkspaces, createWorkspace, updateWorkspace, deleteWorkspace, addUserToWorkspace, removeUserFromWorkspace, updateWorkspaceUser, getUserWorkspaces, getWorkspaceMembers } from '@/core/database/workspaces';
+// 
+// These functions should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // USER-TENANT ROLES (Multi-Role System)
 // ============================================================================
-export {
-  assignTenantRole,
-  removeTenantRole,
-  getUserTenantRoles,
-  getEffectiveRole,
-} from './user-tenant-roles';
+// ⚠️ SERVER-ONLY: Import directly from './user-tenant-roles' in server-side code:
+//   import { assignTenantRole, removeTenantRole, getUserTenantRoles, getEffectiveRole } from '@/core/database/user-tenant-roles';
+// 
+// These functions use createAdminClient and should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// - Middleware
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // ORGANIZATION ADMINS
 // ============================================================================
-export {
-  getOrganizationAdmins,
-  addOrganizationAdmin,
-  removeOrganizationAdmin,
-} from './organization-admins';
+// ⚠️ SERVER-ONLY: Import directly from './organization-admins' in server-side code:
+//   import { getAllOrganizationAdmins, isPlatformAdmin } from '@/core/database/organization-admins';
+// 
+// These functions use createClient from '@/core/database/server' and should only be used in:
+// - Server Components
+// - Server Actions
+// - API Routes
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // UTILITIES
@@ -148,32 +179,11 @@ export function getDatabaseInfo(): {
   };
 }
 
-/**
- * Health check for database connection
- */
-export async function checkDatabaseHealth(): Promise<{
-  healthy: boolean;
-  latency?: number;
-  error?: string;
-}> {
-  try {
-    const start = Date.now();
-    const client = await createClient();
-    
-    // Simple query to test connection
-    const { error } = await client.from('roles').select('id').limit(1);
-    
-    if (error) {
-      return { healthy: false, error: error.message };
-    }
-    
-    const latency = Date.now() - start;
-    return { healthy: true, latency };
-  } catch (error) {
-    return {
-      healthy: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-  }
-}
+// ============================================================================
+// SERVER-ONLY UTILITIES
+// ============================================================================
+// Note: checkDatabaseHealth() has been moved to ./server-utils.ts
+// Import it directly from there in server-side code only:
+// import { checkDatabaseHealth } from '@/core/database/server-utils';
+
 
