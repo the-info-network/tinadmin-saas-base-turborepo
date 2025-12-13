@@ -1,5 +1,5 @@
 {
-  "name": "@tindevelopers/tinadmin-saas-base",
+  "name": "@tindeveloper/tinadmin-saas-base",
   "version": "1.0.0",
   "private": false,
   "description": "Enterprise-ready SaaS admin dashboard with CRM, multi-tenancy, Stripe billing, and role-based access control",
