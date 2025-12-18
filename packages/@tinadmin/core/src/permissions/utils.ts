@@ -6,6 +6,36 @@
  */
 
 /**
+ * Permission type - all available permissions
+ */
+export type Permission = 
+  | "users.read"
+  | "users.write"
+  | "users.delete"
+  | "tenants.read"
+  | "tenants.write"
+  | "tenants.delete"
+  | "roles.read"
+  | "roles.write"
+  | "roles.delete"
+  | "billing.read"
+  | "billing.write"
+  | "settings.read"
+  | "settings.write"
+  | "analytics.read"
+  | "api.access"
+  | "audit.read";
+
+/**
+ * User permissions result
+ */
+export interface UserPermissions {
+  role: string | null;
+  permissions: Permission[];
+  isPlatformAdmin: boolean;
+}
+
+/**
  * All available permissions in the system
  */
 export const PERMISSIONS = {

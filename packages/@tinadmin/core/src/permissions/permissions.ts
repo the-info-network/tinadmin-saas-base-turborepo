@@ -1,32 +1,12 @@
-import { createAdminClient } from "@/core/database/admin-client";
-import type { Database } from "@/core/database";
-import { getEffectiveRole } from "@/core/database/user-tenant-roles";
+import { createAdminClient } from "../database/admin-client";
+import type { Database } from "../database/types";
+import { getEffectiveRole } from "../database/user-tenant-roles";
+
+// Re-export types from utils for backwards compatibility
+export type { Permission, UserPermissions } from "./utils";
+import type { Permission, UserPermissions } from "./utils";
 
 type Role = Database["public"]["Tables"]["roles"]["Row"];
-
-export type Permission = 
-  | "users.read"
-  | "users.write"
-  | "users.delete"
-  | "tenants.read"
-  | "tenants.write"
-  | "tenants.delete"
-  | "roles.read"
-  | "roles.write"
-  | "roles.delete"
-  | "billing.read"
-  | "billing.write"
-  | "settings.read"
-  | "settings.write"
-  | "analytics.read"
-  | "api.access"
-  | "audit.read";
-
-export interface UserPermissions {
-  role: string | null;
-  permissions: Permission[];
-  isPlatformAdmin: boolean;
-}
 
 /**
  * Get user permissions based on their role

@@ -5,9 +5,9 @@
 
 "use client";
 
-import { createClient as createBrowserClient } from "@/core/database/client";
-import type { Database } from "@/core/database/types";
-import type { Permission, UserPermissions } from "./permissions";
+import { createClient as createBrowserClient } from "../database/client";
+import type { Database } from "../database/types";
+import type { Permission, UserPermissions } from "./utils";
 
 /**
  * Get user permissions based on their role (client-side)

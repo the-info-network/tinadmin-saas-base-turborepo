@@ -10,10 +10,11 @@
 // ============================================================================
 // TYPES
 // ============================================================================
+// Import types from utils to avoid importing server-only code
 export type {
   Permission,
   UserPermissions,
-} from './permissions';
+} from './utils';
 
 // ============================================================================
 // PERMISSION CHECKING (Server-Side)
@@ -77,13 +78,14 @@ export {
 // ============================================================================
 // ACTIONS (Server Actions)
 // ============================================================================
-export {
-  getCurrentUserPermissions,
-  getCurrentUserTenantPermissions,
-  checkCurrentUserPermission,
-  checkCurrentUserTenantPermission,
-  getCurrentUserPermissionSource,
-} from './actions';
+// ⚠️ SERVER-ONLY: Import directly from './actions' in server-side code:
+//   import { getCurrentUserPermissions, getCurrentUserTenantPermissions, checkCurrentUserPermission, checkCurrentUserTenantPermission, getCurrentUserPermissionSource } from '@/core/permissions/actions';
+// 
+// These are server actions and should only be called from:
+// - Server Components
+// - Other Server Actions
+// - API Routes
+// Note: Not exported from index to prevent client bundling
 
 // ============================================================================
 // PERMISSION DEFINITIONS & UTILITIES

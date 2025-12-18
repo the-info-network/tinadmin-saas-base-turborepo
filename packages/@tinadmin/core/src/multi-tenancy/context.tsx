@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { createClient as createBrowserClient } from "@/core/database/client";
-import type { Database } from "@/core/database/types";
+import { createClient as createBrowserClient } from "../database/client";
+import type { Database } from "../database/types";
 
 type Tenant = Database["public"]["Tables"]["tenants"]["Row"];
 
