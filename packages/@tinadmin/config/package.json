@@ -1,5 +1,5 @@
 {
-  "name": "@tindeveloper/tinadmin-config",
+  "name": "@tinadmin/config",
   "version": "1.0.1",
   "description": "Shared configuration for TinAdmin SaaS platform",
   "main": "./dist/index.js",

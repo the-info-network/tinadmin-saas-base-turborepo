@@ -1,5 +1,5 @@
 {
-  "name": "@tindeveloper/tinadmin-ui-admin",
+  "name": "@tinadmin/ui-admin",
   "version": "1.0.1",
   "description": "Admin UI components for TinAdmin SaaS platform",
   "main": "./dist/index.js",
@@ -20,7 +20,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@tindeveloper/tinadmin-core": "^1.0.1",
+    "@tinadmin/core": "workspace:*",
     "@heroicons/react": "^2.2.0",
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.6.0"

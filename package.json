@@ -78,8 +78,6 @@
     "@fullcalendar/timegrid": "^6.1.15",
     "@heroicons/react": "^2.2.0",
     "@popperjs/core": "^2.11.8",
-    "@react-jvectormap/core": "^1.0.4",
-    "@react-jvectormap/world": "^1.1.2",
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.5.3",
     "@supabase/ssr": "^0.8.0",
@@ -119,15 +117,5 @@
     "turbo": "^2.3.3",
     "typescript": "5.9.3",
     "vitest": "^2.1.2"
-  },
-  "overrides": {
-    "@react-jvectormap/core": {
-      "react": "^16.8.0 || ^17 || ^18 || ^19",
-      "react-dom": "^16.8.0 || ^17 || ^18 || ^19"
-    },
-    "@react-jvectormap/world": {
-      "react": "^16.8.0 || ^17 || ^18 || ^19",
-      "react-dom": "^16.8.0 || ^17 || ^18 || ^19"
-    }
   }
 }

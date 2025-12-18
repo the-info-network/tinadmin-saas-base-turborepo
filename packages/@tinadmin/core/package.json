@@ -1,5 +1,5 @@
 {
-  "name": "@tindeveloper/tinadmin-core",
+  "name": "@tinadmin/core",
   "version": "1.0.1",
   "description": "Core SaaS platform modules: auth, billing, database, multi-tenancy, permissions",
   "main": "./dist/index.js",

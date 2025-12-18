@@ -32,12 +32,6 @@ importers:
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
-      '@react-jvectormap/core':
-        specifier: ^1.0.4
-        version: 1.0.4(jquery@3.7.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@react-jvectormap/world':
-        specifier: ^1.1.2
-        version: 1.1.2
       '@stripe/react-stripe-js':
         specifier: ^5.4.1
         version: 5.4.1(@stripe/stripe-js@8.6.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -177,12 +171,6 @@ importers:
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
-      '@react-jvectormap/core':
-        specifier: ^1.0.4
-        version: 1.0.4(jquery@3.7.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@react-jvectormap/world':
-        specifier: ^1.1.2
-        version: 1.1.2
       '@stripe/react-stripe-js':
         specifier: ^5.4.1
         version: 5.4.1(@stripe/stripe-js@8.6.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -399,10 +387,10 @@ importers:
         specifier: ^2.86.2
         version: 2.88.0
       react:
-        specifier: ^19.2.3
+        specifier: ^18.0.0 || ^19.0.0
         version: 19.2.3
       react-dom:
-        specifier: ^19.2.3
+        specifier: ^18.0.0 || ^19.0.0
         version: 19.2.3(react@19.2.3)
       stripe:
         specifier: ^20.0.0
@@ -427,10 +415,10 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       react:
-        specifier: ^19.2.3
+        specifier: ^18.0.0 || ^19.0.0
         version: 19.2.3
       react-dom:
-        specifier: ^19.2.3
+        specifier: ^18.0.0 || ^19.0.0
         version: 19.2.3(react@19.2.3)
       tailwind-merge:
         specifier: ^2.6.0
@@ -1512,22 +1500,6 @@ packages:
   '@react-dnd/shallowequal@4.0.2':
     resolution: {integrity: sha512-/RVXdLvJxLg4QKvMoM5WlwNR9ViO9z8B/qPcc+C0Sa/teJY7QG7kJ441DwzOjMYEY7GmU4dj5EcGHIkKZiQZCA==}
 
-  '@react-jvectormap/core@1.0.4':
-    resolution: {integrity: sha512-PefUtLG2Uwu6YVMldTqZCaVu5G+4wS3iQDq5aAV/jY/h8+djIgdSKWb1hEsHk/vb0s2pwallS+VvU7N2xCMncA==}
-    peerDependencies:
-      jquery: ^3.6
-      react: ^16.8 || ^17 || ^18
-      react-dom: ^16.8 || ^17 || ^18
-
-  '@react-jvectormap/jquery-mousewheel@1.0.2':
-    resolution: {integrity: sha512-AmRnBdJfBjDUHreEDDs9qaSo3Q/6oC74m321VuzxkDX6ideVks2n2ouGiMcXq41GdJQoCUzSjfF8KyocL6M+SA==}
-
-  '@react-jvectormap/lib@1.0.3':
-    resolution: {integrity: sha512-EdPYen5GGrny7Mxc8IYvXtSdjTr3EfWjGCXuy6+0Yz9wZDmCfLFfjmuEOZirhe00BJOzi2LpnYMSp0WaJ2BH7Q==}
-
-  '@react-jvectormap/world@1.1.2':
-    resolution: {integrity: sha512-jDSy64DZz4mzEOrVni1zV5rak65+1WZhSGsvAvzHNIMHVx+tdD8R5OikyWUjYte8nxIkOUhQZtVJMK7VOIsmQA==}
-
   '@rollup/rollup-android-arm-eabi@4.53.5':
     resolution: {integrity: sha512-iDGS/h7D8t7tvZ1t6+WPK04KD0MwzLZrG0se1hzBjSi5fyxlsiggoJHwh18PCFNn7tG43OWb6pdZ6Y+rMlmyNQ==}
     cpu: [arm]
@@ -2277,9 +2249,6 @@ packages:
     resolution: {integrity: sha512-OAlb+T7V4Op9OwdkjmguYRqncdlx5JiofwOAUkmTF+jNdHwzTaTs4sRAGpzLF3oOz5xAyDGrPgeIDFQmDOTiJw==}
     engines: {node: '>= 16'}
 
-  classnames@2.5.1:
-    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
-
   client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
 
@@ -2912,9 +2881,6 @@ packages:
   jiti@2.6.1:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
-
-  jquery@3.7.1:
-    resolution: {integrity: sha512-m4avr8yL8kmFN8psrbFFFmB/If14iN5o9nw/NgnnM+kybDJpRsAynV2BsfpTYrTRysYUdADVD7CkUUizgkpLfg==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -4885,24 +4851,6 @@ snapshots:
 
   '@react-dnd/shallowequal@4.0.2': {}
 
-  '@react-jvectormap/core@1.0.4(jquery@3.7.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
-    dependencies:
-      '@react-jvectormap/lib': 1.0.3
-      classnames: 2.5.1
-      jquery: 3.7.1
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
-
-  '@react-jvectormap/jquery-mousewheel@1.0.2':
-    dependencies:
-      jquery: 3.7.1
-
-  '@react-jvectormap/lib@1.0.3':
-    dependencies:
-      '@react-jvectormap/jquery-mousewheel': 1.0.2
-
-  '@react-jvectormap/world@1.1.2': {}
-
   '@rollup/rollup-android-arm-eabi@4.53.5':
     optional: true
 
@@ -5652,8 +5600,6 @@ snapshots:
       supports-color: 7.2.0
 
   check-error@2.1.1: {}
-
-  classnames@2.5.1: {}
 
   client-only@0.0.1: {}
 
@@ -6451,8 +6397,6 @@ snapshots:
       set-function-name: 2.0.2
 
   jiti@2.6.1: {}
-
-  jquery@3.7.1: {}
 
   js-tokens@4.0.0: {}
 
