@@ -1,33 +1,34 @@
-# TinAdmin Development Guide
+# Development Guide
 
-## 🏗️ Multi-Template Architecture
+## 🏗️ Turborepo Monorepo Architecture
 
-This repository uses a monorepo approach to manage multiple industry-specific dashboard templates from a single codebase.
+This repository uses Turborepo to manage a multi-app SaaS platform with shared packages.
 
 ## 📁 Project Structure
 
 ```
-tinadmin-master-admin-panel/
-├── src/                    # Core components and pages
-├── templates/              # Industry-specific templates
-│   ├── ecommerce/         # E-commerce template
-│   ├── healthcare/        # Healthcare template
-│   ├── finance/           # Finance template
-│   ├── education/         # Education template
-│   └── saas/              # SaaS template
-├── packages/              # NPM packages
-│   └── create-tinadmin/   # CLI tool
-├── scripts/               # Build and template scripts
-└── dist/                  # Built templates
+your-saas-platform/
+├── apps/                   # Applications
+│   ├── admin/             # Admin dashboard
+│   └── portal/            # Consumer portal
+├── packages/              # Shared packages
+│   └── @tinadmin/         # Core modules
+│       ├── core/          # Auth, billing, database
+│       ├── config/        # Configuration
+│       ├── ui-admin/      # Admin UI components
+│       └── ui-consumer/   # Consumer UI components
+├── scripts/               # Utility scripts
+├── supabase/              # Database migrations
+└── docs/                  # Documentation
 ```
 
 ## 🚀 Development Workflow
 
-### 1. Creating New Templates
+### 1. Development Commands
 
 ```bash
-# Create a new template
-npm run template:create <template-name>
+# Start all apps
+pnpm dev
 
 # Examples:
 npm run template:create healthcare

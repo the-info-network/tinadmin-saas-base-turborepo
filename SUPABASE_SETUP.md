@@ -9,9 +9,9 @@ This guide will help you set up Supabase for user, tenant, and role management.
 
 ## Step 1: Create Environment Variables
 
-1. Copy `.env.local.example` to `.env.local`:
+1. Copy `.env.example` to `.env.local`:
    ```bash
-   cp .env.local.example .env.local
+   cp .env.example .env.local
    ```
 
 2. Get your Supabase credentials:

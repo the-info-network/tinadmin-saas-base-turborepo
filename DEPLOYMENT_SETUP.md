@@ -12,11 +12,11 @@ This guide will help you set up automated deployment to Vercel using GitHub Acti
 
 1. Go to [vercel.com/new](https://vercel.com/new)
 2. Click "Import Git Repository"
-3. Select your GitHub repository: `tindevelopers/tinadmin-master-admin-panel`
+3. Select your GitHub repository: `your-org/your-saas-platform`
 4. Configure the project:
    - **Framework Preset**: Next.js
    - **Root Directory**: `./` (default)
-   - **Build Command**: `npm run build`
+   - **Build Command**: `pnpm run build`
    - **Output Directory**: `.next` (default)
 5. Click "Deploy"
 

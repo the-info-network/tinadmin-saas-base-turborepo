@@ -1,7 +1,7 @@
 {
   "name": "@tinadmin/ui-admin",
   "version": "1.0.1",
-  "description": "Admin UI components for TinAdmin SaaS platform",
+  "description": "Admin UI components for SaaS platform",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -34,17 +34,17 @@
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
-  "author": "Tin Developers",
+  "author": "Your Organization",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tindevelopers/tinadmin-saas-base-turborepo.git",
+    "url": "git+https://github.com/your-org/your-saas-platform.git",
     "directory": "packages/@tinadmin/ui-admin"
   },
   "bugs": {
-    "url": "https://github.com/tindevelopers/tinadmin-saas-base-turborepo/issues"
+    "url": "https://github.com/your-org/your-saas-platform/issues"
   },
-  "homepage": "https://github.com/tindevelopers/tinadmin-saas-base-turborepo#readme",
+  "homepage": "https://github.com/your-org/your-saas-platform#readme",
   "publishConfig": {
     "access": "public"
   }

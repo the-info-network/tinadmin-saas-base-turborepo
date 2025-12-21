@@ -22,9 +22,9 @@ INSERT INTO public.users (
   status
 )
 VALUES (
-  'b5655a4c-91d8-4cda-968c-e8d3b0d5649b'::UUID,
-  'systemadmin@tin.info',
-  'System Administrator',
+  'b5655a4c-91d8-4cda-968c-e8d3b0d5649b'::UUID,  -- Change this UUID to match your auth user
+  'admin@yourcompany.com',  -- Change this to your admin email
+  'Platform Administrator',
   (SELECT id FROM public.roles WHERE name = 'Platform Admin' LIMIT 1),
   NULL,  -- Platform Admins have NULL tenant_id
   'enterprise',

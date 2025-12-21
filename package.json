@@ -1,5 +1,5 @@
 {
-  "name": "@tindeveloper/tinadmin-saas-base",
+  "name": "@your-org/your-saas-platform",
   "version": "1.0.0",
   "private": false,
   "description": "Enterprise-ready SaaS admin dashboard with CRM, multi-tenancy, Stripe billing, and role-based access control",
@@ -12,17 +12,19 @@
     "crm",
     "multi-tenant",
     "stripe",
-    "rbac"
+    "rbac",
+    "template",
+    "starter"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tindevelopers/tinadmin-saas-base.git"
+    "url": "git+https://github.com/your-org/your-saas-platform.git"
   },
   "bugs": {
-    "url": "https://github.com/tindevelopers/tinadmin-saas-base/issues"
+    "url": "https://github.com/your-org/your-saas-platform/issues"
   },
-  "homepage": "https://github.com/tindevelopers/tinadmin-saas-base#readme",
-  "author": "Tin Developers",
+  "homepage": "https://github.com/your-org/your-saas-platform#readme",
+  "author": "Your Organization",
   "license": "MIT",
   "main": "./src/app/page.tsx",
   "files": [
@@ -42,6 +44,7 @@
   },
   "packageManager": "pnpm@10.6.1",
   "scripts": {
+    "initialize": "node scripts/initialize-fork.js",
     "dev": "turbo run dev",
     "dev:admin": "turbo run dev --filter=@tinadmin/admin",
     "dev:portal": "turbo run dev --filter=@tinadmin/portal",

@@ -1,27 +1,43 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Feature Request
+about: Suggest a new feature for the template
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## 🚀 Feature Description
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+A clear and concise description of the feature you'd like to see.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## 💡 Motivation
 
-**Template Context (if applicable)**
-- [ ] AI Customer Care
-- [ ] Blog Writer
-- [ ] E-commerce
-- [ ] New Template
-- [ ] Core System
+Why is this feature needed? What problem does it solve?
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## 📝 Proposed Solution
+
+How would you like this feature to work?
+
+## 🔄 Alternatives Considered
+
+What alternative solutions have you considered?
+
+## 📊 Use Cases
+
+Describe specific use cases for this feature.
+
+## 🎯 Benefits
+
+Who would benefit from this feature and how?
+
+## 📸 Mockups/Examples
+
+If applicable, add mockups, screenshots, or examples from other applications.
+
+## ⚠️ Potential Drawbacks
+
+Are there any potential downsides or challenges?
+
+## 📝 Additional Context
+
+Any other context or information about the feature request.

@@ -1,7 +1,7 @@
 {
   "name": "@tinadmin/config",
   "version": "1.0.1",
-  "description": "Shared configuration for TinAdmin SaaS platform",
+  "description": "Shared configuration for SaaS platform",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -19,17 +19,17 @@
     "dev": "tsc --watch",
     "clean": "rm -rf dist"
   },
-  "author": "Tin Developers",
+  "author": "Your Organization",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tindevelopers/tinadmin-saas-base-turborepo.git",
+    "url": "git+https://github.com/your-org/your-saas-platform.git",
     "directory": "packages/@tinadmin/config"
   },
   "bugs": {
-    "url": "https://github.com/tindevelopers/tinadmin-saas-base-turborepo/issues"
+    "url": "https://github.com/your-org/your-saas-platform/issues"
   },
-  "homepage": "https://github.com/tindevelopers/tinadmin-saas-base-turborepo#readme",
+  "homepage": "https://github.com/your-org/your-saas-platform#readme",
   "publishConfig": {
     "access": "public"
   },

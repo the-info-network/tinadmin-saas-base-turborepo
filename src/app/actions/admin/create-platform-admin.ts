@@ -3,9 +3,9 @@
 import { createAdminClient } from "@/core/database/admin-client";
 
 export async function createPlatformAdminUser() {
-  const email = "systemadmin@tin.info";
-  const password = "88888888";
-  const fullName = "System Admin";
+  const email = process.env.PLATFORM_ADMIN_EMAIL || "admin@yourcompany.com";
+  const password = process.env.PLATFORM_ADMIN_PASSWORD || "ChangeThisPassword123!";
+  const fullName = "Platform Administrator";
 
   const adminClient = createAdminClient();
 

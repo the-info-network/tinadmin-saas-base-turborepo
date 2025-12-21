@@ -1,5 +1,6 @@
--- Create Platform Admin User: systemadmin@tin.info
+-- Create Platform Admin User
 -- This script creates both the auth user and the public users record
+-- Configure email in your environment variables (PLATFORM_ADMIN_EMAIL)
 
 -- Step 1: Check if Platform Admin role exists, if not create it
 INSERT INTO public.roles (name, description, coverage, permissions, gradient, max_seats, current_seats)
@@ -45,8 +46,8 @@ BEGIN
   )
   VALUES (
     new_user_id,
-    'systemadmin@tin.info',
-    'System Administrator',
+    'admin@yourcompany.com',  -- Change this to your admin email
+    'Platform Administrator',
     admin_role_id,
     NULL,  -- Platform Admins have NULL tenant_id
     'enterprise',
@@ -61,6 +62,6 @@ BEGIN
     status = 'active';
   
   RAISE NOTICE 'User setup complete. User ID: %', new_user_id;
-  RAISE NOTICE 'Email: systemadmin@tin.info';
+  RAISE NOTICE 'Email: admin@yourcompany.com (change this to your admin email)';
   RAISE NOTICE 'You must create this user in Supabase Auth with the same UUID';
 END $$;

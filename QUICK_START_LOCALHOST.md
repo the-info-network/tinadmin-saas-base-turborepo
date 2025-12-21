@@ -1,9 +1,9 @@
-# Quick Start: Localhost Deployment
+# Quick Start: Local Development
 
 ## 🚀 One-Command Start
 
 ```bash
-npm run dev:localhost
+pnpm run dev:localhost
 ```
 
 Or use the script directly:
@@ -11,6 +11,8 @@ Or use the script directly:
 ```bash
 ./scripts/start-localhost.sh
 ```
+
+> **Note:** This template uses pnpm as the package manager. Make sure you have it installed: `npm install -g pnpm`
 
 ## 📋 Prerequisites Checklist
 
@@ -35,7 +37,7 @@ SUPABASE_SERVICE_ROLE_KEY=<get-from-supabase-status>
 
 ### 3. Start Next.js
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## 🌐 Access URLs

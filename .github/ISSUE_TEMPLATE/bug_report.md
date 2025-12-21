@@ -1,34 +1,47 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Bug Report
+about: Report a bug or issue with the template
 title: '[BUG] '
 labels: bug
 assignees: ''
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## 🐛 Bug Description
 
-**To Reproduce**
-Steps to reproduce the behavior:
+A clear and concise description of the bug.
+
+## 📋 Steps to Reproduce
+
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+2. Click on '...'
+3. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## ✅ Expected Behavior
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+What you expected to happen.
 
-**Environment (please complete the following information):**
- - OS: [e.g. macOS, Windows, Linux]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
- - Node.js version [e.g. 18.17.0]
- - Template [e.g. AI Customer Care, Blog Writer, E-commerce]
+## ❌ Actual Behavior
 
-**Additional context**
-Add any other context about the problem here.
+What actually happened.
+
+## 🖼️ Screenshots
+
+If applicable, add screenshots.
+
+## 💻 Environment
+
+- **OS:** [e.g., macOS, Windows, Linux]
+- **Node Version:** [e.g., 20.10.0]
+- **pnpm Version:** [e.g., 10.6.1]
+- **Browser:** [e.g., Chrome 120]
+- **Template Version:** [e.g., 1.0.0]
+
+## 📝 Additional Context
+
+Any other context about the problem.
+
+## 🔍 Logs
+
+```
+Paste relevant error logs here
+```

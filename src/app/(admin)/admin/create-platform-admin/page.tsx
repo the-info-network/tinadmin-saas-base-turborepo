@@ -35,14 +35,17 @@ export default function CreatePlatformAdminPage() {
             Create Platform Admin User
           </h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">
-            Create a Platform Admin user with the following credentials:
+            Create a Platform Admin user with credentials configured in your environment variables.
           </p>
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Email: <span className="font-mono">systemadmin@tin.info</span>
+              Email: <span className="font-mono">{process.env.PLATFORM_ADMIN_EMAIL || "admin@yourcompany.com"}</span>
             </p>
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
-              Password: <span className="font-mono">88888888</span>
+              Password: <span className="font-mono">Configured in .env.local</span>
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+              Set PLATFORM_ADMIN_EMAIL and PLATFORM_ADMIN_PASSWORD in your .env.local file
             </p>
           </div>
         </div>
