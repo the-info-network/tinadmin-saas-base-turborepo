@@ -56,7 +56,7 @@ Add these environment variables in Vercel Dashboard:
 
 ```env
 # Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://xcdlcbphynscowkawabt.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://jruxnkslobykshunucwa.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 # Stripe (if using)
