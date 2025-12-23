@@ -3,9 +3,10 @@
 import { ApexOptions } from "apexcharts";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { MoreDotIcon } from "@/icons";
+import {EllipsisVerticalIcon} from "@/icons";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { EllipsisVerticalIcon as MoreDotIcon } from "@heroicons/react/24/outline";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -125,7 +126,7 @@ export default function AcquisitionChannelChart() {
         </h3>
         <div className="relative h-fit">
           <button onClick={toggleDropdown} className="dropdown-toggle">
-            <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
+            <EllipsisVerticalIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
           <Dropdown
             isOpen={isOpen}

@@ -1,11 +1,12 @@
 "use client";
 
-import { MoreDotIcon } from "@/icons";
+import {EllipsisVerticalIcon} from "@/icons";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
+import { EllipsisVerticalIcon as MoreDotIcon } from "@heroicons/react/24/outline";
 
 // Dynamically import the ReactApexChart component
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -126,7 +127,7 @@ export default function FunnelChart() {
         </div>
         <div className="relative h-fit">
           <button onClick={toggleDropdown} className="dropdown-toggle">
-            <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
+            <EllipsisVerticalIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
           <Dropdown
             isOpen={isOpen}

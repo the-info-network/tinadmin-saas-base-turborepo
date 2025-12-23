@@ -3,8 +3,8 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import Button from "@/components/ui/button/Button";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
-import { PlusIcon, PencilIcon } from "@heroicons/react/24/outline";
-import { TrashBinIcon } from "@/icons";
+import { PlusIcon, PencilIcon, TrashIcon as TrashBinIcon } from "@heroicons/react/24/outline";
+import {TrashIcon} from "@/icons";
 import React, { useState } from "react";
 
 interface SSOProvider {
@@ -142,7 +142,7 @@ export default function SSOConfigurationPage() {
                   Configure
                 </Button>
                 <Button variant="outline" size="sm" className="flex-1">
-                  <TrashBinIcon className="h-4 w-4" />
+                  <TrashIcon className="h-4 w-4" />
                   Remove
                 </Button>
               </div>

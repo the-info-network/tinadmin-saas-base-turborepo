@@ -313,7 +313,7 @@ export default function BasicTableTwo() {
                 <TableCell className="px-4 sm:px-6 py-3.5">
                   {row.actions.delete && (
                     <button>
-                      <TrashBinIcon className="cursor-pointer  text-gray-700 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500" />
+                      <TrashIcon className="cursor-pointer  text-gray-700 hover:text-error-500 dark:text-gray-400 dark:hover:text-error-500" />
                     </button>
                   )}
                 </TableCell>
