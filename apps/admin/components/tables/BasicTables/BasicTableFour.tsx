@@ -9,10 +9,9 @@ import {
 } from "../../ui/table";
 import Badge from "../../ui/badge/Badge";
 import Image from "next/image";
-import {EllipsisVerticalIcon} from "@/icons";
 import { Dropdown } from "../../ui/dropdown/Dropdown";
 import { DropdownItem } from "../../ui/dropdown/DropdownItem";
-import { EllipsisVerticalIcon as MoreDotIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 
 interface Campaign {
   id: number;

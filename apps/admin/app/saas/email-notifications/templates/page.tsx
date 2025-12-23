@@ -7,7 +7,6 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import TextArea from "@/components/form/input/TextArea";
 import { PlusIcon, PencilIcon, EyeIcon, TrashIcon } from "@heroicons/react/24/outline";
-import {TrashIcon as TrashIcon} from "@/icons";
 import React, { useState } from "react";
 
 interface EmailTemplate {

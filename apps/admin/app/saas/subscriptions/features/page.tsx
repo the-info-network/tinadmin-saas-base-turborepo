@@ -1,8 +1,7 @@
 "use client";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import Button from "@/components/ui/button/Button";
-import { PlusIcon, PencilIcon, TrashIcon as TrashBinIcon } from "@heroicons/react/24/outline";
-import {TrashIcon} from "@/icons";
+import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 
 interface Feature {

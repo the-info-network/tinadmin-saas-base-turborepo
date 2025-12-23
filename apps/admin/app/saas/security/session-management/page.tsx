@@ -1,9 +1,8 @@
 "use client";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import Button from "@/components/ui/button/Button";
-import {TrashIcon} from "@/icons";
 import React, { useState } from "react";
-import { TrashIcon as TrashBinIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 
 interface Session {
   id: string;

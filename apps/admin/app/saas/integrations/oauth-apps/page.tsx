@@ -6,7 +6,6 @@ import { useModal } from "@/hooks/useModal";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import { PlusIcon, PencilIcon, EyeIcon, EyeSlashIcon, TrashIcon } from "@heroicons/react/24/outline";
-import {TrashIcon as TrashIcon} from "@/icons";
 import React, { useState } from "react";
 
 interface OAuthApp {

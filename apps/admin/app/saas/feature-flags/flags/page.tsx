@@ -7,7 +7,6 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Switch from "@/components/form/switch/Switch";
 import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
-import {TrashIcon as TrashIcon} from "@/icons";
 import React, { useState } from "react";
 
 interface FeatureFlag {

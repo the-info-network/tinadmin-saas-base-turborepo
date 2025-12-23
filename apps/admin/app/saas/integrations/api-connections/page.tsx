@@ -4,7 +4,6 @@ import Button from "@/components/ui/button/Button";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import { PlusIcon, PencilIcon, KeyIcon, TrashIcon } from "@heroicons/react/24/outline";
-import {TrashIcon as TrashIcon} from "@/icons";
 import React, { useState } from "react";
 
 interface APIConnection {
