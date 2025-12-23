@@ -55,6 +55,10 @@ export const mainNavItems: NavItem[] = [
     new: true,
     subItems: [
       {
+        name: "Chatbot",
+        path: "/saas/chatbot",
+      },
+      {
         name: "Text Generator",
         path: "/text-generator",
       },
