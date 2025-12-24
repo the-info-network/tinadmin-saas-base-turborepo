@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function DashboardLayout({
+export default function AnalyticsLayout({
   children,
 }: {
   children: React.ReactNode;
