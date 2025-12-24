@@ -80,20 +80,20 @@ export async function createSupportCategory(
       .eq("id", user.id)
       .single();
     
-    if (!userData?.tenant_id) {
+    if (!userData || !(userData as { tenant_id: string }).tenant_id) {
       throw new Error("User does not belong to a tenant");
     }
-    finalTenantId = userData.tenant_id;
+    finalTenantId = (userData as { tenant_id: string }).tenant_id;
   }
   
   const { data, error } = await supabase
     .from("support_categories")
     .insert({
-      tenant_id: finalTenantId,
+      tenant_id: finalTenantId as string,
       name: input.name,
       description: input.description || null,
       is_active: input.is_active !== undefined ? input.is_active : true,
-    })
+    } as any)
     .select()
     .single();
   
@@ -117,13 +117,13 @@ export async function updateSupportCategory(
     : await createClient();
   const supabase = getSupabaseClient(client);
   
-  const updateData: any = {};
+  const updateData: Record<string, any> = {};
   if (input.name !== undefined) updateData.name = input.name;
   if (input.description !== undefined) updateData.description = input.description;
   if (input.is_active !== undefined) updateData.is_active = input.is_active;
   
-  const { data, error } = await supabase
-    .from("support_categories")
+  const { data, error } = await (supabase
+    .from("support_categories") as any)
     .update(updateData)
     .eq("id", categoryId)
     .select()

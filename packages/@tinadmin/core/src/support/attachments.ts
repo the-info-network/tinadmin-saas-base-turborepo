@@ -107,7 +107,7 @@ export async function createSupportTicketAttachment(
     throw new Error("Ticket not found");
   }
   
-  const finalTenantId = tenantId || ticket.tenant_id;
+  const finalTenantId = tenantId || (ticket as { tenant_id: string }).tenant_id;
   
   const { data, error } = await supabase
     .from("support_ticket_attachments")
@@ -120,7 +120,7 @@ export async function createSupportTicketAttachment(
       file_size: input.file_size,
       mime_type: input.mime_type,
       uploaded_by: user.id,
-    })
+    } as any)
     .select(`
       *,
       uploaded_by_user:users!support_ticket_attachments_uploaded_by_fkey(id, full_name, email)
@@ -155,7 +155,7 @@ export async function deleteSupportTicketAttachment(
   
   if (attachment) {
     // Delete file from Supabase Storage
-    const filePath = attachment.file_path.replace(/^\/?support-tickets\//, "");
+    const filePath = (attachment as { file_path: string }).file_path.replace(/^\/?support-tickets\//, "");
     const { error: storageError } = await supabase.storage
       .from("support-tickets")
       .remove([filePath]);
@@ -200,7 +200,7 @@ export async function getAttachmentDownloadUrl(
     return null;
   }
   
-  const filePath = attachment.file_path.replace(/^\/?support-tickets\//, "");
+  const filePath = (attachment as { file_path: string }).file_path.replace(/^\/?support-tickets\//, "");
   const { data } = await supabase.storage
     .from("support-tickets")
     .createSignedUrl(filePath, expiresIn);

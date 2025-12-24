@@ -156,16 +156,16 @@ export async function createSupportTicket(
       .eq("id", user.id)
       .single();
     
-    if (!userData?.tenant_id) {
+    if (!userData || !(userData as { tenant_id: string }).tenant_id) {
       throw new Error("User does not belong to a tenant");
     }
-    finalTenantId = userData.tenant_id;
+    finalTenantId = (userData as { tenant_id: string }).tenant_id;
   }
   
-  const { data, error } = await supabase
-    .from("support_tickets")
+  const { data, error } = await (supabase
+    .from("support_tickets") as any)
     .insert({
-      tenant_id: finalTenantId,
+      tenant_id: finalTenantId as string,
       subject: input.subject,
       description: input.description || null,
       priority: input.priority || "medium",
@@ -201,7 +201,7 @@ export async function updateSupportTicket(
     : await createClient();
   const supabase = getSupabaseClient(client);
   
-  const updateData: any = {};
+  const updateData: Record<string, any> = {};
   if (input.subject !== undefined) updateData.subject = input.subject;
   if (input.description !== undefined) updateData.description = input.description;
   if (input.status !== undefined) updateData.status = input.status;
@@ -209,8 +209,8 @@ export async function updateSupportTicket(
   if (input.category_id !== undefined) updateData.category_id = input.category_id;
   if (input.assigned_to !== undefined) updateData.assigned_to = input.assigned_to;
   
-  const { data, error } = await supabase
-    .from("support_tickets")
+  const { data, error } = await (supabase
+    .from("support_tickets") as any)
     .update(updateData)
     .eq("id", ticketId)
     .select(`

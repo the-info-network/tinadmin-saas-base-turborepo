@@ -44,7 +44,7 @@ export class TenantAwareClient {
     
     // Apply tenant filter if tenantId is set
     if (this.tenantId) {
-      query = query.eq("tenant_id", this.tenantId);
+      query = (query as any).eq("tenant_id", this.tenantId);
     }
     
     return query;

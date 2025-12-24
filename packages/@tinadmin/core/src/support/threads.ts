@@ -102,7 +102,7 @@ export async function createSupportTicketThread(
     throw new Error("Ticket not found");
   }
   
-  const finalTenantId = tenantId || ticket.tenant_id;
+  const finalTenantId = tenantId || (ticket as { tenant_id: string }).tenant_id;
   
   const { data, error } = await supabase
     .from("support_ticket_threads")
@@ -112,7 +112,7 @@ export async function createSupportTicketThread(
       user_id: user.id,
       message: input.message,
       is_internal: input.is_internal || false,
-    })
+    } as any)
     .select(`
       *,
       user:users!support_ticket_threads_user_id_fkey(id, full_name, email, avatar_url)
@@ -143,8 +143,8 @@ export async function updateSupportTicketThread(
   if (input.message !== undefined) updateData.message = input.message;
   if (input.is_internal !== undefined) updateData.is_internal = input.is_internal;
   
-  const { data, error } = await supabase
-    .from("support_ticket_threads")
+  const { data, error } = await (supabase
+    .from("support_ticket_threads") as any)
     .update(updateData)
     .eq("id", threadId)
     .select(`
