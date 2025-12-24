@@ -5,6 +5,5 @@
   "buildCommand": "cd ../.. && pnpm install && pnpm turbo run build --filter=@tinadmin/admin",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "rootDirectory": "apps/admin"
+  "regions": ["iad1"]
 }
