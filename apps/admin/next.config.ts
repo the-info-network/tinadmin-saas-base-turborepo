@@ -50,9 +50,24 @@ const nextConfig: NextConfig = {
   
   // Webpack configuration
   webpack(config, { isServer }) {
+    // Handle SVG imports with SVGR - convert SVGs to React components
     config.module.rules.push({
       test: /\.svg$/,
-      use: ["@svgr/webpack"],
+      use: [
+        {
+          loader: "@svgr/webpack",
+          options: {
+            svgoConfig: {
+              plugins: [
+                {
+                  name: "removeViewBox",
+                  active: false,
+                },
+              ],
+            },
+          },
+        },
+      ],
     });
     
     // Optimize bundle size with aliases for better tree-shaking
