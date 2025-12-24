@@ -18,14 +18,14 @@ export async function notifyTicketCreated(ticket: SupportTicket) {
       .eq("id", ticket.created_by)
       .single();
     
-    if (!customer?.email) {
+    if (!customer || !(customer as { email: string }).email) {
       console.warn("Customer email not found for ticket notification");
       return;
     }
     
     // Send to customer
     await sendEmail({
-      to: customer.email,
+      to: (customer as { email: string }).email,
       from: process.env.EMAIL_FROM || "noreply@example.com",
       subject: `Support Ticket Created: ${ticket.ticket_number}`,
       html: `
