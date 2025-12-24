@@ -66,14 +66,14 @@ export async function notifyTicketCreated(ticket: SupportTicket) {
             <p>Hello ${agent.full_name || "there"},</p>
             <p>A new support ticket <strong>${ticket.ticket_number}</strong> has been assigned to you.</p>
             <p><strong>Subject:</strong> ${ticket.subject}</p>
-            <p><strong>Customer:</strong> ${customer.full_name || customer.email}</p>
+            <p><strong>Customer:</strong> ${(customer as { full_name?: string; email: string }).full_name || (customer as { email: string }).email}</p>
             <p><strong>Priority:</strong> ${ticket.priority}</p>
             ${ticket.description ? `<p><strong>Description:</strong><br>${ticket.description}</p>` : ""}
           `,
           text: `
             A new support ticket ${ticket.ticket_number} has been assigned to you.
             Subject: ${ticket.subject}
-            Customer: ${customer.full_name || customer.email}
+            Customer: ${(customer as { full_name?: string; email: string }).full_name || (customer as { email: string }).email}
             Priority: ${ticket.priority}
             ${ticket.description ? `Description: ${ticket.description}` : ""}
           `,
@@ -104,7 +104,7 @@ export async function notifyTicketUpdated(
       .eq("id", ticket.created_by)
       .single();
     
-    if (!customer?.email) {
+    if (!customer || !(customer as { email: string }).email) {
       return;
     }
     
@@ -117,13 +117,13 @@ export async function notifyTicketUpdated(
         .select("full_name")
         .eq("id", changes.assigned_to)
         .single();
-      changeMessages.push(`Assigned to: ${agent?.full_name || "Agent"}`);
+      changeMessages.push(`Assigned to: ${(agent as { full_name?: string })?.full_name || "Agent"}`);
     }
     
     if (changeMessages.length === 0) return;
     
     await sendEmail({
-      to: customer.email,
+      to: (customer as { email: string }).email,
       from: process.env.EMAIL_FROM || "noreply@example.com",
       subject: `Support Ticket Updated: ${ticket.ticket_number}`,
       html: `
@@ -169,9 +169,9 @@ export async function notifyTicketReply(
         .eq("id", ticket.created_by)
         .single();
       
-      if (customer?.email) {
+      if (customer && (customer as { email: string }).email) {
         await sendEmail({
-          to: customer.email,
+          to: (customer as { email: string }).email,
           from: process.env.EMAIL_FROM || "noreply@example.com",
           subject: `New Reply on Support Ticket: ${ticket.ticket_number}`,
           html: `
@@ -203,7 +203,7 @@ export async function notifyTicketReply(
           .select("email")
           .eq("id", ticket.assigned_to)
           .single();
-        if (agent?.email) recipients.push(agent.email);
+        if (agent && (agent as { email: string }).email) recipients.push((agent as { email: string }).email);
       }
       
       // If no assigned agent, notify all agents in tenant (optional)
