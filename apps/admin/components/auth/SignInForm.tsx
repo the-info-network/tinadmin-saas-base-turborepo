@@ -6,8 +6,14 @@ import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { signIn } from "@/app/actions/auth";
+
+// #region agent log
+console.log('[DEBUG:SignInForm] ChevronLeftIcon:', typeof ChevronLeftIcon, ChevronLeftIcon);
+console.log('[DEBUG:SignInForm] EyeIcon:', typeof EyeIcon, EyeIcon);
+console.log('[DEBUG:SignInForm] EyeCloseIcon:', typeof EyeCloseIcon, EyeCloseIcon);
+// #endregion
 
 export default function SignInForm() {
   const router = useRouter();

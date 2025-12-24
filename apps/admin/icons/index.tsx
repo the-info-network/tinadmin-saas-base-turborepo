@@ -57,6 +57,12 @@ import BoxMoving from "./box-tapped.svg";
 import BoxTapped from "./box-icon.svg";
 import TruckDelivery from "./truck-delivery.svg";
 
+// #region agent log
+console.log('[DEBUG:icons/index] EyeIcon type:', typeof EyeIcon, 'isFunction:', typeof EyeIcon === 'function', 'keys:', EyeIcon ? Object.keys(EyeIcon as object) : 'null');
+console.log('[DEBUG:icons/index] ChevronLeftIcon type:', typeof ChevronLeftIcon, 'isFunction:', typeof ChevronLeftIcon === 'function');
+console.log('[DEBUG:icons/index] EyeIcon value:', EyeIcon);
+// #endregion
+
 export {
   BoxTapped,
   TruckDelivery,
