@@ -56,14 +56,16 @@ export async function notifyTicketCreated(ticket: SupportTicket) {
         .eq("id", ticket.assigned_to)
         .single();
       
-      if (agent?.email) {
+      const agentEmail = (agent as { email?: string })?.email;
+      const agentName = (agent as { full_name?: string })?.full_name;
+      if (agentEmail) {
         await sendEmail({
-          to: agent.email,
+          to: agentEmail,
           from: process.env.EMAIL_FROM || "noreply@example.com",
           subject: `New Support Ticket Assigned: ${ticket.ticket_number}`,
           html: `
             <h2>New support ticket assigned to you</h2>
-            <p>Hello ${(agent as { full_name?: string }).full_name || "there"},</p>
+            <p>Hello ${agentName || "there"},</p>
             <p>A new support ticket <strong>${ticket.ticket_number}</strong> has been assigned to you.</p>
             <p><strong>Subject:</strong> ${ticket.subject}</p>
             <p><strong>Customer:</strong> ${(customer as { full_name?: string; email: string }).full_name || (customer as { email: string }).email}</p>
