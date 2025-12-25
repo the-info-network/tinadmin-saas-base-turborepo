@@ -322,6 +322,7 @@ export const supportNavItems: NavItem[] = [
   },
   {
     // Support menu includes all support-related navigation items
+    // Automatically deployed via Vercel webhooks on push to develop/main
     icon: <CallIcon />,
     name: "Support",
     new: true,
