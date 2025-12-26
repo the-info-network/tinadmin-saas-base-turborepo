@@ -30,8 +30,6 @@ export async function getTenantForSupport(): Promise<string> {
     throw new Error("You must be logged in to perform support operations. Please sign in and try again.");
   }
 
-  console.log(`[getTenantForSupport] Authenticated user: ${user.email} (${user.id})`);
-
   // Use admin client to get user data (bypasses RLS)
   const { data: userData, error: userError } = await (adminClient.from("users") as any)
     .select("role_id, tenant_id, roles:role_id(name)")
@@ -45,13 +43,9 @@ export async function getTenantForSupport(): Promise<string> {
 
   const roleName = (userData.roles as any)?.name;
   const isPlatformAdmin = roleName === "Platform Admin" && userData.tenant_id === null;
-  
-  console.log(`[getTenantForSupport] User check: role=${roleName}, tenant_id=${userData.tenant_id || "NULL"}, isPlatformAdmin=${isPlatformAdmin}`);
 
   if (isPlatformAdmin) {
     // Platform Admin: Get the first available tenant
-    console.log("[getTenantForSupport] Platform Admin detected, fetching tenants...");
-    
     // Get all tenants and pick the first one
     const { data: tenants, error } = await (adminClient.from("tenants") as any)
       .select("id, name, domain")
@@ -71,8 +65,6 @@ export async function getTenantForSupport(): Promise<string> {
       );
     }
 
-    console.log(`[getTenantForSupport] Found ${tenants?.length || 0} tenant(s)`);
-
     if (!tenants || tenants.length === 0) {
       // No tenants exist - Platform Admin needs to create one first
       throw new Error(
@@ -82,7 +74,6 @@ export async function getTenantForSupport(): Promise<string> {
     }
 
     const selectedTenant = tenants[0];
-    console.log(`[getTenantForSupport] Platform Admin using tenant: ${selectedTenant.id} (${selectedTenant.name || selectedTenant.domain})`);
     return selectedTenant.id;
   }
 
