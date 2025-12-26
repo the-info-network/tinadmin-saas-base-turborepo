@@ -323,7 +323,6 @@ export const supportNavItems: NavItem[] = [
   {
     // Support menu includes all support-related navigation items
     // Automatically deployed via Vercel webhooks on push to develop/main
-    // Testing deployment to tinadmin-saas-base-turborepo-admin project
     icon: <CallIcon />,
     name: "Support",
     new: true,
