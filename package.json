@@ -119,6 +119,6 @@
     "postcss": "^8",
     "turbo": "^2.7.1",
     "typescript": "5.9.3",
-    "vitest": "^2.1.2"
+    "vitest": "^4.0.17"
   }
 }
