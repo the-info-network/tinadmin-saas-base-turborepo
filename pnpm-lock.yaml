@@ -198,6 +198,12 @@ importers:
       '@tinadmin/core':
         specifier: workspace:*
         version: link:../../packages/@tinadmin/core
+      '@tinadmin/integration-gohighlevel':
+        specifier: workspace:*
+        version: link:../../packages/@tinadmin/integration-gohighlevel
+      '@tinadmin/integrations-core':
+        specifier: workspace:*
+        version: link:../../packages/@tinadmin/integrations-core
       '@tinadmin/ui-admin':
         specifier: workspace:*
         version: link:../../packages/@tinadmin/ui-admin
@@ -429,6 +435,29 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.19.27
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/@tinadmin/integration-gohighlevel:
+    dependencies:
+      '@tinadmin/integrations-core':
+        specifier: workspace:*
+        version: link:../integrations-core
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/@tinadmin/integrations-core:
+    dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.89.0
+        version: 2.89.0
+      '@tinadmin/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
